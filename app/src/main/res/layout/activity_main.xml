@@ -6,14 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.sorcererxw.matthiasheidericphotography.ui.activities.MainActivity">
+    tools:context="com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <com.sorcererxw.matthiasheidericphotography.ui.views.TypefaceToolbar
+        <com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar
             android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"

@@ -1,7 +1,6 @@
-package com.sorcererxw.matthiasheidericphotography.ui.fragments;
+package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,12 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.sorcererxw.matthiasheiderichphotography.models.LibraryBean;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.matthiasheidericphotography.models.LibraryBean;
-import com.sorcererxw.matthiasheidericphotography.ui.views.LibraryListView;
-import com.sorcererxw.matthiasheidericphotography.util.TypefaceHelper;
-
-import org.w3c.dom.Text;
+import com.sorcererxw.matthiasheiderichphotography.ui.views.LibraryListView;
+import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,7 +57,7 @@ public class HomeFragment extends Fragment {
 
         mProject.setTypeface(TypefaceHelper.getTypeface(getContext(), TypefaceHelper.Type.Book));
         mProject.setText(Html.fromHtml(
-                "This project address <a href='https://github.com/sorcererXW/MatthiasHeidericPhotography'>Github</a>"));
+                "This project address <a href='https://github.com/sorcererXW/MatthiasHeiderichPhotography'>Github</a>"));
         mProject.setMovementMethod(LinkMovementMethod.getInstance());
 
         for (LibraryBean aMLibraryBeen : mLibraryBeen) {
@@ -319,23 +316,23 @@ public class HomeFragment extends Fragment {
                     "https://github.com/afollestad/material-dialogs",
                     "A beautiful, fluid, and customizable dialogs API. "),
             new LibraryBean(
-                    "android-floating-action-button", // name
-                    "futuresimple", // author
-                    "Copyright (C) 2014 Jerzy Chalupski\n"
+                    "FloatingActionButton", // name
+                    "Clans", // author
+                    "Copyright 2015 Dmytro Tarianyk\n"
                             + "\n"
                             + "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
                             + "you may not use this file except in compliance with the License.\n"
                             + "You may obtain a copy of the License at\n"
                             + "\n"
-                            + "     http://www.apache.org/licenses/LICENSE-2.0\n"
+                            + "   http://www.apache.org/licenses/LICENSE-2.0\n"
                             + "\n"
                             + "Unless required by applicable law or agreed to in writing, software\n"
                             + "distributed under the License is distributed on an \"AS IS\" BASIS,\n"
                             + "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
                             + "See the License for the specific language governing permissions and\n"
                             + "limitations under the License.", // licence
-                    "https://github.com/futuresimple/android-floating-action-button", // link
-                    "Floating Action Button for Android based on Material Design specification"
+                    "https://github.com/Clans/FloatingActionButton", // link
+                    "Android Floating Action Button based on Material Design specification\n"
                     // des
             ),
             new LibraryBean(

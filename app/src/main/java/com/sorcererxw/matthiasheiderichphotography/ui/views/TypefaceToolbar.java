@@ -1,4 +1,4 @@
-package com.sorcererxw.matthiasheidericphotography.ui.views;
+package com.sorcererxw.matthiasheiderichphotography.ui.views;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -8,9 +8,9 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.matthiasheidericphotography.util.ResourceUtil;
-import com.sorcererxw.matthiasheidericphotography.util.TypefaceHelper;
+import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 
 /**
  * Created by Sorcerer on 2016/8/24.

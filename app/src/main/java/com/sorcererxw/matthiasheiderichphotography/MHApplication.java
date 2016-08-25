@@ -1,9 +1,7 @@
-package com.sorcererxw.matthiasheidericphotography;
+package com.sorcererxw.matthiasheiderichphotography;
 
 import android.app.Application;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.widget.Toast;
 
 /**
  * Created by Sorcerer on 2016/8/22.

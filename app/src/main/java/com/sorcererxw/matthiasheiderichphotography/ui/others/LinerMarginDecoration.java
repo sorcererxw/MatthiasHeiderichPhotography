@@ -1,4 +1,4 @@
-package com.sorcererxw.matthiasheidericphotography.ui.others;
+package com.sorcererxw.matthiasheiderichphotography.ui.others;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;

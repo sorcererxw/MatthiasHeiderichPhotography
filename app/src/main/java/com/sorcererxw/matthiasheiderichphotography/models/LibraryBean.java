@@ -1,4 +1,4 @@
-package com.sorcererxw.matthiasheidericphotography.models;
+package com.sorcererxw.matthiasheiderichphotography.models;
 
 /**
  * Created by Sorcerer on 2016/8/25.

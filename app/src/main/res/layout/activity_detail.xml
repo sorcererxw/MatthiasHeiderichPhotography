@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.DetailActivity">
+    tools:context="com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity">
 
     <View
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fitsSystemWindows="true"/>
 
-    <com.sorcererxw.matthiasheidericphotography.ui.views.TypefaceToolbar
+    <com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar
         android:id="@+id/toolbar_detail"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -27,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         app:indicatorColor="@color/accent"
+        android:layout_gravity="center"
         app:indicatorName="LineScalePulseOutIndicator"/>
 
     <uk.co.senab.photoview.PhotoView
@@ -37,32 +39,30 @@
         android:scaleType="centerCrop"
         android:transitionName="image"/>
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
+    <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_detail"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_gravity="bottom|right"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        app:fab_expandDirection="up"
-        app:fab_labelsPosition="left">
+        android:layout_marginRight="16dp"
+        app:layout_behavior="com.sorcererxw.matthiasheiderichphotography.ui.others.FloatingActionButtonBehavior">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_detail_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_icon="@drawable/ic_cloud_download_white_18dp"
-            app:fab_size="normal"
-            app:fab_title="save"/>
+            android:src="@drawable/ic_cloud_download_white_18dp"
+            app:fab_label="Save"
+            app:fab_size="normal"/>
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_detail_apply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_icon="@drawable/ic_wallpaper_white_18dp"
-            app:fab_size="normal"
-            app:fab_title="set wallpaper"/>
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+            android:src="@drawable/ic_wallpaper_white_18dp"
+            app:fab_label="Set Wallpaper"
+            app:fab_size="normal"/>
+    </com.github.clans.fab.FloatingActionMenu>
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

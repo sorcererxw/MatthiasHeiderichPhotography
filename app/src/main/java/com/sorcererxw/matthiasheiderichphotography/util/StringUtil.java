@@ -1,4 +1,4 @@
-package com.sorcererxw.matthiasheidericphotography.util;
+package com.sorcererxw.matthiasheiderichphotography.util;
 
 /**
  * Created by Sorcerer on 2016/8/22.
@@ -33,5 +33,10 @@ public class StringUtil {
             }
         }
         return res;
+    }
+
+    public static String getFileNameFromLinkWithoutExtension(String link) {
+        String[] sa = link.split("/");
+        return sa[sa.length - 1].split("\\.")[0];
     }
 }

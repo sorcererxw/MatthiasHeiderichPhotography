@@ -1,4 +1,4 @@
-package com.sorcererxw.matthiasheidericphotography.util;
+package com.sorcererxw.matthiasheiderichphotography.util;
 
 import android.content.Context;
 import android.database.Cursor;

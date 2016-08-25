@@ -1,4 +1,4 @@
-package com.sorcererxw.matthiasheidericphotography.ui.activities;
+package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,13 +18,13 @@ import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.sorcererxw.matthiasheidericphotography.MHApplication;
+import com.sorcererxw.matthiasheiderichphotography.MHApplication;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.matthiasheidericphotography.ui.fragments.HomeFragment;
-import com.sorcererxw.matthiasheidericphotography.ui.fragments.MHFragment;
-import com.sorcererxw.matthiasheidericphotography.ui.views.TypefaceToolbar;
-import com.sorcererxw.matthiasheidericphotography.util.StringUtil;
-import com.sorcererxw.matthiasheidericphotography.util.TypefaceHelper;
+import com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment;
+import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
+import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
+import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 
 import java.util.ArrayList;
 import java.util.List;

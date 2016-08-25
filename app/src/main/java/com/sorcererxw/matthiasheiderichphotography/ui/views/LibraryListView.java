@@ -1,18 +1,15 @@
-package com.sorcererxw.matthiasheidericphotography.ui.views;
+package com.sorcererxw.matthiasheiderichphotography.ui.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sorcererxw.matthiasheiderichphotography.models.LibraryBean;
+import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.matthiasheidericphotography.models.LibraryBean;
-import com.sorcererxw.matthiasheidericphotography.util.TypefaceHelper;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by Sorcerer on 2016/8/25.

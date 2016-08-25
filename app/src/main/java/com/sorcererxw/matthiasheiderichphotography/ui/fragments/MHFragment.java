@@ -1,27 +1,25 @@
-package com.sorcererxw.matthiasheidericphotography.ui.fragments;
+package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
+import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
+import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.matthiasheidericphotography.ui.adapters.MHAdapter;
-import com.sorcererxw.matthiasheidericphotography.ui.others.LinerMarginDecoration;
-import com.sorcererxw.matthiasheidericphotography.util.DialogUtil;
-import com.sorcererxw.matthiasheidericphotography.util.DisplayUtil;
-import com.sorcererxw.matthiasheidericphotography.util.ProjectDBHelper;
-import com.sorcererxw.matthiasheidericphotography.util.StringUtil;
+import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -100,7 +98,15 @@ public class MHFragment extends Fragment {
         if (System.currentTimeMillis()
                 - getContext().getSharedPreferences(PREFERENCES_UPDATE_DATE,
                 Context.MODE_PRIVATE).getLong(mProjectName, 0) < 86400000) {
-            mAdapter.setData(dbHelper.getLinks());
+            List<String> list = dbHelper.getLinks();
+            if (list.size() == 0) {
+                getContext().getSharedPreferences(PREFERENCES_UPDATE_DATE,
+                        Context.MODE_PRIVATE).edit()
+                        .putLong(mProjectName, 0).apply();
+                initData();
+            } else {
+                mAdapter.setData(list);
+            }
         } else {
             final MaterialDialog dialog = DialogUtil.getProgressDialog(getContext(), "Loading");
             dialog.show();
