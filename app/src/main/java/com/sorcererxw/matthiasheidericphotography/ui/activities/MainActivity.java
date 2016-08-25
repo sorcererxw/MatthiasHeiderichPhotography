@@ -5,16 +5,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.DimenHolder;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -23,7 +22,9 @@ import com.sorcererxw.matthiasheidericphotography.MHApplication;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.matthiasheidericphotography.ui.fragments.HomeFragment;
 import com.sorcererxw.matthiasheidericphotography.ui.fragments.MHFragment;
+import com.sorcererxw.matthiasheidericphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheidericphotography.util.StringUtil;
+import com.sorcererxw.matthiasheidericphotography.util.TypefaceHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar_main)
-    Toolbar mToolbar;
+    TypefaceToolbar mToolbar;
 
     @BindView(R.id.frameLayout_fragment_container)
     FrameLayout mContainer;
@@ -61,24 +62,27 @@ public class MainActivity extends AppCompatActivity {
 
         initDrawer();
 
-        showFragment(FRAGMENT_TAG_HOME);
+        if (savedInstanceState != null) {
+            showFragment(savedInstanceState.getString("tag"));
+        } else {
+            showFragment(FRAGMENT_TAG_HOME);
+        }
     }
 
     private void initDrawer() {
+
+        View head = LayoutInflater.from(this).inflate(R.layout.layout_drawer_head, null);
+        TextView headText = (TextView) head.findViewById(R.id.textView_drawer_head);
+        headText.setText("MATTHIAS\nHEIDERICH");
+        headText.setTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Demi));
+
         mDrawer = new DrawerBuilder()
                 .withCloseOnClick(true)
                 .withToolbar(mToolbar)
                 .withActionBarDrawerToggleAnimated(true)
-                .withAccountHeader(new AccountHeaderBuilder()
-                        .withActivity(this)
-                        .withHeightDp(178)
-                        .withHeaderBackgroundScaleType(ImageView.ScaleType.CENTER_CROP)
-                        .withProfileImagesClickable(false)
-                        .withResetDrawerOnProfileListClick(false)
-                        .withSelectionListEnabled(false)
-                        .withDividerBelowHeader(false)
-                        .withSelectionListEnabledForSingleProfile(false)
-                        .build())
+                .withHeader(head)
+                .withHeaderDivider(false)
+                .withHeaderHeight(DimenHolder.fromDp(178))
                 .withActivity(this)
                 .build();
 
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
             IDrawerItem item = new SecondaryDrawerItem()
                     .withName("        " + StringUtil
                             .handleProjectName(MHApplication.PROJECTS_NAME[i]))
+                    .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
                     .withTag(MHApplication.PROJECTS_NAME[i])
                     .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                         @Override
@@ -109,9 +114,11 @@ public class MainActivity extends AppCompatActivity {
                                 return false;
                             }
                         })
+                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
                         .withIcon(GoogleMaterial.Icon.gmd_home)
                         .withName("Home"),
                 new ExpandableDrawerItem()
+                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
                         .withIsExpanded(true)
                         .withSelectable(false)
                         .withName("Collections")
@@ -147,7 +154,16 @@ public class MainActivity extends AppCompatActivity {
         transaction.show(mCurrentFragment);
         mLastFragment = mCurrentFragment;
         transaction.commit();
-
-        getSupportActionBar().setTitle(StringUtil.handleProjectName(tag));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(StringUtil.handleProjectName(tag));
+        }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("tag", mCurrentFragment.getTag());
+    }
+
+
 }

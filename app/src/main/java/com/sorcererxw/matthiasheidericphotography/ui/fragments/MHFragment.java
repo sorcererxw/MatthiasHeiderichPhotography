@@ -1,8 +1,6 @@
 package com.sorcererxw.matthiasheidericphotography.ui.fragments;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,25 +13,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.matthiasheidericphotography.ui.activities.DetailActivity;
 import com.sorcererxw.matthiasheidericphotography.ui.adapters.MHAdapter;
-import com.sorcererxw.matthiasheidericphotography.ui.others.GridMarginDecoration;
 import com.sorcererxw.matthiasheidericphotography.ui.others.LinerMarginDecoration;
+import com.sorcererxw.matthiasheidericphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheidericphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheidericphotography.util.ProjectDBHelper;
 import com.sorcererxw.matthiasheidericphotography.util.StringUtil;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -87,9 +79,7 @@ public class MHFragment extends Fragment {
 
     @BindView(R.id.recyclerView_fragment_mh)
     RecyclerView mRecyclerView;
-
     private MHAdapter mAdapter;
-
     private GridLayoutManager mLayoutManager;
 
     private void initViews() {
@@ -112,22 +102,21 @@ public class MHFragment extends Fragment {
                 Context.MODE_PRIVATE).getLong(mProjectName, 0) < 86400000) {
             mAdapter.setData(dbHelper.getLinks());
         } else {
-            final String link =
-                    "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY);
-            Observable.just(link)
+            final MaterialDialog dialog = DialogUtil.getProgressDialog(getContext(), "Loading");
+            dialog.show();
+            Observable.just(
+                    "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY))
                     .map(new Func1<String, String>() {
                         @Override
                         public String call(String path) {
                             URL url;
                             String res = "";
                             try {
-                                // get URL content
                                 url = new URL(path);
                                 URLConnection conn = url.openConnection();
                                 conn.setRequestProperty(
                                         "User-Agent",
                                         "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
-                                // open the stream and put it into BufferedReader
                                 BufferedReader br = new BufferedReader(
                                         new InputStreamReader(conn.getInputStream()));
 
@@ -136,12 +125,10 @@ public class MHFragment extends Fragment {
                                     res += inputLine;
                                 }
                                 br.close();
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                                System.exit(0);
                             } catch (IOException e) {
-                                e.printStackTrace();
-                                System.exit(0);
+                                if (BuildConfig.DEBUG) {
+                                    e.printStackTrace();
+                                }
                             }
                             return res;
                         }
@@ -176,17 +163,10 @@ public class MHFragment extends Fragment {
                                     .putLong(mProjectName,
                                             System.currentTimeMillis()).apply();
                             dbHelper.saveLinks(strings);
+                            dialog.dismiss();
                         }
                     });
         }
-    }
-
-    private int calcNumOfSpans() {
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        float s = getResources().getDimension(R.dimen.mh_list_item_size);
-        return (int) (size.x / s);
     }
 
     @Override

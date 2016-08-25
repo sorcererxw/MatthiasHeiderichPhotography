@@ -4,4 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="mh_list_item_size">320dp</dimen>
+
+    <dimen name="status_bar_height">25dp</dimen>
 </resources>

@@ -7,38 +7,44 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.DetailActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout"
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="true"/>
+
+    <com.sorcererxw.matthiasheidericphotography.ui.views.TypefaceToolbar
+        android:id="@+id/toolbar_detail"
         android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="@dimen/status_bar_height"
+        android:background="@color/transparent"
+        android:elevation="4dp"
+        app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/loadingIndicator_item"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_centerInParent="true"
+        app:indicatorColor="@color/accent"
+        app:indicatorName="LineScalePulseOutIndicator"/>
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar_detail"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:elevation="4dp"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
-    </android.support.design.widget.AppBarLayout>
-
-
-        <ImageView
-            android:id="@+id/imageView_detail"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/appBarLayout"
-            android:transitionName="image"/>
+    <uk.co.senab.photoview.PhotoView
+        android:id="@+id/imageView_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:scaleType="centerCrop"
+        android:transitionName="image"/>
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fab_detail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
-        app:fab_addButtonSize="normal"
         app:fab_expandDirection="up"
         app:fab_labelsPosition="left">
 
@@ -46,6 +52,7 @@
             android:id="@+id/fab_detail_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:fab_icon="@drawable/ic_cloud_download_white_18dp"
             app:fab_size="normal"
             app:fab_title="save"/>
 
@@ -53,6 +60,7 @@
             android:id="@+id/fab_detail_apply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:fab_icon="@drawable/ic_wallpaper_white_18dp"
             app:fab_size="normal"
             app:fab_title="set wallpaper"/>
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

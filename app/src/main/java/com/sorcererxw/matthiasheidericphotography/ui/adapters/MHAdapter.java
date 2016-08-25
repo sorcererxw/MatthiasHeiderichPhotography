@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,10 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
+import com.sorcererxw.matthiasheidericphotography.MHApplication;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.matthiasheidericphotography.ui.activities.DetailActivity;
+import com.sorcererxw.matthiasheidericphotography.util.ResourceUtil;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
@@ -76,18 +79,20 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
             holder.loadingIndicatorView.setVisibility(View.VISIBLE);
         }
         Glide.with(mContext)
-                .load(mList.get(position) + "?format=500w")
+                .load(mList.get(position) + "?format=1000w")
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model,
+                    public boolean onException(Exception e,
+                                               String model,
                                                Target<GlideDrawable> target,
                                                boolean isFirstResource) {
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model,
+                    public boolean onResourceReady(GlideDrawable resource,
+                                                   String model,
                                                    Target<GlideDrawable> target,
                                                    boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
@@ -96,6 +101,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                         return false;
                     }
                 })
+                .placeholder(new ColorDrawable(ResourceUtil.getColor(mContext, R.color.grey_50)))
                 .fitCenter()
                 .into(holder.image);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +109,12 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 intent.putExtra("link", mList.get(holder.getAdapterPosition()));
+                if (mShowedMap.containsKey(holder.getAdapterPosition()) && mShowedMap
+                        .get(holder.getAdapterPosition())) {
+                    MHApplication.getInstance().setTmpDrawable(holder.image.getDrawable());
+                }else{
+                    MHApplication.getInstance().setTmpDrawable(null);
+                }
                 mContext.startActivity(intent);
             }
         });
