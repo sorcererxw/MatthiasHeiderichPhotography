@@ -14,7 +14,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.sorcererxw.matthiasheiderichphotography.MHApplication;
+import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheidericphotography.R;
@@ -75,7 +75,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
             holder.loadingIndicatorView.setVisibility(View.VISIBLE);
         }
         Glide.with(mContext)
-                .load(mList.get(position) + "?format=1000w")
+                .load(mList.get(position) + "?format=" + 1000 + "w")
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
@@ -107,9 +107,9 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                 intent.putExtra("link", mList.get(holder.getAdapterPosition()));
                 if (mShowedMap.containsKey(holder.getAdapterPosition()) && mShowedMap
                         .get(holder.getAdapterPosition())) {
-                    MHApplication.getInstance().setTmpDrawable(holder.image.getDrawable());
-                }else{
-                    MHApplication.getInstance().setTmpDrawable(null);
+                    MHApp.getInstance().setTmpDrawable(holder.image.getDrawable());
+                } else {
+                    MHApp.getInstance().setTmpDrawable(null);
                 }
                 mContext.startActivity(intent);
             }

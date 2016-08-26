@@ -27,11 +27,6 @@ public class FloatingActionButtonBehavior extends CoordinatorLayout.Behavior<Flo
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionMenu child,
                                           View dependency) {
-        if (dependency.getTranslationY() != 0.0) {
-            Toast.makeText(parent.getContext(), dependency.getTranslationY() + "",
-                    Toast.LENGTH_SHORT)
-                    .show();
-        }
         float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight());
         child.animate().translationY(translationY).setDuration(200).start();
         return true;

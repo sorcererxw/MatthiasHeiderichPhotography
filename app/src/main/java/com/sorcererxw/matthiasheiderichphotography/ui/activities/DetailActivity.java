@@ -24,7 +24,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.sorcererxw.matthiasheiderichphotography.MHApplication;
+import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.PermissionsHelper;
@@ -125,25 +125,26 @@ public class DetailActivity extends AppCompatActivity {
 
     private void initImage() {
         mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        if (MHApplication.getInstance().getTmpDrawable() != null) {
-            mImageView.setImageDrawable(MHApplication.getInstance().getTmpDrawable());
+        if (MHApp.getInstance().getTmpDrawable() != null) {
+            mImageView.setImageDrawable(MHApp.getInstance().getTmpDrawable());
             setupFAB();
         } else {
-            Observable.just(mLink + "?format=1000w").map(new Func1<String, Drawable>() {
-                @Override
-                public Drawable call(String s) {
-                    try {
-                        return Glide.with(DetailActivity.this)
-                                .load(s)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(-1, -1)
-                                .get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            })
+            Observable.just(mLink + "?format=1000w")
+                    .map(new Func1<String, Drawable>() {
+                        @Override
+                        public Drawable call(String s) {
+                            try {
+                                return Glide.with(DetailActivity.this)
+                                        .load(s)
+                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                        .into(-1, -1)
+                                        .get();
+                            } catch (InterruptedException | ExecutionException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+                    })
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<Drawable>() {
@@ -183,9 +184,7 @@ public class DetailActivity extends AppCompatActivity {
                     public Bitmap call(String s) {
                         try {
                             return Glide.with(DetailActivity.this)
-                                    .load(mLink + "?format=" + Math.max(
-                                            MHApplication.deviceHeight,
-                                            MHApplication.deviceWidth) + "w")
+                                    .load(mLink)
                                     .asBitmap()
                                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                                     .into(-1, -1)
@@ -196,9 +195,7 @@ public class DetailActivity extends AppCompatActivity {
                             }
                             try {
                                 return Glide.with(DetailActivity.this)
-                                        .load(mLink + "?format=" + Math.min(
-                                                MHApplication.deviceHeight,
-                                                MHApplication.deviceWidth) + "w")
+                                        .load(mLink)
                                         .asBitmap()
                                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                                         .into(-1, -1)
@@ -206,18 +203,6 @@ public class DetailActivity extends AppCompatActivity {
                             } catch (InterruptedException | ExecutionException e1) {
                                 if (BuildConfig.DEBUG) {
                                     e1.printStackTrace();
-                                }
-                                try {
-                                    return Glide.with(DetailActivity.this)
-                                            .load(mLink)
-                                            .asBitmap()
-                                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                            .into(-1, -1)
-                                            .get();
-                                } catch (InterruptedException | ExecutionException e2) {
-                                    if (BuildConfig.DEBUG) {
-                                        e2.printStackTrace();
-                                    }
                                 }
                             }
                         }

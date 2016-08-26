@@ -1,15 +1,13 @@
 package com.sorcererxw.matthiasheiderichphotography;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.view.Display;
-
-import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 
 /**
  * Created by Sorcerer on 2016/8/22.
  */
-public class MHApplication extends Application {
+public class MHApp extends Application {
     public static String[] PROJECTS_NAME = new String[]{
             "material-i",
             "reflections-1",
@@ -35,21 +33,21 @@ public class MHApplication extends Application {
             "random"
     };
 
-    public static int deviceHeight;
-
-    public static int deviceWidth;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mApp = this;
-        deviceHeight = DisplayUtil.getScreenHeight(this);
-        deviceWidth = DisplayUtil.getScreenWidth(this);
+
+//        SharedPreferences sharedPreferences = getSharedPreferences("Settings", MODE_PRIVATE);
+//        previewResolution = sharedPreferences.getInt(PREFERENCE_SETTINGS_PREVIEW_RESOLUTION, 1080);
+//        downloadResolution =
+//                sharedPreferences.getInt(PREFERENCE_SETTINGS_DOWNLOAD_RESOLUTION, 1080);
     }
 
-    private static MHApplication mApp;
+    private static MHApp mApp;
 
-    public static MHApplication getInstance() {
+    public static MHApp getInstance() {
         return mApp;
     }
 
@@ -62,4 +60,14 @@ public class MHApplication extends Application {
     public Drawable getTmpDrawable() {
         return mTmpDrawable;
     }
+
+    public static final int[] RESOLUTIONS = new int[]{
+            240, 480, 720, 1080, 2160
+    };
+
+    public static final String PREFERENCE_SETTINGS_PREVIEW_RESOLUTION = "preview_resolution";
+    public static final String PREFERENCE_SETTINGS_DOWNLOAD_RESOLUTION = "download_resolution";
+
+    public static int previewResolution;
+    public static int downloadResolution;
 }

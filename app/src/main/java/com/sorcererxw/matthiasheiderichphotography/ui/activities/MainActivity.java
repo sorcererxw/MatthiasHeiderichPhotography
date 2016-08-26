@@ -18,7 +18,7 @@ import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.sorcererxw.matthiasheiderichphotography.MHApplication;
+import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment;
@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         List<IDrawerItem> collectionList = new ArrayList<>();
-        for (int i = 0; i < MHApplication.PROJECTS_NAME.length; i++) {
+        for (int i = 0; i < MHApp.PROJECTS_NAME.length; i++) {
             IDrawerItem item = new SecondaryDrawerItem()
                     .withName("        " + StringUtil
-                            .handleProjectName(MHApplication.PROJECTS_NAME[i]))
+                            .handleProjectName(MHApp.PROJECTS_NAME[i]))
                     .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                    .withTag(MHApplication.PROJECTS_NAME[i])
+                    .withTag(MHApp.PROJECTS_NAME[i])
                     .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                         @Override
                         public boolean onItemClick(View view, int position,
@@ -125,20 +125,7 @@ public class MainActivity extends AppCompatActivity {
                         .withSelectable(false)
                         .withName("Collections")
                         .withIcon(GoogleMaterial.Icon.gmd_photo_library)
-                        .withSubItems(collectionList),
-                new PrimaryDrawerItem()
-                        .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                            @Override
-                            public boolean onItemClick(View view, int position,
-                                                       IDrawerItem drawerItem) {
-                                showFragment(FRAGMENT_TAG_SETTINGS);
-                                return false;
-                            }
-                        })
-                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                        .withSelectable(true)
-                        .withIcon(GoogleMaterial.Icon.gmd_settings)
-                        .withName("Settings")
+                        .withSubItems(collectionList)
         );
     }
 

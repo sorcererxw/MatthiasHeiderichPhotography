@@ -39,4 +39,17 @@ public class StringUtil {
         String[] sa = link.split("/");
         return sa[sa.length - 1].split("\\.")[0];
     }
+
+    public static String resolutionToString(int resolution) {
+        if (resolution <= 1080) {
+            return resolution + "p";
+        }
+        if (resolution / 1000 == 2) {
+            return "2K";
+        }
+        if (resolution / 1000 == 4) {
+            return "4K";
+        }
+        return "";
+    }
 }
