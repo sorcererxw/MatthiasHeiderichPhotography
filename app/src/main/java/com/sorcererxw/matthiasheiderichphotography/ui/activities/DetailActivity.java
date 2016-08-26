@@ -17,7 +17,7 @@ import android.support.v7.graphics.Palette;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -34,6 +34,7 @@ import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -41,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -67,26 +69,46 @@ public class DetailActivity extends AppCompatActivity {
         setWallpapers();
     }
 
+    @OnLongClick(R.id.fab_detail_apply)
+    boolean longClickApply() {
+        setWallpapersMore();
+        return true;
+    }
+
     @OnClick(R.id.fab_detail_save)
     void clickSave() {
         saveToLocal();
     }
 
+    @OnLongClick(R.id.fab_detail_save)
+    boolean longClickSave() {
+        return true;
+    }
+
     private String mLink;
+    private Uri mUri = null;
 
-    private Bitmap mRawBitmap;
+    private interface DownloadCallback {
+        void onFinish(Uri uri);
+    }
 
-    private MaterialDialog mSaveDialog;
-    private MaterialDialog mSetDialog;
+    private interface OnPermissionGrantCallback {
+        void onPermissionGrant();
+    }
+
+    private OnPermissionGrantCallback mOnPermissionGrantCallback;
+
+    private MaterialDialog mProgressDialog;
 
     private Snackbar.Callback mSnackbarCallback = new Snackbar.Callback() {
         @Override
         public void onDismissed(Snackbar snackbar, int event) {
             super.onDismissed(snackbar, event);
-            mFAB.setTranslationY(0);
+            mFAB.animate().translationY(0).setDuration(200).start();
         }
     };
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
@@ -97,8 +119,6 @@ public class DetailActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mSaveDialog = DialogUtil.getProgressDialog(this, "Saving to local...");
-        mSetDialog = DialogUtil.getProgressDialog(this, "Setting wallpaper...");
 
         mFAB.hideMenuButton(false);
     }
@@ -107,7 +127,7 @@ public class DetailActivity extends AppCompatActivity {
         mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         if (MHApplication.getInstance().getTmpDrawable() != null) {
             mImageView.setImageDrawable(MHApplication.getInstance().getTmpDrawable());
-            setFABColor();
+            setupFAB();
         } else {
             Observable.just(mLink + "?format=1000w").map(new Func1<String, Drawable>() {
                 @Override
@@ -131,129 +151,12 @@ public class DetailActivity extends AppCompatActivity {
                         public void call(Drawable drawable) {
                             if (drawable != null) {
                                 mImageView.setImageDrawable(drawable);
-                                setFABColor();
+                                setupFAB();
                             } else {
                                 finish();
                             }
                         }
                     });
-        }
-    }
-
-    private interface DownloadCallback {
-        void onFinish();
-
-    }
-
-    private void download(final DownloadCallback callback) {
-        Observable.just(mLink)
-                .map(new Func1<String, Bitmap>() {
-                    @Override
-                    public Bitmap call(String s) {
-                        try {
-                            return Glide.with(DetailActivity.this)
-                                    .load(mLink)
-                                    .asBitmap()
-                                    .into(-1, -1)
-                                    .get();
-                        } catch (InterruptedException | ExecutionException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Bitmap>() {
-                    @Override
-                    public void call(Bitmap bitmap) {
-                        mRawBitmap = bitmap;
-                        if (callback != null) {
-                            callback.onFinish();
-                        }
-                    }
-                });
-    }
-
-    private void saveToLocal() {
-        if (Build.VERSION.SDK_INT >= 23 && !PermissionsHelper.hasPermission(this,
-                PermissionsHelper.WRITE_EXTERNAL_STORAGE_MANIFEST)) {
-            PermissionsHelper.requestWriteExternalStorage(this);
-            return;
-        }
-        if (mRawBitmap == null) {
-            if (!mSaveDialog.isShowing()) {
-                mSaveDialog.show();
-            }
-            download(new DownloadCallback() {
-                @Override
-                public void onFinish() {
-                    saveToLocal();
-                }
-            });
-        } else {
-            FileOutputStream out = null;
-            try {
-                File path = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_PICTURES);
-                File dir = new File(path, "/Matthisa Heideric");
-                if (!dir.exists()) {
-                    dir.mkdir();
-                }
-                final File file = new File(path, "/Matthisa Heideric/"
-                        + StringUtil.getFileNameFromLinkWithoutExtension(mLink) + ".png");
-                if (file.exists()) {
-                    Snackbar.make(mCoordinatorLayout, "Existed", Snackbar.LENGTH_LONG)
-                            .setAction("Open", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Intent intent = new Intent();
-                                    intent.setAction(Intent.ACTION_VIEW);
-                                    intent.setDataAndType(Uri.fromFile(file), "image/*");
-                                    startActivity(intent);
-                                }
-                            })
-                            .setActionTextColor(ResourceUtil.getColor(this, R.color.white))
-                            .setCallback(mSnackbarCallback)
-                            .show();
-                } else {
-                    if (!mSaveDialog.isShowing()) {
-                        mSaveDialog.show();
-                    }
-                    out = new FileOutputStream(file);
-                    mRawBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                    Snackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
-                            .setAction("Open", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Intent intent = new Intent();
-                                    intent.setAction(Intent.ACTION_VIEW);
-                                    intent.setDataAndType(Uri.fromFile(file), "image/*");
-                                    startActivity(intent);
-                                }
-                            })
-                            .setActionTextColor(ResourceUtil.getColor(this, R.color.white))
-                            .setCallback(mSnackbarCallback)
-                            .show();
-                }
-            } catch (Exception e) {
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace();
-                }
-                Snackbar.make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
-                        .setCallback(mSnackbarCallback).show();
-            } finally {
-                try {
-                    if (out != null) {
-                        out.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (mSaveDialog.isShowing()) {
-                mSaveDialog.dismiss();
-            }
         }
     }
 
@@ -263,43 +166,305 @@ public class DetailActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PermissionsHelper.WRITE_EXTERNAL_STORAGE_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                saveToLocal();
-                // Permission Granted
+                if (mOnPermissionGrantCallback != null) {
+                    mOnPermissionGrantCallback.onPermissionGrant();
+                }
             } else {
-                Toast.makeText(this, "No permission :(", Toast.LENGTH_SHORT).show();
-                // Permission Denied
+                Snackbar.make(mCoordinatorLayout, "No permission :(", Snackbar.LENGTH_LONG)
+                        .setCallback(mSnackbarCallback).show();
             }
         }
     }
 
-    private void setWallpapers() {
-        if (!mSetDialog.isShowing()) {
-            mSetDialog.show();
+    private void download(final DownloadCallback callback) {
+        Observable.just(mLink)
+                .map(new Func1<String, Bitmap>() {
+                    @Override
+                    public Bitmap call(String s) {
+                        try {
+                            return Glide.with(DetailActivity.this)
+                                    .load(mLink + "?format=" + Math.max(
+                                            MHApplication.deviceHeight,
+                                            MHApplication.deviceWidth) + "w")
+                                    .asBitmap()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(-1, -1)
+                                    .get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            if (BuildConfig.DEBUG) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                return Glide.with(DetailActivity.this)
+                                        .load(mLink + "?format=" + Math.min(
+                                                MHApplication.deviceHeight,
+                                                MHApplication.deviceWidth) + "w")
+                                        .asBitmap()
+                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                        .into(-1, -1)
+                                        .get();
+                            } catch (InterruptedException | ExecutionException e1) {
+                                if (BuildConfig.DEBUG) {
+                                    e1.printStackTrace();
+                                }
+                                try {
+                                    return Glide.with(DetailActivity.this)
+                                            .load(mLink)
+                                            .asBitmap()
+                                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                            .into(-1, -1)
+                                            .get();
+                                } catch (InterruptedException | ExecutionException e2) {
+                                    if (BuildConfig.DEBUG) {
+                                        e2.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<Bitmap, Uri>() {
+                    @Override
+                    public Uri call(Bitmap bitmap) {
+                        if (bitmap == null) {
+                            return null;
+                        }
+                        Uri uri = null;
+                        FileOutputStream out = null;
+                        try {
+                            File path = Environment.getExternalStoragePublicDirectory(
+                                    Environment.DIRECTORY_PICTURES);
+                            File dir = new File(path, "/Matthisa Heideric");
+                            if (dir.exists()) {
+                                dir.renameTo(new File(path, "/Matthisa Heiderich"));
+                            }
+                            dir = new File(path, "/Matthisa Heiderich");
+                            if (!dir.exists()) {
+                                dir.mkdir();
+                            }
+                            final File file = new File(path, "/Matthisa Heiderich/"
+                                    + StringUtil.getFileNameFromLinkWithoutExtension(mLink)
+                                    + ".png");
+                            if (file.exists()) {
+                                uri = Uri.fromFile(file);
+                            } else {
+                                out = new FileOutputStream(file);
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                                uri = Uri.fromFile(file);
+                            }
+                        } catch (Exception e) {
+                            if (BuildConfig.DEBUG) {
+                                e.printStackTrace();
+                            }
+                        } finally {
+                            try {
+                                if (out != null) {
+                                    out.close();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return uri;
+                    }
+                })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Uri>() {
+                    @Override
+                    public void call(Uri uri) {
+                        mUri = uri;
+                        callback.onFinish(uri);
+                    }
+                });
+    }
+
+    private void saveToLocal() {
+        if (Build.VERSION.SDK_INT >= 23 && !PermissionsHelper.hasPermission(this,
+                PermissionsHelper.WRITE_EXTERNAL_STORAGE_MANIFEST)) {
+            mOnPermissionGrantCallback = new OnPermissionGrantCallback() {
+                @Override
+                public void onPermissionGrant() {
+                    saveToLocal();
+                }
+            };
+            PermissionsHelper.requestWriteExternalStorage(this);
+            return;
         }
-        if (mRawBitmap == null) {
+        String progressText = "Saving To Local...";
+        if (mUri == null) {
+            showDialog(progressText);
             download(new DownloadCallback() {
                 @Override
-                public void onFinish() {
+                public void onFinish(final Uri uri) {
+                    dismissDialog();
+                    if (uri != null) {
+                        Snackbar.make(mCoordinatorLayout, "Existed", Snackbar.LENGTH_LONG)
+                                .setAction("Open", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent();
+                                        intent.setAction(Intent.ACTION_VIEW);
+                                        intent.setDataAndType(uri, "image/*");
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setActionTextColor(
+                                        ResourceUtil.getColor(DetailActivity.this, R.color.white))
+                                .setCallback(mSnackbarCallback)
+                                .show();
+                    } else {
+                        Snackbar.make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
+                                .setCallback(mSnackbarCallback).show();
+                    }
+                }
+            });
+        } else {
+            Snackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
+                    .setAction("Open", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.setDataAndType(mUri, "image/*");
+                            startActivity(intent);
+                        }
+                    })
+                    .setActionTextColor(ResourceUtil.getColor(this, R.color.white))
+                    .setCallback(mSnackbarCallback)
+                    .show();
+        }
+    }
+
+    private void setWallpapers() {
+        if (Build.VERSION.SDK_INT >= 23 && !PermissionsHelper.hasPermission(this,
+                PermissionsHelper.WRITE_EXTERNAL_STORAGE_MANIFEST)) {
+            mOnPermissionGrantCallback = new OnPermissionGrantCallback() {
+                @Override
+                public void onPermissionGrant() {
+                    setWallpapers();
+                }
+            };
+            PermissionsHelper.requestWriteExternalStorage(this);
+            return;
+        }
+        String progressText = "Setting wallpaper...";
+
+        if (mUri == null) {
+            showDialog(progressText);
+            download(new DownloadCallback() {
+                @Override
+                public void onFinish(Uri uri) {
                     setWallpapers();
                 }
             });
         } else {
-            WallpaperManager wallpaperManager
-                    = WallpaperManager.getInstance(getApplicationContext());
-            try {
-                wallpaperManager.setWallpaperOffsets(
-                        getWindow().getDecorView().getRootView().getWindowToken(), 2, 1);
-                wallpaperManager.setBitmap(mRawBitmap);
-                Snackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
-                        .setCallback(mSnackbarCallback).show();
-            } catch (IOException e) {
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace();
+            Observable.just(mUri).map(new Func1<Uri, Boolean>() {
+                @Override
+                public Boolean call(Uri uri) {
+                    try {
+                        WallpaperManager wallpaperManager
+                                = WallpaperManager.getInstance(getApplicationContext());
+                        wallpaperManager.setWallpaperOffsets(
+                                getWindow().getDecorView().getRootView().getWindowToken(), 1, 1);
+                        wallpaperManager.setStream(new FileInputStream(new File(mUri.getPath())));
+                        return true;
+                    } catch (IOException e) {
+                        if (BuildConfig.DEBUG) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return false;
                 }
-                Snackbar.make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
-                        .setCallback(mSnackbarCallback).show();
+
+//                @Override
+//                public Boolean call(Bitmap bitmap) {
+//                    try {
+//                        WallpaperManager wallpaperManager
+//                                = WallpaperManager.getInstance(getApplicationContext());
+//                        wallpaperManager.setWallpaperOffsets(
+//                                getWindow().getDecorView().getRootView().getWindowToken(), 1, 1);
+//                        wallpaperManager.setBitmap(mRawBitmap);
+//                        return true;
+//                    } catch (IOException e) {
+//                        if (BuildConfig.DEBUG) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    return false;
+//                }
+            })
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Boolean>() {
+                        @Override
+                        public void call(Boolean aBoolean) {
+                            if (aBoolean) {
+                                Snackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
+                                        .setCallback(mSnackbarCallback).show();
+                            } else {
+                                Snackbar.make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
+                                        .setCallback(mSnackbarCallback).show();
+                            }
+                            dismissDialog();
+                        }
+                    });
+        }
+    }
+
+    private void setWallpapersMore() {
+        if (Build.VERSION.SDK_INT >= 23 && !PermissionsHelper.hasPermission(this,
+                PermissionsHelper.WRITE_EXTERNAL_STORAGE_MANIFEST)) {
+            mOnPermissionGrantCallback = new OnPermissionGrantCallback() {
+                @Override
+                public void onPermissionGrant() {
+                    setWallpapersMore();
+                }
+            };
+            PermissionsHelper.requestWriteExternalStorage(this);
+            return;
+        }
+        String progressText = "Preparing...";
+
+        if (mUri == null) {
+            showDialog(progressText);
+            download(new DownloadCallback() {
+                @Override
+                public void onFinish(Uri uri) {
+                    dismissDialog();
+                    setWallpapersMore();
+                }
+            });
+        } else {
+            Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setDataAndType(mUri, "image/*");
+            intent.putExtra("mimeType", "image/*");
+            this.startActivity(Intent.createChooser(intent, "Set as:"));
+        }
+    }
+
+    private void showDialog(String s) {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogUtil.getProgressDialog(this, s);
+        } else if (mProgressDialog.isShowing()) {
+            return;
+        } else {
+            if (mProgressDialog.getCustomView() != null) {
+                ((TextView) mProgressDialog.getCustomView()
+                        .findViewById(R.id.textView_progress_message)).setText(s);
             }
-            mSetDialog.dismiss();
+        }
+        if (!mProgressDialog.isShowing()) {
+            mProgressDialog.show();
+        }
+    }
+
+    private void dismissDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
         }
     }
 
@@ -313,8 +478,7 @@ public class DetailActivity extends AppCompatActivity {
         return false;
     }
 
-
-    private void setFABColor() {
+    private void setupFAB() {
         Observable.just(mLink + "?format=1000w").map(new Func1<String, Palette.Swatch>() {
             @Override
             public Palette.Swatch call(String s) {

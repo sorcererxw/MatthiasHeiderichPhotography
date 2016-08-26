@@ -52,8 +52,4 @@ public class TypefaceToolbar extends Toolbar {
         super.setTitle("");
         mTitleTextView.setText(title);
     }
-
-    public void setTypeface(Typeface typeface) {
-        mTitleTextView.setTypeface(typeface);
-    }
 }

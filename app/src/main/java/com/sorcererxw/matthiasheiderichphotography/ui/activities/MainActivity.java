@@ -1,11 +1,11 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -19,12 +19,13 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sorcererxw.matthiasheiderichphotography.MHApplication;
-import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
+import com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
+import com.sorcererxw.matthiasheidericphotography.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.frameLayout_fragment_container)
     FrameLayout mContainer;
-
-    private Drawer mDrawer;
 
     private FragmentManager mFragmentManager;
 
@@ -57,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -71,12 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void initDrawer() {
 
-        View head = LayoutInflater.from(this).inflate(R.layout.layout_drawer_head, null);
+        View head = View.inflate(this, R.layout.layout_drawer_head, null);
         TextView headText = (TextView) head.findViewById(R.id.textView_drawer_head);
         headText.setText("MATTHIAS\nHEIDERICH");
         headText.setTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Demi));
 
-        mDrawer = new DrawerBuilder()
+        Drawer drawer = new DrawerBuilder()
                 .withCloseOnClick(true)
                 .withToolbar(mToolbar)
                 .withActionBarDrawerToggleAnimated(true)
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             collectionList.add(item);
         }
 
-        mDrawer.addItems(
+        drawer.addItems(
                 new PrimaryDrawerItem()
                         .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                             @Override
@@ -123,10 +125,24 @@ public class MainActivity extends AppCompatActivity {
                         .withSelectable(false)
                         .withName("Collections")
                         .withIcon(GoogleMaterial.Icon.gmd_photo_library)
-                        .withSubItems(collectionList)
+                        .withSubItems(collectionList),
+                new PrimaryDrawerItem()
+                        .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                            @Override
+                            public boolean onItemClick(View view, int position,
+                                                       IDrawerItem drawerItem) {
+                                showFragment(FRAGMENT_TAG_SETTINGS);
+                                return false;
+                            }
+                        })
+                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
+                        .withSelectable(true)
+                        .withIcon(GoogleMaterial.Icon.gmd_settings)
+                        .withName("Settings")
         );
     }
 
+    private static final String FRAGMENT_TAG_SETTINGS = "Settings";
     private static final String FRAGMENT_TAG_HOME = "Home";
 
     private void showFragment(String tag) {
@@ -137,6 +153,9 @@ public class MainActivity extends AppCompatActivity {
             switch (tag) {
                 case FRAGMENT_TAG_HOME:
                     mCurrentFragment = HomeFragment.newInstance();
+                    break;
+                case FRAGMENT_TAG_SETTINGS:
+                    mCurrentFragment = SettingsFragment.newInstance();
                     break;
                 default:
                     mCurrentFragment = MHFragment.newInstance(tag);
@@ -164,6 +183,5 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putString("tag", mCurrentFragment.getTag());
     }
-
 
 }

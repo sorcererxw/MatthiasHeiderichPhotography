@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout_detail"
     android:layout_width="match_parent"
@@ -27,8 +28,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        app:indicatorColor="@color/accent"
         android:layout_gravity="center"
+        app:indicatorColor="@color/accent"
         app:indicatorName="LineScalePulseOutIndicator"/>
 
     <uk.co.senab.photoview.PhotoView
@@ -40,29 +41,36 @@
         android:transitionName="image"/>
 
     <com.github.clans.fab.FloatingActionMenu
+
         android:id="@+id/fab_detail"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_behavior="com.sorcererxw.matthiasheiderichphotography.ui.others.FloatingActionButtonBehavior">
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        app:layout_behavior="com.sorcererxw.matthiasheiderichphotography.ui.others.FloatingActionButtonBehavior"
+        fab:menu_colorNormal="@color/colorAccent"
+        fab:menu_colorPressed="@color/colorPrimary"
+        fab:menu_labels_ellipsize="end"
+        fab:menu_labels_singleLine="true">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_detail_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_cloud_download_white_18dp"
-            app:fab_label="Save"
-            app:fab_size="normal"/>
+            fab:fab_label="Save To Local"
+            fab:fab_size="normal"/>
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_detail_apply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_wallpaper_white_18dp"
-            app:fab_label="Set Wallpaper"
-            app:fab_size="normal"/>
+            fab:fab_label="Set Wallpaper"
+            fab:fab_size="normal"/>
+
     </com.github.clans.fab.FloatingActionMenu>
 
 </android.support.design.widget.CoordinatorLayout>

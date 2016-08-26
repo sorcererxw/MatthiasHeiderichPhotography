@@ -33,7 +33,7 @@ public class FloatingActionButtonBehavior extends CoordinatorLayout.Behavior<Flo
                     .show();
         }
         float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight());
-        child.setTranslationY(translationY);
+        child.animate().translationY(translationY).setDuration(200).start();
         return true;
     }
 }
