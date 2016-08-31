@@ -66,6 +66,12 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
     private Map<Integer, Boolean> mShowedMap = new HashMap<>();
 
+    public interface OnItemLongClickListener {
+        void onLongClick(View view, String data, int position);
+    }
+
+    private OnItemLongClickListener mOnItemLongClickListener;
+
     @Override
     public void onBindViewHolder(final MHViewHolder holder, int position) {
         if (mShowedMap.containsKey(holder.getAdapterPosition()) && mShowedMap
@@ -114,12 +120,39 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                 mContext.startActivity(intent);
             }
         });
+
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (mOnItemLongClickListener != null) {
+                    mOnItemLongClickListener.onLongClick(view,
+                            mList.get(holder.getAdapterPosition()),
+                            holder.getAdapterPosition());
+                }
+                return true;
+            }
+        });
+
     }
 
+    public void removeItem(int position) {
+        mList.remove(position);
+        notifyItemRemoved(position);
+    }
 
     @Override
     public int getItemCount() {
         return mList.size();
+    }
+
+    public OnItemLongClickListener getOnItemLongClickListener() {
+        return mOnItemLongClickListener;
+    }
+
+    public void setOnItemLongClickListener(
+            OnItemLongClickListener onItemLongClickListener) {
+        mOnItemLongClickListener = onItemLongClickListener;
     }
 
 }

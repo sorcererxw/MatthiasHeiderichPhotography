@@ -15,3 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keep class com.sorcererxw.matthiasheiderichphotography.ui.others.FloatingActionButtonBehavior
+
+-keep class com.wang.avi.indicators.*

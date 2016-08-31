@@ -3,7 +3,6 @@ package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -22,7 +21,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Sorcerer on 2016/8/22.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BaseFragment {
 
     public static HomeFragment newInstance() {
         return new HomeFragment();

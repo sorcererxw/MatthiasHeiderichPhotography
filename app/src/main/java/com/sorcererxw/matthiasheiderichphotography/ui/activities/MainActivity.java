@@ -2,7 +2,6 @@ package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -19,9 +18,10 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.ui.fragments.BaseFragment;
+import com.sorcererxw.matthiasheiderichphotography.ui.fragments.FavoriteFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
-import com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     private FragmentManager mFragmentManager;
 
-    private Fragment mCurrentFragment;
-    private Fragment mLastFragment;
+    private BaseFragment mCurrentFragment;
+    private BaseFragment mLastFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +119,18 @@ public class MainActivity extends AppCompatActivity {
                         .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
                         .withIcon(GoogleMaterial.Icon.gmd_home)
                         .withName("Home"),
+                new PrimaryDrawerItem().withOnDrawerItemClickListener(
+                        new Drawer.OnDrawerItemClickListener() {
+                            @Override
+                            public boolean onItemClick(View view, int position,
+                                                       IDrawerItem drawerItem) {
+                                showFragment(FRAGMENT_TAG_FAVORITE);
+                                return false;
+                            }
+                        })
+                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
+                        .withIcon(GoogleMaterial.Icon.gmd_favorite)
+                        .withName("Favorite"),
                 new ExpandableDrawerItem()
                         .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
                         .withIsExpanded(true)
@@ -129,20 +141,20 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private static final String FRAGMENT_TAG_SETTINGS = "Settings";
+    private static final String FRAGMENT_TAG_FAVORITE = "Favorite";
     private static final String FRAGMENT_TAG_HOME = "Home";
 
     private void showFragment(String tag) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        mCurrentFragment = mFragmentManager
+        mCurrentFragment = (BaseFragment) mFragmentManager
                 .findFragmentByTag(tag);
         if (mCurrentFragment == null) {
             switch (tag) {
                 case FRAGMENT_TAG_HOME:
                     mCurrentFragment = HomeFragment.newInstance();
                     break;
-                case FRAGMENT_TAG_SETTINGS:
-                    mCurrentFragment = SettingsFragment.newInstance();
+                case FRAGMENT_TAG_FAVORITE:
+                    mCurrentFragment = FavoriteFragment.newInstance();
                     break;
                 default:
                     mCurrentFragment = MHFragment.newInstance(tag);
@@ -150,7 +162,10 @@ public class MainActivity extends AppCompatActivity {
             transaction.add(R.id.frameLayout_fragment_container,
                     mCurrentFragment,
                     tag);
+        } else {
+            mCurrentFragment.onShow();
         }
+
         if (mLastFragment != null) {
             transaction.hide(mLastFragment);
         }

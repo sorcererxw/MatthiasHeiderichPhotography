@@ -44,6 +44,24 @@ public class ProjectDBHelper {
         mDB.execSQL(sql);
     }
 
+    public boolean isLinkContain(String link) {
+        String sql = "select link from " + mTable + " where link=?";
+        Cursor cursor = mDB.rawQuery(sql, new String[]{link});
+        boolean has = cursor.moveToNext();
+        cursor.close();
+        return has;
+    }
+
+    public void deleteLink(String link) {
+        String sql = "delete from " + mTable + " where link=?";
+        mDB.execSQL(sql, new String[]{link});
+    }
+
+    public void saveLink(String link) {
+        String sql = "insert into " + mTable + "(link) values(?)";
+        mDB.execSQL(sql, new String[]{link});
+    }
+
     public void saveLinks(List<String> list) {
         clear();
         String sql = "INSERT INTO " + mTable + "(link) values(?)";

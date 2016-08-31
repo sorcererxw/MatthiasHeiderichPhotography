@@ -53,6 +53,7 @@
         fab:menu_colorNormal="@color/colorAccent"
         fab:menu_colorPressed="@color/colorPrimary"
         fab:menu_labels_ellipsize="end"
+        fab:menu_labels_customFont="FuturaPTBook.otf"
         fab:menu_labels_singleLine="true">
 
         <com.github.clans.fab.FloatingActionButton

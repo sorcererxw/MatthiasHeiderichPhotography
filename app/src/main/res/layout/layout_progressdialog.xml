@@ -10,6 +10,8 @@
         android:id="@+id/loadingIndicator_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         app:indicatorColor="@color/accent"
         app:indicatorName="BallScaleMultipleIndicator"/>
 
@@ -17,6 +19,8 @@
         android:id="@+id/textView_progress_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:textSize="16sp"/>
 </LinearLayout>

@@ -13,7 +13,7 @@ import com.sorcererxw.matthiasheidericphotography.R;
  */
 public class DialogUtil {
     public static MaterialDialog getProgressDialog(Context context, String message) {
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_progressdialog, null);
+        View view = View.inflate(context, R.layout.layout_progressdialog, null);
         TextView textView = (TextView) view.findViewById(R.id.textView_progress_message);
         textView.setText(message);
         textView.setTypeface(TypefaceHelper.getTypeface(context, TypefaceHelper.Type.Book));

@@ -3,7 +3,8 @@ package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,14 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
+import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceSnackbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +44,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Sorcerer on 2016/8/22.
  */
-public class MHFragment extends Fragment {
+public class MHFragment extends BaseFragment {
 
     private static final String PROJECT_KEY = "project key";
 
@@ -56,11 +58,13 @@ public class MHFragment extends Fragment {
         return fragment;
     }
 
+    private ProjectDBHelper mFavoriteDBHelper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        mFavoriteDBHelper = new ProjectDBHelper(getContext(), "favorite");
     }
 
     @Nullable
@@ -75,6 +79,9 @@ public class MHFragment extends Fragment {
         return view;
     }
 
+    @BindView(R.id.coordinatorLayout_fragment_mh)
+    CoordinatorLayout mRoot;
+
     @BindView(R.id.recyclerView_fragment_mh)
     RecyclerView mRecyclerView;
     private MHAdapter mAdapter;
@@ -82,11 +89,24 @@ public class MHFragment extends Fragment {
 
     private void initViews() {
         mAdapter = new MHAdapter(getContext());
+        mAdapter.setOnItemLongClickListener(new MHAdapter.OnItemLongClickListener() {
+            @Override
+            public void onLongClick(View view, String data, int position) {
+                if (mFavoriteDBHelper.isLinkContain(data)) {
+                    mFavoriteDBHelper.deleteLink(data);
+                    TypefaceSnackbar.make(mRoot, "Removed from Favorite", Snackbar.LENGTH_LONG)
+                            .show();
+                } else {
+                    mFavoriteDBHelper.saveLink(data);
+                    TypefaceSnackbar.make(mRoot, "Added to Favorite", Snackbar.LENGTH_LONG).show();
+                }
+            }
+        });
         mRecyclerView.setAdapter(mAdapter);
         mLayoutManager = new GridLayoutManager(getContext(), 1);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView
-                .addItemDecoration(new LinerMarginDecoration(DisplayUtil.dip2px(getContext(), 8)));
+                .addItemDecoration(new LinerMarginDecoration(DisplayUtil.dip2px(getContext(), 4)));
         mRecyclerView.setHasFixedSize(true);
     }
 

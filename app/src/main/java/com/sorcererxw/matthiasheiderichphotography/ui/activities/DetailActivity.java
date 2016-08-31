@@ -25,6 +25,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceSnackbar;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.PermissionsHelper;
@@ -171,7 +172,7 @@ public class DetailActivity extends AppCompatActivity {
                     mOnPermissionGrantCallback.onPermissionGrant();
                 }
             } else {
-                Snackbar.make(mCoordinatorLayout, "No permission :(", Snackbar.LENGTH_LONG)
+                TypefaceSnackbar.make(mCoordinatorLayout, "No permission :(", Snackbar.LENGTH_LONG)
                         .setCallback(mSnackbarCallback).show();
             }
         }
@@ -286,7 +287,7 @@ public class DetailActivity extends AppCompatActivity {
                 public void onFinish(final Uri uri) {
                     dismissDialog();
                     if (uri != null) {
-                        Snackbar.make(mCoordinatorLayout, "Existed", Snackbar.LENGTH_LONG)
+                        TypefaceSnackbar.make(mCoordinatorLayout, "Existed", Snackbar.LENGTH_LONG)
                                 .setAction("Open", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -301,13 +302,13 @@ public class DetailActivity extends AppCompatActivity {
                                 .setCallback(mSnackbarCallback)
                                 .show();
                     } else {
-                        Snackbar.make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
+                        TypefaceSnackbar.make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
                                 .setCallback(mSnackbarCallback).show();
                     }
                 }
             });
         } else {
-            Snackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
+            TypefaceSnackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
                     .setAction("Open", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -387,10 +388,10 @@ public class DetailActivity extends AppCompatActivity {
                         @Override
                         public void call(Boolean aBoolean) {
                             if (aBoolean) {
-                                Snackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
+                                TypefaceSnackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
                                         .setCallback(mSnackbarCallback).show();
                             } else {
-                                Snackbar.make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
+                                TypefaceSnackbar.make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
                                         .setCallback(mSnackbarCallback).show();
                             }
                             dismissDialog();
@@ -513,6 +514,7 @@ public class DetailActivity extends AppCompatActivity {
                         mApplyFAB.setColorPressed(color);
                         mSaveFAB.setColorNormal(color);
                         mSaveFAB.setColorPressed(color);
+
                         mFAB.showMenuButton(true);
                     }
                 });
