@@ -165,7 +165,7 @@ public class MHFragment extends BaseFragment {
                         public List<String> call(String s) {
                             Log.d("main", s);
                             Pattern p = Pattern.compile(
-                                    "data-image=\"http://static1.squarespace.com/static/[0-9a-z]*/[0-9a-z]*/[0-9a-z]*/[0-9a-z]*/[a-zA-Z0-9-_.]*\"");
+                                    "data-image=\"https://static1.squarespace.com/static/[0-9a-z]*/[0-9a-z]*/[0-9a-z]*/[0-9a-z]*/[a-zA-Z0-9-_.]*\"");
                             Matcher m = p.matcher(s);
                             List<String> list = new ArrayList<>();
                             while (m.find()) {
@@ -173,7 +173,6 @@ public class MHFragment extends BaseFragment {
                                 if (!list.contains(tmp)) {
                                     list.add(tmp);
                                 }
-
                             }
                             return list;
                         }

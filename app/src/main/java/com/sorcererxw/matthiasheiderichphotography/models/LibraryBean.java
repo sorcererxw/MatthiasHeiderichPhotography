@@ -1,7 +1,9 @@
 package com.sorcererxw.matthiasheiderichphotography.models;
 
 /**
- * Created by Sorcerer on 2016/8/25.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/25
  */
 public class LibraryBean {
     private String mName;
