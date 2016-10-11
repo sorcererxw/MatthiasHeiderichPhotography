@@ -71,6 +71,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private Drawer mDrawer;
+
+    public void openDrawer(){
+        mDrawer.openDrawer();
+    }
+
     private void initDrawer() {
 
         View head = View.inflate(this, R.layout.layout_drawer_head, null);
@@ -78,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         headText.setText("MATTHIAS\nHEIDERICH");
         headText.setTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Demi));
 
-        Drawer drawer = new DrawerBuilder()
+        mDrawer = new DrawerBuilder()
                 .withCloseOnClick(true)
                 .withToolbar(mToolbar)
                 .withActionBarDrawerToggleAnimated(true)
@@ -106,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             collectionList.add(item);
         }
 
-        drawer.addItems(
+        mDrawer.addItems(
                 new PrimaryDrawerItem()
                         .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                             @Override

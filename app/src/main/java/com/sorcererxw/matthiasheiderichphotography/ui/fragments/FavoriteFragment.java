@@ -37,7 +37,9 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by Sorcerer on 2016/8/31.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/31
  */
 public class FavoriteFragment extends BaseFragment {
     public static FavoriteFragment newInstance() {

@@ -1,8 +1,11 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
 import android.app.WallpaperManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -13,10 +16,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -29,6 +36,7 @@ import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -51,6 +59,8 @@ import rx.schedulers.Schedulers;
 import uk.co.senab.photoview.PhotoView;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.app.WallpaperManager.FLAG_LOCK;
+import static android.app.WallpaperManager.FLAG_SYSTEM;
 
 public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.coordinatorLayout_detail)
@@ -68,7 +78,29 @@ public class DetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab_detail_apply)
     void clickApply() {
-        setWallpapers();
+        if (Build.VERSION.SDK_INT >= 24) {
+            MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
+            builder.typeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Demi),
+                    TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book));
+            builder.items("Home Screen", "Lock Screen", "Home And Lock Screen");
+            builder.itemsCallback(new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog dialog, View itemView, int position,
+                                        CharSequence text) {
+                    String selection = text.toString();
+                    if (selection.contains("Home") && selection.contains("Lock")) {
+                        setWallpapers(true, true);
+                    } else if (selection.contains("Home")) {
+                        setWallpapers(true, false);
+                    } else {
+                        setWallpapers(false, true);
+                    }
+                }
+            });
+            builder.show();
+        } else {
+            setWallpapers(false, false);
+        }
     }
 
     @OnLongClick(R.id.fab_detail_apply)
@@ -159,14 +191,19 @@ public class DetailActivity extends AppCompatActivity {
 
     private Observable<Boolean> requestPermission() {
         return mRxPermissions.request(WRITE_EXTERNAL_STORAGE)
-                .map(new Func1<Boolean, Boolean>() {
+                .doOnNext(new Action1<Boolean>() {
                     @Override
-                    public Boolean call(Boolean aBoolean) {
+                    public void call(Boolean aBoolean) {
                         if (!aBoolean) {
                             TypefaceSnackbar.make(mCoordinatorLayout, "No permission :(",
                                     Snackbar.LENGTH_LONG)
                                     .setCallback(mSnackbarCallback).show();
                         }
+                    }
+                })
+                .filter(new Func1<Boolean, Boolean>() {
+                    @Override
+                    public Boolean call(Boolean aBoolean) {
                         return aBoolean;
                     }
                 });
@@ -259,12 +296,9 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void saveToLocal() {
-        mRxPermissions.request(WRITE_EXTERNAL_STORAGE).subscribe(new Action1<Boolean>() {
+        requestPermission().subscribe(new Action1<Boolean>() {
             @Override
             public void call(Boolean aBoolean) {
-                if (!aBoolean) {
-                    return;
-                }
                 String progressText = "Saving To Local...";
                 if (mUri == null) {
                     showDialog(progressText);
@@ -312,87 +346,84 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    private void setWallpapers() {
-        mRxPermissions.request(WRITE_EXTERNAL_STORAGE)
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if (!aBoolean) {
-                            return;
+    private void setWallpapers(final boolean homeScreen, final boolean lockScreen) {
+        requestPermission().subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean aBoolean) {
+                String progressText = "Setting wallpaper...";
+                showDialog(progressText);
+                if (mUri == null) {
+                    download().subscribe(new Action1<Uri>() {
+                        @Override
+                        public void call(Uri uri) {
+                            setWallpapers(homeScreen, lockScreen);
                         }
-                        String progressText = "Setting wallpaper...";
-
-                        if (mUri == null) {
-                            showDialog(progressText);
-                            download().subscribe(new Action1<Uri>() {
+                    });
+                } else {
+                    Observable.just(mUri).map(new Func1<Uri, Boolean>() {
+                        @Override
+                        public Boolean call(Uri uri) {
+                            try {
+                                WallpaperManager wallpaperManager
+                                        = WallpaperManager
+                                        .getInstance(getApplicationContext());
+                                wallpaperManager.setWallpaperOffsets(
+                                        getWindow().getDecorView().getRootView()
+                                                .getWindowToken(), 0.5f, 1);
+                                if (lockScreen) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                        wallpaperManager.setBitmap(
+                                                cropBitmapFromCenterAndScreenSize(mUri),
+                                                null,
+                                                true,
+                                                FLAG_LOCK);
+                                    }
+                                }
+                                if (homeScreen) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                        wallpaperManager.setStream(
+                                                new FileInputStream(new File(mUri.getPath())),
+                                                null,
+                                                true,
+                                                FLAG_SYSTEM);
+                                    }
+                                }
+                                if (!homeScreen && !lockScreen) {
+                                    setWallpaperSimple(wallpaperManager, uriToBitmap(mUri));
+                                }
+                                return true;
+                            } catch (IOException e) {
+                                if (BuildConfig.DEBUG) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            return false;
+                        }
+                    })
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Action1<Boolean>() {
                                 @Override
-                                public void call(Uri uri) {
-                                    setWallpapers();
+                                public void call(Boolean aBoolean) {
+                                    if (aBoolean) {
+                                        TypefaceSnackbar
+                                                .make(mCoordinatorLayout, "Success",
+                                                        Snackbar.LENGTH_LONG)
+                                                .setCallback(mSnackbarCallback)
+                                                .show();
+                                    } else {
+                                        TypefaceSnackbar
+                                                .make(mCoordinatorLayout, "Fail",
+                                                        Snackbar.LENGTH_LONG)
+                                                .setCallback(mSnackbarCallback)
+                                                .show();
+                                    }
+                                    dismissDialog();
                                 }
                             });
-                        } else {
-                            Observable.just(mUri).map(new Func1<Uri, Boolean>() {
-                                @Override
-                                public Boolean call(Uri uri) {
-                                    try {
-                                        WallpaperManager wallpaperManager
-                                                = WallpaperManager
-                                                .getInstance(getApplicationContext());
-                                        wallpaperManager.setWallpaperOffsets(
-                                                getWindow().getDecorView().getRootView()
-                                                        .getWindowToken(), 1, 1);
-                                        wallpaperManager.setStream(
-                                                new FileInputStream(new File(mUri.getPath())));
-                                        return true;
-                                    } catch (IOException e) {
-                                        if (BuildConfig.DEBUG) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                    return false;
-                                }
-
-//                @Override
-//                public Boolean call(Bitmap bitmap) {
-//                    try {
-//                        WallpaperManager wallpaperManager
-//                                = WallpaperManager.getInstance(getApplicationContext());
-//                        wallpaperManager.setWallpaperOffsets(
-//                                getWindow().getDecorView().getRootView().getWindowToken(), 1, 1);
-//                        wallpaperManager.setBitmap(mRawBitmap);
-//                        return true;
-//                    } catch (IOException e) {
-//                        if (BuildConfig.DEBUG) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                    return false;
-//                }
-                            })
-                                    .subscribeOn(Schedulers.newThread())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Action1<Boolean>() {
-                                        @Override
-                                        public void call(Boolean aBoolean) {
-                                            if (aBoolean) {
-                                                TypefaceSnackbar
-                                                        .make(mCoordinatorLayout, "Success",
-                                                                Snackbar.LENGTH_LONG)
-                                                        .setCallback(mSnackbarCallback)
-                                                        .show();
-                                            } else {
-                                                TypefaceSnackbar
-                                                        .make(mCoordinatorLayout, "Fail",
-                                                                Snackbar.LENGTH_LONG)
-                                                        .setCallback(mSnackbarCallback)
-                                                        .show();
-                                            }
-                                            dismissDialog();
-                                        }
-                                    });
-                        }
-                    }
-                });
+                }
+            }
+        });
 
     }
 
@@ -400,9 +431,6 @@ public class DetailActivity extends AppCompatActivity {
         requestPermission().subscribe(new Action1<Boolean>() {
             @Override
             public void call(Boolean aBoolean) {
-                if (!aBoolean) {
-                    return;
-                }
                 String progressText = "Preparing...";
 
                 if (mUri == null) {
@@ -530,5 +558,83 @@ public class DetailActivity extends AppCompatActivity {
             intent.setDataAndType(uri, "image/*");
             startActivity(intent);
         }
+    }
+
+    private Bitmap uriToBitmap(Uri uri) {
+        File image = new File(uri.getPath());
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        return BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+    }
+
+    private void setWallpaperSimple(WallpaperManager manager, Bitmap wallPaperBitmap) {
+        //get screen height
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenHeight = size.y;
+
+        //adjust the aspect ratio of the Image
+        //this is the main part
+        int width = wallPaperBitmap.getWidth();
+        width = (width * screenHeight) / wallPaperBitmap.getHeight();
+        //set the wallpaper
+        //this may not be the most efficent way but it works
+        try {
+            manager.setBitmap(
+                    Bitmap.createScaledBitmap(wallPaperBitmap, width, screenHeight, true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Bitmap cropBitmapFromCenterAndScreenSize(Uri uri) {
+        return cropBitmapFromCenterAndScreenSize(uriToBitmap(uri));
+    }
+
+    private Bitmap cropBitmapFromCenterAndScreenSize(Bitmap bitmap) {
+        float screenWidth, screenHeight;
+        float bitmap_width = bitmap.getWidth(), bitmap_height = bitmap
+                .getHeight();
+        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay();
+        screenWidth = display.getWidth();
+        screenHeight = display.getHeight();
+
+        Log.i("TAG", "bitmap_width " + bitmap_width);
+        Log.i("TAG", "bitmap_height " + bitmap_height);
+
+        float bitmap_ratio = bitmap_width / bitmap_height;
+        float screen_ratio = screenWidth / screenHeight;
+        int bitmapNewWidth, bitmapNewHeight;
+
+        Log.i("TAG", "bitmap_ratio " + bitmap_ratio);
+        Log.i("TAG", "screen_ratio " + screen_ratio);
+
+        if (screen_ratio > bitmap_ratio) {
+            bitmapNewWidth = (int) screenWidth;
+            bitmapNewHeight = (int) (bitmapNewWidth / bitmap_ratio);
+        } else {
+            bitmapNewHeight = (int) screenHeight;
+            bitmapNewWidth = (int) (bitmapNewHeight * bitmap_ratio);
+        }
+
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmapNewWidth,
+                bitmapNewHeight, true);
+
+        Log.i("TAG", "screenWidth " + screenWidth);
+        Log.i("TAG", "screenHeight " + screenHeight);
+        Log.i("TAG", "bitmapNewWidth " + bitmapNewWidth);
+        Log.i("TAG", "bitmapNewHeight " + bitmapNewHeight);
+
+        int bitmapGapX, bitmapGapY;
+        bitmapGapX = (int) ((bitmapNewWidth - screenWidth) / 2.0f);
+        bitmapGapY = (int) ((bitmapNewHeight - screenHeight) / 2.0f);
+
+        Log.i("TAG", "bitmapGapX " + bitmapGapX);
+        Log.i("TAG", "bitmapGapY " + bitmapGapY);
+        bitmap = Bitmap.createBitmap(bitmap,
+                bitmapGapX, bitmapGapY,
+                (int) screenWidth, (int) screenHeight);
+        return bitmap;
     }
 }
