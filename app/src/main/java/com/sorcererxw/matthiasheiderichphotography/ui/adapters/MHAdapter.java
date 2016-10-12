@@ -1,17 +1,17 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.adapters;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Path;
 import android.graphics.drawable.ColorDrawable;
-import android.media.AudioManager;
-import android.support.annotation.NonNull;
+import android.graphics.drawable.VectorDrawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -27,12 +27,12 @@ import com.sorcererxw.matthiasheidericphotography.R;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.view.View.GONE;
 
 /**
  * @description:
@@ -43,7 +43,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
     public static class MHViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.pathView_item)
-        PathView mPathView;
+        PathView pathView;
 
         @BindView(R.id.imageView_item)
         ImageView image;
@@ -54,6 +54,62 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
         public MHViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        public void playLikeAnim() {
+            pathView.getPathAnimator()
+                    .duration(500)
+                    .listenerStart(new PathView.AnimatorBuilder.ListenerStart() {
+                        @Override
+                        public void onAnimationStart() {
+                            pathView.setAlpha(1);
+                        }
+                    })
+                    .listenerEnd(new PathView.AnimatorBuilder.ListenerEnd() {
+                        @Override
+                        public void onAnimationEnd() {
+                            pathView.animate()
+                                    .setStartDelay(100)
+                                    .alpha(0)
+                                    .setDuration(500)
+                                    .start();
+                        }
+                    })
+                    .interpolator(new AccelerateDecelerateInterpolator())
+                    .start();
+        }
+
+        public void playDislikeAnim() {
+            pathView.animate()
+                    .alpha(1)
+                    .scaleXBy(20)
+                    .scaleYBy(20)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            pathView.animate()
+                                    .alpha(0)
+                                    .scaleX(0)
+                                    .scaleY(0)
+                                    .start();
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    })
+                    .start();
         }
     }
 
@@ -86,7 +142,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
     @Override
     public void onBindViewHolder(final MHViewHolder holder, int position) {
         if (mShowedMap.get(position)) {
-            holder.loadingIndicatorView.setVisibility(View.GONE);
+            holder.loadingIndicatorView.setVisibility(GONE);
         } else {
             holder.loadingIndicatorView.setVisibility(View.VISIBLE);
         }
@@ -108,7 +164,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                                                    Target<GlideDrawable> target,
                                                    boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
-                        holder.loadingIndicatorView.setVisibility(View.GONE);
+                        holder.loadingIndicatorView.setVisibility(GONE);
                         mShowedMap.put(holder.getAdapterPosition(), true);
                         return false;
                     }

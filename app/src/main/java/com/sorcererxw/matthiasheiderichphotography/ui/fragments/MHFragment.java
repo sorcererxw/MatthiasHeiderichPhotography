@@ -97,9 +97,11 @@ public class MHFragment extends BaseFragment {
                     mFavoriteDBHelper.deleteLink(data);
                     TypefaceSnackbar.make(mRoot, "Removed from Favorite", Snackbar.LENGTH_LONG)
                             .show();
+                    holder.playDislikeAnim();
                 } else {
                     mFavoriteDBHelper.saveLink(data);
                     TypefaceSnackbar.make(mRoot, "Added to Favorite", Snackbar.LENGTH_LONG).show();
+                    holder.playLikeAnim();
                 }
             }
         });

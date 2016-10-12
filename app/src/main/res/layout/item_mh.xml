@@ -23,10 +23,12 @@
         app:indicatorName="LineScalePulseOutIndicator"/>
 
     <com.eftimoff.androipathview.PathView
-        android:visibility="gone"
+        app:svg="@raw/love"
+        app:pathColor="#fff"
+        android:alpha="0"
         android:id="@+id/pathView_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
