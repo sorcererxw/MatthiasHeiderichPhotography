@@ -91,7 +91,8 @@ public class MHFragment extends BaseFragment {
         mAdapter = new MHAdapter(getContext());
         mAdapter.setOnItemLongClickListener(new MHAdapter.OnItemLongClickListener() {
             @Override
-            public void onLongClick(View view, String data, int position) {
+            public void onLongClick(View view, String data, int position,
+                                    MHAdapter.MHViewHolder holder) {
                 if (mFavoriteDBHelper.isLinkContain(data)) {
                     mFavoriteDBHelper.deleteLink(data);
                     TypefaceSnackbar.make(mRoot, "Removed from Favorite", Snackbar.LENGTH_LONG)

@@ -82,4 +82,6 @@ dependencies {
     compile 'com.github.chrisbanes:PhotoView:1.3.0'
     // muzei
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
+    // svg anim
+    compile 'com.eftimoff:android-pathview:1.0.8@aar'
 }

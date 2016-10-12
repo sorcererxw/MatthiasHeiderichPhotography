@@ -6,7 +6,9 @@ import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 
 /**
- * Created by Sorcerer on 2016/10/12.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/10/12
  */
 
 public class MHArtSource extends RemoteMuzeiArtSource {

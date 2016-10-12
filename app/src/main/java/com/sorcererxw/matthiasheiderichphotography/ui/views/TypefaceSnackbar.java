@@ -10,7 +10,9 @@ import android.widget.TextView;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 
 /**
- * Created by Sorcerer on 2016/8/31.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/31
  */
 public class TypefaceSnackbar {
     public static Snackbar make(@NonNull View view, @NonNull CharSequence text, int duration) {

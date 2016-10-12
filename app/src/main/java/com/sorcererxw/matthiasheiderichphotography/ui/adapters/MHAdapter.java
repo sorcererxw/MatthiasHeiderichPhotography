@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -18,6 +19,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.eftimoff.androipathview.PathView;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
@@ -33,11 +35,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Sorcerer on 2016/8/22.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/22
  */
 public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
-    static class MHViewHolder extends RecyclerView.ViewHolder {
+    public static class MHViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.pathView_item)
+        PathView mPathView;
+
         @BindView(R.id.imageView_item)
         ImageView image;
 
@@ -71,7 +78,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
     private SparseBooleanArray mShowedMap = new SparseBooleanArray();
 
     public interface OnItemLongClickListener {
-        void onLongClick(View view, String data, int position);
+        void onLongClick(View view, String data, int position, MHViewHolder holder);
     }
 
     private OnItemLongClickListener mOnItemLongClickListener;
@@ -130,7 +137,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                 if (mOnItemLongClickListener != null) {
                     mOnItemLongClickListener.onLongClick(view,
                             mList.get(holder.getAdapterPosition()),
-                            holder.getAdapterPosition());
+                            holder.getAdapterPosition(), holder);
                 }
                 return true;
             }

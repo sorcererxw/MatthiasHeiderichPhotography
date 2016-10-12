@@ -75,7 +75,7 @@ public class FavoriteFragment extends BaseFragment {
         mAdapter = new MHAdapter(getContext());
         mAdapter.setOnItemLongClickListener(new MHAdapter.OnItemLongClickListener() {
             @Override
-            public void onLongClick(View view, final String data, final int position) {
+            public void onLongClick(View view, final String data, final int position, MHAdapter.MHViewHolder holder) {
                 new MaterialDialog.Builder(getContext())
                         .typeface(
                                 TypefaceHelper.getTypeface(getContext(), TypefaceHelper.Type.Demi),
