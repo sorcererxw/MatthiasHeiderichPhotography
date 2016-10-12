@@ -27,6 +27,16 @@
             android:theme="@style/AppTheme.Detail">
         </activity>
 
+        <service android:name="com.sorcererxw.matthiasheiderichphotography.muzei.MHArtSource"
+            android:label="@string/muzei_source_name"
+            android:description="@string/muzei_source_description"
+            android:icon="@drawable/ic_launcher">
+            <intent-filter>
+                <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
+            </intent-filter>
+            <meta-data android:name="color" android:value="#fa0" />
+        </service>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.sorcererxw.matthiasheiderichphotography.fileProvider"

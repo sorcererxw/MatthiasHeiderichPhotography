@@ -80,4 +80,6 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
     // photo view
     compile 'com.github.chrisbanes:PhotoView:1.3.0'
+    // muzei
+    compile 'com.google.android.apps.muzei:muzei-api:2.0'
 }

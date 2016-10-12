@@ -406,11 +406,22 @@ public class DetailActivity extends AppCompatActivity {
                                 @Override
                                 public void call(Boolean aBoolean) {
                                     if (aBoolean) {
-                                        TypefaceSnackbar
+                                        Snackbar snackbar = TypefaceSnackbar
                                                 .make(mCoordinatorLayout, "Success",
                                                         Snackbar.LENGTH_LONG)
-                                                .setCallback(mSnackbarCallback)
-                                                .show();
+                                                .setCallback(mSnackbarCallback);
+                                        if (!lockScreen) {
+                                            snackbar.setAction("have a look", new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Intent startMain = new Intent(Intent.ACTION_MAIN);
+                                                    startMain.addCategory(Intent.CATEGORY_HOME);
+                                                    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(startMain);
+                                                }
+                                            });
+                                        }
+                                        snackbar.show();
                                     } else {
                                         TypefaceSnackbar
                                                 .make(mCoordinatorLayout, "Fail",

@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
+import android.util.SparseBooleanArray;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +37,7 @@ import butterknife.ButterKnife;
  */
 public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
-    class MHViewHolder extends RecyclerView.ViewHolder {
+    static class MHViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.imageView_item)
         ImageView image;
 
@@ -65,7 +68,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                 LayoutInflater.from(mContext).inflate(R.layout.item_mh, parent, false));
     }
 
-    private Map<Integer, Boolean> mShowedMap = new HashMap<>();
+    private SparseBooleanArray mShowedMap = new SparseBooleanArray();
 
     public interface OnItemLongClickListener {
         void onLongClick(View view, String data, int position);
@@ -75,8 +78,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
     @Override
     public void onBindViewHolder(final MHViewHolder holder, int position) {
-        if (mShowedMap.containsKey(holder.getAdapterPosition()) && mShowedMap
-                .put(holder.getAdapterPosition(), true)) {
+        if (mShowedMap.get(position)) {
             holder.loadingIndicatorView.setVisibility(View.GONE);
         } else {
             holder.loadingIndicatorView.setVisibility(View.VISIBLE);
@@ -112,8 +114,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 intent.putExtra("link", mList.get(holder.getAdapterPosition()));
-                if (mShowedMap.containsKey(holder.getAdapterPosition()) && mShowedMap
-                        .get(holder.getAdapterPosition())) {
+                if (mShowedMap.get(holder.getAdapterPosition())) {
                     MHApp.getInstance().setTmpDrawable(holder.image.getDrawable());
                 } else {
                     MHApp.getInstance().setTmpDrawable(null);
