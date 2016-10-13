@@ -1,5 +1,7 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -75,7 +77,8 @@ public class FavoriteFragment extends BaseFragment {
         mAdapter = new MHAdapter(getContext());
         mAdapter.setOnItemLongClickListener(new MHAdapter.OnItemLongClickListener() {
             @Override
-            public void onLongClick(View view, final String data, final int position, MHAdapter.MHViewHolder holder) {
+            public void onLongClick(View view, final String data, final int position,
+                                    final MHAdapter.MHViewHolder holder) {
                 new MaterialDialog.Builder(getContext())
                         .typeface(
                                 TypefaceHelper.getTypeface(getContext(), TypefaceHelper.Type.Demi),
@@ -132,6 +135,12 @@ public class FavoriteFragment extends BaseFragment {
     @Override
     public void onShow() {
         initData();
+    }
+
+    @Override
+    public void onToolbarDoubleTap() {
+        super.onToolbarDoubleTap();
+        mRecyclerView.smoothScrollToPosition(0);
     }
 
     public void initData() {

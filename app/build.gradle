@@ -15,7 +15,6 @@ def getVersionCode() {
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
-    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId 'com.sorcererxw.matthiasheiderichphotography'
@@ -26,8 +25,8 @@ android {
     }
     buildTypes {
         debug {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
@@ -60,8 +59,6 @@ dependencies {
     // butterknife
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
-    // glide
-    compile 'com.github.bumptech.glide:glide:3.7.0'
     // material drawer
     compile('com.mikepenz:materialdrawer:5.5.0@aar') {
         transitive = true
@@ -84,4 +81,8 @@ dependencies {
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
     // svg anim
     compile 'com.eftimoff:android-pathview:1.0.8@aar'
+    // okhttp
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 }

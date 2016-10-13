@@ -1,11 +1,6 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
 import android.support.v4.app.Fragment;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Toast;
-
-import com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity;
 
 /**
  * @description:
@@ -14,6 +9,10 @@ import com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity;
  */
 public class BaseFragment extends Fragment {
     public void onShow() {
+
+    }
+
+    public void onToolbarDoubleTap() {
 
     }
 

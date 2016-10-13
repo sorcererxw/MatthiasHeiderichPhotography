@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceSnackbar;
@@ -20,6 +21,7 @@ import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 
@@ -27,7 +29,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,6 +36,8 @@ import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.OkHttpClient;
+import okhttp3.internal.huc.OkHttpURLConnection;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -42,7 +45,9 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by Sorcerer on 2016/8/22.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/22
  */
 public class MHFragment extends BaseFragment {
 
@@ -93,15 +98,18 @@ public class MHFragment extends BaseFragment {
             @Override
             public void onLongClick(View view, String data, int position,
                                     MHAdapter.MHViewHolder holder) {
+                if (!mAdapter.hasItemShowed(position)) {
+                    return;
+                }
                 if (mFavoriteDBHelper.isLinkContain(data)) {
                     mFavoriteDBHelper.deleteLink(data);
                     TypefaceSnackbar.make(mRoot, "Removed from Favorite", Snackbar.LENGTH_LONG)
                             .show();
-                    holder.playDislikeAnim();
+                    holder.playDislikeAnim(getContext());
                 } else {
                     mFavoriteDBHelper.saveLink(data);
                     TypefaceSnackbar.make(mRoot, "Added to Favorite", Snackbar.LENGTH_LONG).show();
-                    holder.playLikeAnim();
+                    holder.playLikeAnim(getContext());
                 }
             }
         });
@@ -133,54 +141,8 @@ public class MHFragment extends BaseFragment {
         } else {
             final MaterialDialog dialog = DialogUtil.getProgressDialog(getContext(), "Loading");
             dialog.show();
-            Observable.just(
+            WebCatcher.catchImageLinks(
                     "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY))
-                    .map(new Func1<String, String>() {
-                        @Override
-                        public String call(String path) {
-                            URL url;
-                            String res = "";
-                            try {
-                                url = new URL(path);
-                                URLConnection conn = url.openConnection();
-                                conn.setRequestProperty(
-                                        "User-Agent",
-                                        "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
-                                BufferedReader br = new BufferedReader(
-                                        new InputStreamReader(conn.getInputStream()));
-
-                                String inputLine;
-                                while ((inputLine = br.readLine()) != null) {
-                                    res += inputLine;
-                                }
-                                br.close();
-                            } catch (IOException e) {
-                                if (BuildConfig.DEBUG) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            return res;
-                        }
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .map(new Func1<String, List<String>>() {
-                        @Override
-                        public List<String> call(String s) {
-                            Log.d("main", s);
-                            Pattern p = Pattern.compile(
-                                    "data-image=\"https://static1.squarespace.com/static/[0-9a-z]*/[0-9a-z]*/[0-9a-z]*/[0-9a-z]*/[a-zA-Z0-9-_.]*\"");
-                            Matcher m = p.matcher(s);
-                            List<String> list = new ArrayList<>();
-                            while (m.find()) {
-                                String tmp = m.group(0).split("\"")[1];
-                                if (!list.contains(tmp)) {
-                                    list.add(tmp);
-                                }
-                            }
-                            return list;
-                        }
-                    })
-                    .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<List<String>>() {
                         @Override
@@ -205,5 +167,11 @@ public class MHFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onToolbarDoubleTap() {
+        super.onToolbarDoubleTap();
+        mRecyclerView.smoothScrollToPosition(0);
     }
 }

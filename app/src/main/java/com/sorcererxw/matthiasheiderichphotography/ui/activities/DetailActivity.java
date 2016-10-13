@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -250,11 +249,7 @@ public class DetailActivity extends AppCompatActivity {
                 try {
                     File path = Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_PICTURES);
-                    File dir = new File(path, "/Matthisa Heideric");
-                    if (dir.exists()) {
-                        dir.renameTo(new File(path, "/Matthisa Heiderich"));
-                    }
-                    dir = new File(path, "/Matthisa Heiderich");
+                    File dir = new File(path, "/Matthisa Heiderich");
                     if (!dir.exists()) {
                         dir.mkdir();
                     }

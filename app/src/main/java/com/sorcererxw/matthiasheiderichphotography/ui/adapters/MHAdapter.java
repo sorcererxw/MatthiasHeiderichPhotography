@@ -1,11 +1,11 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.adapters;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Path;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.VectorDrawable;
+import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -56,9 +56,11 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        public void playLikeAnim() {
+        public void playLikeAnim(Context context) {
+            ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE))
+                    .vibrate(150);
             pathView.getPathAnimator()
-                    .duration(500)
+                    .duration(400)
                     .listenerStart(new PathView.AnimatorBuilder.ListenerStart() {
                         @Override
                         public void onAnimationStart() {
@@ -71,7 +73,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                             pathView.animate()
                                     .setStartDelay(100)
                                     .alpha(0)
-                                    .setDuration(500)
+                                    .setDuration(300)
                                     .start();
                         }
                     })
@@ -79,34 +81,31 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                     .start();
         }
 
-        public void playDislikeAnim() {
+        public void playDislikeAnim(Context context) {
+            ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE))
+                    .vibrate(150);
             pathView.animate()
                     .alpha(1)
-                    .scaleXBy(20)
-                    .scaleYBy(20)
-                    .setListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-
-                        }
-
+                    .scaleX(1.2f)
+                    .scaleY(1.2f)
+                    .setDuration(300)
+                    .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             pathView.animate()
                                     .alpha(0)
                                     .scaleX(0)
                                     .scaleY(0)
+                                    .setDuration(500)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            pathView.setScaleX(1);
+                                            pathView.setScaleY(1);
+                                        }
+                                    })
                                     .start();
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
                         }
                     })
                     .start();
@@ -132,6 +131,10 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
     }
 
     private SparseBooleanArray mShowedMap = new SparseBooleanArray();
+
+    public boolean hasItemShowed(int position) {
+        return mShowedMap.get(position);
+    }
 
     public interface OnItemLongClickListener {
         void onLongClick(View view, String data, int position, MHViewHolder holder);

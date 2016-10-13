@@ -8,6 +8,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.sorcererxw.matthiasheiderichphotography.models.LibraryBean;
@@ -19,13 +20,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Sorcerer on 2016/8/22.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/22
  */
 public class HomeFragment extends BaseFragment {
 
     public static HomeFragment newInstance() {
         return new HomeFragment();
     }
+
+    @BindView(R.id.scrollView_home)
+    ScrollView mScrollView;
 
     @BindView(R.id.textView_home_introduce)
     TextView mIntroduce;
@@ -74,6 +80,12 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onToolbarDoubleTap() {
+        super.onToolbarDoubleTap();
+        mScrollView.smoothScrollTo(0,0);
     }
 
     private LibraryBean[] mLibraryBeen = new LibraryBean[]{

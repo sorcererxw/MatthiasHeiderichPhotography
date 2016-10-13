@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -56,9 +58,27 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
+        final GestureDetector gestureDetector = new GestureDetector(this,
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onDoubleTap(MotionEvent e) {
+                        if (mCurrentFragment != null) {
+                            mCurrentFragment.onToolbarDoubleTap();
+                        }
+                        return super.onDoubleTap(e);
+                    }
+                });
+        mToolbar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
+            }
+        });
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -72,10 +92,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Drawer mDrawer;
-
-    public void openDrawer(){
-        mDrawer.openDrawer();
-    }
 
     private void initDrawer() {
 
@@ -145,6 +161,10 @@ public class MainActivity extends AppCompatActivity {
                         .withIcon(GoogleMaterial.Icon.gmd_photo_library)
                         .withSubItems(collectionList)
         );
+    }
+
+    public void openDrawer() {
+        mDrawer.openDrawer();
     }
 
     private static final String FRAGMENT_TAG_FAVORITE = "Favorite";
