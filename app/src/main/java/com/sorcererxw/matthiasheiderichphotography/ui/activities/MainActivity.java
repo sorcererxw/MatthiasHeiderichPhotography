@@ -24,6 +24,7 @@ import com.sorcererxw.matthiasheiderichphotography.ui.fragments.BaseFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.FavoriteFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
+import com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
@@ -155,11 +156,23 @@ public class MainActivity extends AppCompatActivity {
                         .withName("Favorite"),
                 new ExpandableDrawerItem()
                         .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                        .withIsExpanded(true)
+                        .withIsExpanded(false)
                         .withSelectable(false)
                         .withName("Collections")
                         .withIcon(GoogleMaterial.Icon.gmd_photo_library)
-                        .withSubItems(collectionList)
+                        .withSubItems(collectionList),
+                new PrimaryDrawerItem().withOnDrawerItemClickListener(
+                        new Drawer.OnDrawerItemClickListener() {
+                            @Override
+                            public boolean onItemClick(View view, int position,
+                                                       IDrawerItem drawerItem) {
+                                showFragment(FRAGMENT_TAG_SETTINGS);
+                                return false;
+                            }
+                        })
+                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
+                        .withIcon(GoogleMaterial.Icon.gmd_settings)
+                        .withName("Settings")
         );
     }
 
@@ -169,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String FRAGMENT_TAG_FAVORITE = "Favorite";
     private static final String FRAGMENT_TAG_HOME = "Home";
+    private static final String FRAGMENT_TAG_SETTINGS = "Settings";
 
     private void showFragment(String tag) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
@@ -181,6 +195,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case FRAGMENT_TAG_FAVORITE:
                     mCurrentFragment = FavoriteFragment.newInstance();
+                    break;
+                case FRAGMENT_TAG_SETTINGS:
+                    mCurrentFragment = SettingsFragment.newInstance();
                     break;
                 default:
                     mCurrentFragment = MHFragment.newInstance(tag);

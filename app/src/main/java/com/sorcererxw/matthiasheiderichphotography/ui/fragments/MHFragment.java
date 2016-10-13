@@ -19,6 +19,7 @@ import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecorati
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceSnackbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
 import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
@@ -121,19 +122,14 @@ public class MHFragment extends BaseFragment {
         mRecyclerView.setHasFixedSize(true);
     }
 
-    private static final String PREFERENCES_UPDATE_DATE = "Preference-Update-Date";
-
     private void initData() {
         final ProjectDBHelper dbHelper =
                 new ProjectDBHelper(getContext(), StringUtil.onlyLetter(mProjectName));
-        if (System.currentTimeMillis()
-                - getContext().getSharedPreferences(PREFERENCES_UPDATE_DATE,
-                Context.MODE_PRIVATE).getLong(mProjectName, 0) < 86400000) {
+        final MHPreference<Long> lastSync = MHApp.getInstance().getPrefs().getLastSync(mProjectName, 0L);
+        if (System.currentTimeMillis() - lastSync.getValue() < 86400000) {
             List<String> list = dbHelper.getLinks();
             if (list.size() == 0) {
-                getContext().getSharedPreferences(PREFERENCES_UPDATE_DATE,
-                        Context.MODE_PRIVATE).edit()
-                        .putLong(mProjectName, 0).apply();
+                lastSync.setValue(0L);
                 initData();
             } else {
                 mAdapter.setData(list);
@@ -148,10 +144,7 @@ public class MHFragment extends BaseFragment {
                         @Override
                         public void call(List<String> strings) {
                             mAdapter.setData(strings);
-                            getContext().getSharedPreferences(PREFERENCES_UPDATE_DATE,
-                                    Context.MODE_PRIVATE).edit()
-                                    .putLong(mProjectName,
-                                            System.currentTimeMillis()).apply();
+                            lastSync.setValue(System.currentTimeMillis());
                             dbHelper.saveLinks(strings);
                             dialog.dismiss();
                         }

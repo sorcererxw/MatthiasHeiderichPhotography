@@ -3,6 +3,8 @@ package com.sorcererxw.matthiasheiderichphotography;
 import android.app.Application;
 import android.graphics.drawable.Drawable;
 
+import com.sorcererxw.matthiasheiderichphotography.util.Prefs;
+
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
@@ -42,6 +44,12 @@ public class MHApp extends Application {
             "random"
     };
 
+    private Prefs mPrefs;
+
+    public Prefs getPrefs() {
+        return mPrefs;
+    }
+
     private OkHttpClient mOkHttpClient;
 
     public OkHttpClient getHttpClient() {
@@ -53,15 +61,9 @@ public class MHApp extends Application {
         super.onCreate();
         mApp = this;
 
-//        Authenticator.setDefault(new Authenticator() {
-//            @Override
-//            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication("", "macallytech1".toCharArray());
-//            }
-//        });
+        mPrefs = new Prefs(this);
 
         mOkHttpClient = new OkHttpClient.Builder()
-//                .proxy(new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("124.248.220.39", 10777)))
                 .build();
     }
 

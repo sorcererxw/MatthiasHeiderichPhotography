@@ -7,6 +7,7 @@ import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
+import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 
 import java.util.List;
 import java.util.Random;
@@ -50,7 +51,7 @@ public class MHArtSource extends RemoteMuzeiArtSource {
                         String uri = list.get(random.nextInt(list.size()));
 
                         publishArtwork(new Artwork.Builder()
-                                .title("name")
+                                .title(getName(uri))
                                 .byline("Matthias Heiderich")
                                 .viewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
                                 .imageUri(Uri.parse(uri))
@@ -58,6 +59,19 @@ public class MHArtSource extends RemoteMuzeiArtSource {
 
                         scheduleUpdate(System.currentTimeMillis() + ROTATE_TIME_MILLIS);
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        if (BuildConfig.DEBUG) {
+                            throwable.printStackTrace();
+                        }
+                    }
                 });
+    }
+
+    public static String getName(String uri) {
+        String[] split = uri.split("/");
+        String raw = split[split.length - 1];
+        return raw.split("\\.")[0];
     }
 }
