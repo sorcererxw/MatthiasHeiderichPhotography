@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,9 +36,10 @@ public class WebCatcher {
                         String res = "";
                         try {
                             url = new URL(path);
-                            OkHttpURLConnection connection =
-                                    new OkHttpURLConnection(url,
-                                            MHApp.getInstance().getHttpClient());
+                            URLConnection connection = url.openConnection();
+//                            OkHttpURLConnection connection =
+//                                    new OkHttpURLConnection(url,
+//                                            MHApp.getInstance().getHttpClient());
                             connection.setRequestProperty("User-Agent",
                                     "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
                             BufferedReader br = new BufferedReader(

@@ -30,6 +30,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceMaterialDialogBuilder;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceSnackbar;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
@@ -78,9 +79,7 @@ public class DetailActivity extends AppCompatActivity {
     @OnClick(R.id.fab_detail_apply)
     void clickApply() {
         if (Build.VERSION.SDK_INT >= 24) {
-            MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
-            builder.typeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Demi),
-                    TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book));
+            TypefaceMaterialDialogBuilder builder = new TypefaceMaterialDialogBuilder(this);
             builder.items("Home Screen", "Lock Screen", "Home And Lock Screen");
             builder.itemsCallback(new MaterialDialog.ListCallback() {
                 @Override

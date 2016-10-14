@@ -49,6 +49,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
+        <meta-data
+            android:name="com.sorcererxw.matthiasheiderichphotography.util.GlideConfiguration"
+            android:value="GlideModule"/>
     </application>
 
 </manifest>

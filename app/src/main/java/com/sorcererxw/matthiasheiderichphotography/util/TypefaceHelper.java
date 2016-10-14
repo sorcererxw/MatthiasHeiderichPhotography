@@ -5,7 +5,9 @@ import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 
 /**
- * Created by Sorcerer on 2016/8/24.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/24
  */
 public class TypefaceHelper {
     private static Typeface fontDemi;

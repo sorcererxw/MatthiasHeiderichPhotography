@@ -84,11 +84,15 @@ public class MainActivity extends AppCompatActivity {
         mFragmentManager = getSupportFragmentManager();
 
         initDrawer();
+    }
 
-        if (savedInstanceState != null) {
-            showFragment(savedInstanceState.getString("tag"));
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (getIntent().hasExtra("fragment_tag")) {
+            showFragment(getIntent().getStringExtra("fragment_tag"));
         } else {
-            showFragment(FRAGMENT_TAG_HOME);
+            showFragment(MHApp.getInstance().getPrefs().getLastLeaveFragmentTag().getValue());
         }
     }
 
@@ -180,11 +184,14 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.openDrawer();
     }
 
-    private static final String FRAGMENT_TAG_FAVORITE = "Favorite";
-    private static final String FRAGMENT_TAG_HOME = "Home";
-    private static final String FRAGMENT_TAG_SETTINGS = "Settings";
+    public static final String FRAGMENT_TAG_FAVORITE = "Favorite";
+    public static final String FRAGMENT_TAG_HOME = "Home";
+    public static final String FRAGMENT_TAG_SETTINGS = "Settings";
+
+    private String mFragmentTag = FRAGMENT_TAG_HOME;
 
     private void showFragment(String tag) {
+        mFragmentTag = tag;
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         mCurrentFragment = (BaseFragment) mFragmentManager
                 .findFragmentByTag(tag);
@@ -224,9 +231,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("tag", mCurrentFragment.getTag());
+    protected void onStop() {
+        super.onStop();
+        MHApp.getInstance().getPrefs().getLastLeaveFragmentTag().setValue(mFragmentTag);
     }
-
 }

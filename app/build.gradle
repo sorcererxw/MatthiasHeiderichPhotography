@@ -37,6 +37,9 @@ android {
     }
     productFlavors {
     }
+
+    useLibrary 'org.apache.http.legacy'
+
     return void;
 }
 

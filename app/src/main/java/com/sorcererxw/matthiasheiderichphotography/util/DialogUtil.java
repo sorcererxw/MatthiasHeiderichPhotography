@@ -9,7 +9,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.sorcererxw.matthiasheidericphotography.R;
 
 /**
- * Created by Sorcerer on 2016/8/24.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/24
  */
 public class DialogUtil {
     public static MaterialDialog getProgressDialog(Context context, String message) {
@@ -19,6 +21,7 @@ public class DialogUtil {
         textView.setTypeface(TypefaceHelper.getTypeface(context, TypefaceHelper.Type.Book));
         return new MaterialDialog.Builder(context)
                 .customView(view, true)
+                .cancelable(false)
                 .canceledOnTouchOutside(false)
                 .build();
     }

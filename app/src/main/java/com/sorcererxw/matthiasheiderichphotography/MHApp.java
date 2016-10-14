@@ -5,12 +5,6 @@ import android.graphics.drawable.Drawable;
 
 import com.sorcererxw.matthiasheiderichphotography.util.Prefs;
 
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.SocketAddress;
-
 import okhttp3.OkHttpClient;
 
 /**
@@ -63,8 +57,7 @@ public class MHApp extends Application {
 
         mPrefs = new Prefs(this);
 
-        mOkHttpClient = new OkHttpClient.Builder()
-                .build();
+        mOkHttpClient = new OkHttpClient.Builder().build();
     }
 
     private static MHApp mApp;
