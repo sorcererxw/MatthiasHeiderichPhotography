@@ -5,6 +5,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
+import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceMaterialDialogBuilder;
 import com.sorcererxw.matthiasheiderichphotography.util.ApplicationUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ListUtil;
@@ -59,6 +61,9 @@ public class SettingsFragment extends BaseFragment {
         private MHPreference<Boolean> mMuzeiRotateOnlyWifiPreference;
         private CheckBoxPreference mMuzeiRotateOnlyWifiItem;
 
+        private MHPreference<Boolean> mThemeNightModePreference;
+        private SwitchPreference mThemeNightModeItem;
+
         private List<Pair<String, Long>> mMuzeiRotateTimeOptionList = Arrays.asList(
                 new Pair<>("Every 10 Seconds", 1000 * 10L),
                 new Pair<>("Every Minute", 1000 * 60L),
@@ -86,11 +91,13 @@ public class SettingsFragment extends BaseFragment {
             mMuzeiRotateTimePreference = MHApp.getInstance().getPrefs().getMuzeiRotateTime();
             mMuzeiRotateOnlyWifiPreference =
                     MHApp.getInstance().getPrefs().getMuzeiRotateOnlyWifi();
+            mThemeNightModePreference = MHApp.getInstance().getPrefs().getThemeNightMode();
 
             mMuzeiRotateCategoryItem = findPreference(Prefs.KEY_MUZEI_ROTATE_CATEGORY);
             mMuzeiRotateTimeItem = findPreference(Prefs.KEY_MUZEI_ROTATE_TIME);
             mMuzeiRotateOnlyWifiItem =
                     (CheckBoxPreference) findPreference(Prefs.KEY_MUZEI_ROTATE_ONLY_WIFI);
+            mThemeNightModeItem = (SwitchPreference) findPreference(Prefs.KEY_THEME_NIGHT_MODE);
 
             mMuzeiRotateCategoryItem
                     .setSummary(mMuzeiRotateCategoryPreference.getValue().isEmpty() ?
@@ -104,6 +111,7 @@ public class SettingsFragment extends BaseFragment {
                             (mMuzeiRotateTimePreference.getValue() / 1000 + "S") :
                             nowRotateTime.first);
             mMuzeiRotateOnlyWifiItem.setChecked(mMuzeiRotateOnlyWifiPreference.getValue());
+            mThemeNightModeItem.setChecked(mThemeNightModePreference.getValue());
 
             mMuzeiRotateTimeItem.setOnPreferenceClickListener(
                     new Preference.OnPreferenceClickListener() {
@@ -162,6 +170,21 @@ public class SettingsFragment extends BaseFragment {
                             return true;
                         }
                     });
+
+            mThemeNightModeItem.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            if ((Boolean) newValue) {
+                                ((MainActivity) getActivity()).setTheme(true);
+                            } else {
+                                ((MainActivity) getActivity()).setTheme(false);
+                            }
+                            mThemeNightModePreference.setValue((Boolean) newValue);
+                            return true;
+                        }
+                    });
+
         }
     }
 }

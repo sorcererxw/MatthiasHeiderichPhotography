@@ -1,16 +1,21 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.StyleRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.Resource;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -26,6 +31,7 @@ import com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
+import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
@@ -52,6 +58,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Boolean isNightMode = MHApp.getInstance().getPrefs().getThemeNightMode().getValue();
+
+        if (isNightMode) {
+            setTheme(R.style.NightTheme);
+        } else {
+            setTheme(R.style.DayTheme);
+        }
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -60,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
         final GestureDetector gestureDetector = new GestureDetector(this,
                 new GestureDetector.SimpleOnGestureListener() {
                     @Override
@@ -84,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
         mFragmentManager = getSupportFragmentManager();
 
         initDrawer();
+
+        setTheme(isNightMode);
     }
 
     @Override
@@ -180,10 +194,6 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    public void openDrawer() {
-        mDrawer.openDrawer();
-    }
-
     public static final String FRAGMENT_TAG_FAVORITE = "Favorite";
     public static final String FRAGMENT_TAG_HOME = "Home";
     public static final String FRAGMENT_TAG_SETTINGS = "Settings";
@@ -234,5 +244,53 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         MHApp.getInstance().getPrefs().getLastLeaveFragmentTag().setValue(mFragmentTag);
+    }
+
+    public void setTheme(boolean isNightMode) {
+        if (isNightMode) {
+            setTheme(R.style.NightTheme);
+        } else {
+            setTheme(R.style.DayTheme);
+        }
+        refreshUI();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (isNightMode) {
+                mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            } else {
+                mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
+        }
+    }
+
+    private void refreshUI() {
+        Resources.Theme theme = getTheme();
+        TypedValue textPrimary = new TypedValue();
+        TypedValue textSecondary = new TypedValue();
+        TypedValue accent = new TypedValue();
+        TypedValue primary = new TypedValue();
+        TypedValue primaryDark = new TypedValue();
+        TypedValue background = new TypedValue();
+
+        theme.resolveAttribute(R.attr.colorPrimaryText, textPrimary, true);
+        theme.resolveAttribute(R.attr.colorBackground, background, true);
+        theme.resolveAttribute(R.attr.colorPrimary, primary, true);
+        theme.resolveAttribute(R.attr.colorPrimaryDark, primaryDark, true);
+        theme.resolveAttribute(R.attr.colorSecondaryText, textSecondary, true);
+        theme.resolveAttribute(R.attr.colorAccent, accent, true);
+
+        mContainer.setBackgroundResource(background.resourceId);
+        mDrawer.getHeader().setBackgroundResource(background.resourceId);
+        mDrawer.getSlider().setBackgroundResource(background.resourceId);
+
+        for (IDrawerItem drawerItem : mDrawer.getDrawerItems()) {
+            if (drawerItem instanceof PrimaryDrawerItem) {
+                ((PrimaryDrawerItem) drawerItem).withSelectedColorRes(primaryDark.resourceId);
+            }
+        }
+
+        mToolbar.setBackgroundResource(primary.resourceId);
+        mToolbar.setSubtitleTextColor(ContextCompat.getColor(this, textSecondary.resourceId));
+        mToolbar.setTitleTextColor(ContextCompat.getColor(this, textPrimary.resourceId));
     }
 }

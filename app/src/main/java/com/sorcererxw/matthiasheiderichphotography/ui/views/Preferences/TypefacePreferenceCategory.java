@@ -1,4 +1,4 @@
-package com.sorcererxw.matthiasheiderichphotography.ui.views.Preference;
+package com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences;
 
 import android.content.Context;
 import android.preference.PreferenceCategory;

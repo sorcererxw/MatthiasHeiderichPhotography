@@ -27,7 +27,9 @@ public class Prefs {
     public static final String KEY_MUZEI_ROTATE_CATEGORY = "KEY_MUZEI_ROTATE_CATEGORY";
     public static final String KEY_MUZEI_ROTATE_ONLY_WIFI = "KEY_MUZEI_ROTATE_ONLY_WIFI";
 
-    public static final String KEY_LAST_LEAVE_FRAGMENT_TAG = "KEY_LAST_LEAVE_FRAGMENT_TAG";
+    private static final String KEY_LAST_LEAVE_FRAGMENT_TAG = "KEY_LAST_LEAVE_FRAGMENT_TAG";
+
+    public static final String KEY_THEME_NIGHT_MODE = "KEY_THEME_NIGHT_MODE";
 
     public MHPreference<Long> getMuzeiRotateTime() {
         return new MHPreference<>(mSharedPreferences, KEY_MUZEI_ROTATE_TIME, 1000 * 60 * 60 * 24L);
@@ -44,5 +46,9 @@ public class Prefs {
     public MHPreference<String> getLastLeaveFragmentTag() {
         return new MHPreference<>(mSharedPreferences, KEY_LAST_LEAVE_FRAGMENT_TAG,
                 MainActivity.FRAGMENT_TAG_HOME);
+    }
+
+    public MHPreference<Boolean> getThemeNightMode() {
+        return new MHPreference<>(mSharedPreferences, KEY_THEME_NIGHT_MODE, false);
     }
 }

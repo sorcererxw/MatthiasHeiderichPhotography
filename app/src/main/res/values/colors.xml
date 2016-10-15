@@ -3,6 +3,26 @@
     <color name="colorPrimary">#f5f5f5</color>
     <color name="colorPrimaryDark">#e0e0e0</color>
     <color name="colorAccent">#212121</color>
+    <color name="colorBackground">#fff</color>
     <color name="colorPrimaryText">#DE000000</color>
     <color name="colorSecondaryText">#8A000000</color>
+
+    <color name="colorPathView">#fff</color>
+    <color name="colorLibCopyrightBackground">#EEE</color>
+    <color name="colorFragmentBackground">#FFF</color>
+    <color name="colorDrawerHeadLogo">#000</color>
+    <color name="colorDrawerBackground">#fff</color>
+
+    <color name="colorNightPrimary">#263238</color>
+    <color name="colorNightPrimaryDark">#1e282d</color>
+    <color name="colorNightAccent">#546e7a</color>
+    <color name="colorNightBackground">#212b30</color>
+    <color name="colorNightPrimaryText">#ffffff</color>
+    <color name="colorNightSecondaryText">#A3ABAE</color>
+
+    <color name="colorNightPathView">#fff</color>
+    <color name="colorNightLibCopyrightBackground">#EEE</color>
+    <color name="colorNightFragmentBackground">#FFF</color>
+    <color name="colorNightDrawerHeadLogo">#000</color>
+    <color name="colorNightDrawerBackground">#fff</color>
 </resources>

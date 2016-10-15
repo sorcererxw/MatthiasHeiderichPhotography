@@ -1,7 +1,8 @@
-package com.sorcererxw.matthiasheiderichphotography.ui.views.Preference;
+package com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences;
 
 import android.content.Context;
-import android.preference.CheckBoxPreference;
+import android.preference.SwitchPreference;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
@@ -14,22 +15,21 @@ import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
  * @date: 2016/10/14
  */
 
-public class TypefaceCheckBoxPreference extends CheckBoxPreference{
-    public TypefaceCheckBoxPreference(Context context, AttributeSet attrs,
-                                      int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public TypefaceCheckBoxPreference(Context context, AttributeSet attrs, int defStyleAttr,
-                                      int defStyleRes) {
+public class TypefaceSwitchPreference extends SwitchPreference {
+    public TypefaceSwitchPreference(Context context, AttributeSet attrs,
+                                    int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public TypefaceCheckBoxPreference(Context context, AttributeSet attrs) {
+    public TypefaceSwitchPreference(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    public TypefaceSwitchPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TypefaceCheckBoxPreference(Context context) {
+    public TypefaceSwitchPreference(Context context) {
         super(context);
     }
 

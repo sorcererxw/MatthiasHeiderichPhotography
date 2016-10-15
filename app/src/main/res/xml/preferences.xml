@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <com.sorcererxw.matthiasheiderichphotography.ui.views.Preference.TypefacePreferenceCategory
+    <com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefacePreferenceCategory
         android:key="KEY_MUZEI_GROUP"
         android:title="Muzei Live Wallpaper">
-        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preference.TypefacePreference
+        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefacePreference
             android:key="KEY_MUZEI_ROTATE_TIME"
-            android:title="Rotate time"/>
-        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preference.TypefacePreference
+            android:title="Rotate Time"/>
+        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefacePreference
             android:key="KEY_MUZEI_ROTATE_CATEGORY"
-            android:title="Rotate category"/>
-        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preference.TypefaceCheckBoxPreference
+            android:title="Rotate Category"/>
+        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefaceCheckBoxPreference
             android:key="KEY_MUZEI_ROTATE_ONLY_WIFI"
-            android:title="Rotate only in WiFi"/>
-        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preference.TypefacePreference
+            android:title="Rotate Only in WiFi"/>
+        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefacePreference
             android:summary="If you want lasting stability Muzei service, please do not let this the system or third-party tools kill this application or Muzei application."
             android:title="Tips"/>
-    </com.sorcererxw.matthiasheiderichphotography.ui.views.Preference.TypefacePreferenceCategory>
+    </com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefacePreferenceCategory>
+
+    <com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefacePreferenceCategory
+        android:title="Theme">
+        <com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefaceSwitchPreference
+            android:key="KEY_THEME_NIGHT_MODE"
+            android:title="Night Mode"/>
+    </com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefacePreferenceCategory>
 </PreferenceScreen>

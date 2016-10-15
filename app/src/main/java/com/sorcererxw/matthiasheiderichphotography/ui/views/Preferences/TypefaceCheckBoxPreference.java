@@ -1,8 +1,7 @@
-package com.sorcererxw.matthiasheiderichphotography.ui.views.Preference;
+package com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.preference.Preference;
+import android.preference.CheckBoxPreference;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
@@ -12,24 +11,25 @@ import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 /**
  * @description:
  * @author: Sorcerer
- * @date: 2016/10/13
+ * @date: 2016/10/14
  */
 
-public class TypefacePreference extends Preference {
-    public TypefacePreference(Context context, AttributeSet attrs,
-                              int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-    public TypefacePreference(Context context, AttributeSet attrs, int defStyleAttr) {
+public class TypefaceCheckBoxPreference extends CheckBoxPreference{
+    public TypefaceCheckBoxPreference(Context context, AttributeSet attrs,
+                                      int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public TypefacePreference(Context context, AttributeSet attrs) {
+    public TypefaceCheckBoxPreference(Context context, AttributeSet attrs, int defStyleAttr,
+                                      int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public TypefaceCheckBoxPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TypefacePreference(Context context) {
+    public TypefaceCheckBoxPreference(Context context) {
         super(context);
     }
 
