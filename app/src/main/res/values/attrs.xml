@@ -3,4 +3,6 @@
     <attr name="colorBackground" format="color"/>
     <attr name="colorPrimaryText" format="color"/>
     <attr name="colorSecondaryText" format="color"/>
+    <attr name="colorLibCopyrightBackground" format="color"/>
+    <attr name="colorImagePlaceHolder" format="color"/>
 </resources>

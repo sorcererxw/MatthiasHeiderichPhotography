@@ -5,8 +5,6 @@ import android.graphics.drawable.Drawable;
 
 import com.sorcererxw.matthiasheiderichphotography.util.Prefs;
 
-import okhttp3.OkHttpClient;
-
 /**
  * @description:
  * @author: Sorcerer
@@ -44,20 +42,12 @@ public class MHApp extends Application {
         return mPrefs;
     }
 
-    private OkHttpClient mOkHttpClient;
-
-    public OkHttpClient getHttpClient() {
-        return mOkHttpClient;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         mApp = this;
 
         mPrefs = new Prefs(this);
-
-        mOkHttpClient = new OkHttpClient.Builder().build();
     }
 
     private static MHApp mApp;

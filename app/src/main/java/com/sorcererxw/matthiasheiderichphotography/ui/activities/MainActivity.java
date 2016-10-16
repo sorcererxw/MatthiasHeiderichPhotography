@@ -1,13 +1,18 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.StyleRes;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -33,9 +38,13 @@ import com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -252,18 +261,17 @@ public class MainActivity extends AppCompatActivity {
         } else {
             setTheme(R.style.DayTheme);
         }
-        refreshUI();
+        refreshUI(isNightMode);
+        refreshStatusBar(isNightMode);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (isNightMode) {
-                mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-            } else {
-                mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
+        try {
+            refreshFragments();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private void refreshUI() {
+    private void refreshUI(boolean isNightMode) {
         Resources.Theme theme = getTheme();
         TypedValue textPrimary = new TypedValue();
         TypedValue textSecondary = new TypedValue();
@@ -280,17 +288,67 @@ public class MainActivity extends AppCompatActivity {
         theme.resolveAttribute(R.attr.colorAccent, accent, true);
 
         mContainer.setBackgroundResource(background.resourceId);
+
+        ((TextView) mDrawer.getHeader().findViewById(R.id.textView_drawer_head))
+                .setTextColor(ContextCompat.getColor(this, textPrimary.resourceId));
         mDrawer.getHeader().setBackgroundResource(background.resourceId);
         mDrawer.getSlider().setBackgroundResource(background.resourceId);
 
         for (IDrawerItem drawerItem : mDrawer.getDrawerItems()) {
             if (drawerItem instanceof PrimaryDrawerItem) {
-                ((PrimaryDrawerItem) drawerItem).withSelectedColorRes(primaryDark.resourceId);
+                PrimaryDrawerItem primaryDrawerItem = (PrimaryDrawerItem) drawerItem;
+                primaryDrawerItem.withSelectedColorRes(primaryDark.resourceId);
+                primaryDrawerItem.withTextColorRes(textSecondary.resourceId);
+                primaryDrawerItem.withSelectedTextColorRes(textPrimary.resourceId);
+
+                primaryDrawerItem.withIconColorRes(textSecondary.resourceId);
+                primaryDrawerItem.withSelectedIconColorRes(textPrimary.resourceId);
+            } else if (drawerItem instanceof ExpandableDrawerItem) {
+                ExpandableDrawerItem expandableDrawerItem = (ExpandableDrawerItem) drawerItem;
+                expandableDrawerItem.withTextColorRes(textSecondary.resourceId);
+                for (IDrawerItem subDrawable : expandableDrawerItem.getSubItems()) {
+                    if (subDrawable instanceof PrimaryDrawerItem) {
+                        PrimaryDrawerItem primarySubDrawerItem = (PrimaryDrawerItem) subDrawable;
+                        primarySubDrawerItem.withTextColorRes(textSecondary.resourceId);
+                        primarySubDrawerItem.withSelectedTextColorRes(textPrimary.resourceId);
+                        primarySubDrawerItem.withSelectedColorRes(primaryDark.resourceId);
+                    }
+                }
+                expandableDrawerItem.withIconColorRes(textSecondary.resourceId);
+                expandableDrawerItem.withSelectedIconColorRes(textPrimary.resourceId);
             }
         }
 
         mToolbar.setBackgroundResource(primary.resourceId);
         mToolbar.setSubtitleTextColor(ContextCompat.getColor(this, textSecondary.resourceId));
         mToolbar.setTitleTextColor(ContextCompat.getColor(this, textPrimary.resourceId));
+
+        mDrawer.getActionBarDrawerToggle().getDrawerArrowDrawable()
+                .setColor(ResourceUtil.getColor(this, textPrimary.resourceId));
+        mDrawer.getAdapter().notifyDataSetChanged();
+    }
+
+    private void refreshStatusBar(boolean isNightMode) {
+
+        getWindow().setStatusBarColor(
+                ContextCompat.getColor(this, StyleUtil.getPrimaryDarkColorRes(this)));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (isNightMode) {
+                mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            } else {
+                mToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
+        }
+    }
+
+    private void refreshFragments() {
+        FragmentManager fm = getSupportFragmentManager();
+
+        for (Fragment fragment : fm.getFragments()) {
+            if (fragment != null) {
+                ((BaseFragment) fragment).onThemeChanged();
+            }
+        }
     }
 }

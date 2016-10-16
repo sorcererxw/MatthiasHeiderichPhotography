@@ -4,7 +4,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentStatus">true</item>`
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar"/>
@@ -16,20 +16,40 @@
     </style>
 
     <style name="DayTheme" parent="AppTheme">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/colorPrimaryText</item>
+        <item name="android:textColorSecondary">@color/colorSecondaryText</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:colorControlNormal">@color/colorPrimaryText</item>
+        <item name="android:colorControlActivated">@color/colorPrimaryText</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorBackground">@color/colorBackground</item>
         <item name="colorPrimaryText">@color/colorPrimaryText</item>
         <item name="colorSecondaryText">@color/colorSecondaryText</item>
+        <item name="colorLibCopyrightBackground">@color/colorLibCopyrightBackground</item>
+        <item name="colorImagePlaceHolder">@color/colorImagePlaceHolder</item>
     </style>
 
     <style name="NightTheme" parent="AppTheme">
+        <item name="android:colorPrimary">@color/colorNightPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorNightPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorNightAccent</item>
+        <item name="android:textColorPrimary">@color/colorNightPrimaryText</item>
+        <item name="android:textColorSecondary">@color/colorNightSecondaryText</item>
+        <item name="android:colorBackground">@color/colorNightBackground</item>
+        <item name="android:colorControlNormal">@color/colorNightPrimaryText</item>
+        <item name="android:colorControlActivated">@color/colorNightPrimaryText</item>
         <item name="colorPrimary">@color/colorNightPrimary</item>
         <item name="colorPrimaryDark">@color/colorNightPrimaryDark</item>
         <item name="colorAccent">@color/colorNightAccent</item>
         <item name="colorBackground">@color/colorNightBackground</item>
         <item name="colorPrimaryText">@color/colorNightPrimaryText</item>
         <item name="colorSecondaryText">@color/colorNightSecondaryText</item>
+        <item name="colorLibCopyrightBackground">@color/colorNightLibCopyrightBackground</item>
+        <item name="colorImagePlaceHolder">@color/colorNightImagePlaceHolder</item>
     </style>
 </resources>

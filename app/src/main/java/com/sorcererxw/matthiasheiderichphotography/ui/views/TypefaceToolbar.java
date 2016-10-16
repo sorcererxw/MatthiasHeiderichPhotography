@@ -2,6 +2,7 @@ package com.sorcererxw.matthiasheiderichphotography.ui.views;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
@@ -13,7 +14,9 @@ import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 
 /**
- * Created by Sorcerer on 2016/8/24.
+ * @description:
+ * @author: Sorcerer
+ * @date: 2016/8/24
  */
 public class TypefaceToolbar extends Toolbar {
     public TypefaceToolbar(Context context) {
@@ -51,5 +54,11 @@ public class TypefaceToolbar extends Toolbar {
     public void setTitle(CharSequence title) {
         super.setTitle("");
         mTitleTextView.setText(title);
+    }
+
+    @Override
+    public void setTitleTextColor(@ColorInt int color) {
+        super.setTitleTextColor(color);
+        mTitleTextView.setTextColor(color);
     }
 }

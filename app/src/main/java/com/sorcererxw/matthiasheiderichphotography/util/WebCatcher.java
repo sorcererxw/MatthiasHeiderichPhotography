@@ -2,7 +2,6 @@ package com.sorcererxw.matthiasheiderichphotography.util;
 
 import android.util.Log;
 
-import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 
 import java.io.BufferedReader;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.internal.huc.OkHttpURLConnection;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -37,9 +35,6 @@ public class WebCatcher {
                         try {
                             url = new URL(path);
                             URLConnection connection = url.openConnection();
-//                            OkHttpURLConnection connection =
-//                                    new OkHttpURLConnection(url,
-//                                            MHApp.getInstance().getHttpClient());
                             connection.setRequestProperty("User-Agent",
                                     "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
                             BufferedReader br = new BufferedReader(

@@ -1,7 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
-def getVersionCode() {
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.3"
+
     def Properties versionProps = new Properties()
     def versionPropsFile = file('version.properties')
     if (versionPropsFile.exists())
@@ -9,19 +12,13 @@ def getVersionCode() {
     int code = new Integer((String) versionProps['VERSION_CODE'] ?: "0") + 1
     versionProps['VERSION_CODE'] = code.toString()
     versionProps.store(versionPropsFile.newWriter(), null)
-    return code
-}
-
-android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId 'com.sorcererxw.matthiasheiderichphotography'
         minSdkVersion 21
         targetSdkVersion 24
-        versionName "1.4." + getVersionCode()
-        versionCode getVersionCode()
+        versionName "2.0." + code
+        versionCode code
     }
     buildTypes {
         debug {
@@ -39,6 +36,10 @@ android {
     }
 
     useLibrary 'org.apache.http.legacy'
+
+    dataBinding {
+        enabled = true
+    }
 
     return void;
 }
@@ -84,8 +85,6 @@ dependencies {
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
     // svg anim
     compile 'com.eftimoff:android-pathview:1.0.8@aar'
-    // okhttp
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+    // glide
     compile 'com.github.bumptech.glide:glide:3.7.0'
 }

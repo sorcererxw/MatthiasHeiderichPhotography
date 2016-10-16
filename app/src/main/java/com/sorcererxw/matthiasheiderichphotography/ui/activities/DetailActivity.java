@@ -30,13 +30,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceMaterialDialogBuilder;
+import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceSnackbar;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
-import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
+import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -135,6 +135,11 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (MHApp.getInstance().getPrefs().getThemeNightMode().getValue()) {
+            setTheme(R.style.NightTheme);
+        } else {
+            setTheme(R.style.DayTheme);
+        }
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
         mLink = getIntent().getStringExtra("link");
@@ -147,44 +152,44 @@ public class DetailActivity extends AppCompatActivity {
         mFAB.hideMenuButton(false);
 
         mRxPermissions = RxPermissions.getInstance(this);
+
     }
 
     private void initImage() {
         mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
         if (MHApp.getInstance().getTmpDrawable() != null) {
             mImageView.setImageDrawable(MHApp.getInstance().getTmpDrawable());
-            setupFAB();
-        } else {
-            Observable.just(mLink + "?format=1000w")
-                    .map(new Func1<String, Drawable>() {
-                        @Override
-                        public Drawable call(String s) {
-                            try {
-                                return Glide.with(DetailActivity.this)
-                                        .load(s)
-                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                        .into(-1, -1)
-                                        .get();
-                            } catch (InterruptedException | ExecutionException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        }
-                    })
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<Drawable>() {
-                        @Override
-                        public void call(Drawable drawable) {
-                            if (drawable != null) {
-                                mImageView.setImageDrawable(drawable);
-                                setupFAB();
-                            } else {
-                                finish();
-                            }
-                        }
-                    });
         }
+        Observable.just(mLink + "?format=1000w")
+                .map(new Func1<String, Drawable>() {
+                    @Override
+                    public Drawable call(String s) {
+                        try {
+                            return Glide.with(DetailActivity.this)
+                                    .load(s)
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(-1, -1)
+                                    .get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Drawable>() {
+                    @Override
+                    public void call(Drawable drawable) {
+                        if (drawable != null) {
+                            mImageView.setImageDrawable(drawable);
+                            setupFAB();
+                        } else {
+                            finish();
+                        }
+                    }
+                });
     }
 
     private Observable<Boolean> requestPermission() {

@@ -19,3 +19,8 @@
 -keep class com.sorcererxw.matthiasheiderichphotography.ui.others.FloatingActionButtonBehavior
 
 -keep class com.wang.avi.indicators.*
+
+-dontwarn com.caverock.androidsvg.*
+
+-keepnames class com.mypackage.MyGlideModule
+-keep public class * implements com.bumptech.glide.module.GlideModule

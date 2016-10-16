@@ -6,7 +6,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
 import com.sorcererxw.matthiasheidericphotography.R;
+import com.wang.avi.AVLoadingIndicatorView;
+import com.wang.avi.Indicator;
 
 /**
  * @description:
@@ -18,8 +21,15 @@ public class DialogUtil {
         View view = View.inflate(context, R.layout.layout_progressdialog, null);
         TextView textView = (TextView) view.findViewById(R.id.textView_progress_message);
         textView.setText(message);
+        textView.setTextColor(
+                ResourceUtil.getColor(context, StyleUtil.getSecondaryTextColor(context)));
         textView.setTypeface(TypefaceHelper.getTypeface(context, TypefaceHelper.Type.Book));
-        return new MaterialDialog.Builder(context)
+
+        AVLoadingIndicatorView indicator =
+                (AVLoadingIndicatorView) view.findViewById(R.id.loadingIndicator_progress_dialog);
+        indicator.setIndicatorColor(
+                ResourceUtil.getColor(context, StyleUtil.getAccentColorRes(context)));
+        return new TypefaceMaterialDialogBuilder(context)
                 .customView(view, true)
                 .cancelable(false)
                 .canceledOnTouchOutside(false)

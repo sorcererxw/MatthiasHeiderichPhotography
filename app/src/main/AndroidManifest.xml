@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CLEAR_APP_CACHE"/>
 
     <application
         android:name="com.sorcererxw.matthiasheiderichphotography.MHApp"
@@ -33,7 +34,7 @@
         <service android:name="com.sorcererxw.matthiasheiderichphotography.muzei.MHArtSource"
             android:label="@string/muzei_source_name"
             android:description="@string/muzei_source_description"
-            android:icon="@drawable/ic_launcher">
+            android:icon="@drawable/muzei">
             <intent-filter>
                 <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
             </intent-filter>

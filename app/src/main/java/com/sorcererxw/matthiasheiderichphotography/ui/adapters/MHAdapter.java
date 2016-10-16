@@ -4,10 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,6 +146,14 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
     @Override
     public void onBindViewHolder(final MHViewHolder holder, int position) {
+        Resources.Theme theme = mContext.getTheme();
+        TypedValue imagePlaceHolderColor = new TypedValue();
+        TypedValue accentColor = new TypedValue();
+        theme.resolveAttribute(R.attr.colorImagePlaceHolder, imagePlaceHolderColor, true);
+        theme.resolveAttribute(R.attr.colorAccent, accentColor, true);
+
+        holder.loadingIndicatorView
+                .setIndicatorColor(ResourceUtil.getColor(mContext, accentColor.resourceId));
         if (mShowedMap.get(position)) {
             holder.loadingIndicatorView.setVisibility(GONE);
         } else {
@@ -172,7 +182,8 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                         return false;
                     }
                 })
-                .placeholder(new ColorDrawable(ResourceUtil.getColor(mContext, R.color.grey_50)))
+                .placeholder(new ColorDrawable(
+                        ResourceUtil.getColor(mContext, imagePlaceHolderColor.resourceId)))
                 .fitCenter()
                 .into(holder.image);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -207,6 +218,10 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
     public void removeItem(int position) {
         mList.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public void setNightMode(boolean isNightMode) {
+        notifyDataSetChanged();
     }
 
     @Override

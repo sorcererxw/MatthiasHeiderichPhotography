@@ -1,10 +1,14 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +43,17 @@ public class HomeFragment extends BaseFragment {
     @BindView(R.id.libraryListView)
     LibraryListView mLibraryListView;
 
-    @BindView(R.id.textView_home_prject)
+    @BindView(R.id.textView_home_project)
     TextView mProject;
+
+    @BindView(R.id.cardView_home_lib)
+    CardView mLibCard;
+
+    @BindView(R.id.cardView_home_introduce)
+    CardView mIntroduceCard;
+
+    @BindView(R.id.cardView_home_project)
+    CardView mProjectCard;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,14 +91,50 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void refreshUI() {
+        TypedValue cardColor = new TypedValue();
+        TypedValue primaryColor = new TypedValue();
+        TypedValue secondaryColor = new TypedValue();
+        TypedValue libColor = new TypedValue();
+        Resources.Theme theme = getActivity().getTheme();
+        theme.resolveAttribute(R.attr.colorPrimary, cardColor, true);
+        theme.resolveAttribute(R.attr.colorPrimaryText, primaryColor, true);
+        theme.resolveAttribute(R.attr.colorSecondaryText, secondaryColor, true);
+        theme.resolveAttribute(R.attr.colorLibCopyrightBackground, libColor, true);
+
+        mIntroduceCard.setCardBackgroundColor(
+                ContextCompat.getColor(getContext(), cardColor.resourceId));
+        mLibCard.setCardBackgroundColor(
+                ContextCompat.getColor(getContext(), cardColor.resourceId));
+        mProjectCard.setCardBackgroundColor(
+                ContextCompat.getColor(getContext(), cardColor.resourceId));
+
+        mProject.setTextColor(ContextCompat.getColor(getContext(), secondaryColor.resourceId));
+        mIntroduce.setTextColor(ContextCompat.getColor(getContext(), secondaryColor.resourceId));
+
+        for (int i = 0; i < mLibraryListView.getChildCount(); i++) {
+            ((TextView) mLibraryListView.getChildAt(i)
+                    .findViewById(R.id.textView_item_library_name)).setTextColor(
+                    ContextCompat.getColor(getContext(), secondaryColor.resourceId)
+            );
+            ((TextView) mLibraryListView.getChildAt(i)
+                    .findViewById(R.id.textView_item_library_author)).setTextColor(
+                    ContextCompat.getColor(getContext(), secondaryColor.resourceId)
+            );
+            ((TextView) mLibraryListView.getChildAt(i)
+                    .findViewById(R.id.textView_item_library_licence))
+                    .setTextColor(ContextCompat.getColor(getContext(), secondaryColor.resourceId)
+                    );
+            mLibraryListView.getChildAt(i).findViewById(R.id.frameLayout_item_library_container)
+                    .setBackgroundResource(libColor.resourceId);
+        }
+
     }
 
     @Override
     public void onToolbarDoubleTap() {
         super.onToolbarDoubleTap();
-        mScrollView.smoothScrollTo(0,0);
+        mScrollView.smoothScrollTo(0, 0);
     }
 
     private LibraryBean[] mLibraryBeen = new LibraryBean[]{
@@ -364,6 +413,39 @@ public class HomeFragment extends BaseFragment {
                             + "limitations under the License.",
                     "https://github.com/chrisbanes/PhotoView",
                     "Implementation of ImageView for Android that supports zooming, by various touch gestures."
-            )
+            ),
+            new LibraryBean(
+                    "muzei",
+                    "romannurik",
+                    "Copyright 2014 Google Inc.\n"
+                            + "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
+                            + "you may not use this file except in compliance with the License.\n"
+                            + "You may obtain a copy of the License at\n"
+                            + "    http://www.apache.org/licenses/LICENSE-2.0\n"
+                            + "Unless required by applicable law or agreed to in writing, software\n"
+                            + "distributed under the License is distributed on an \"AS IS\" BASIS,\n"
+                            + "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
+                            + "See the License for the specific language governing permissions and\n"
+                            + "limitations under the License.",
+                    "https://github.com/romannurik/muzei",
+                    "Muzei Live Wallpaper for Android"),
+            new LibraryBean(
+                    "android-pathview",
+                    "geftimov",
+                    "Copyright 2016 Georgi Eftimov\n"
+                            + "\n"
+                            + "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
+                            + "you may not use this file except in compliance with the License.\n"
+                            + "You may obtain a copy of the License at\n"
+                            + "\n"
+                            + "   http://www.apache.org/licenses/LICENSE-2.0\n"
+                            + "\n"
+                            + "Unless required by applicable law or agreed to in writing, software\n"
+                            + "distributed under the License is distributed on an \"AS IS\" BASIS,\n"
+                            + "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
+                            + "See the License for the specific language governing permissions and\n"
+                            + "limitations under the License.",
+                    "https://github.com/geftimov/android-pathview",
+                    "Android view with both path from constructed path or from svg.\n")
     };
 }

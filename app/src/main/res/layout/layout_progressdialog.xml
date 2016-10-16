@@ -7,12 +7,11 @@
               android:orientation="horizontal">
 
     <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/loadingIndicator_item"
+        android:id="@+id/loadingIndicator_progress_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        app:indicatorColor="@color/accent"
         app:indicatorName="BallScaleMultipleIndicator"/>
 
     <TextView

@@ -1,9 +1,8 @@
-package com.sorcererxw.matthiasheiderichphotography.ui.views;
+package com.sorcererxw.matthiasheiderichphotography.ui.views.dialog;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 
 /**
@@ -12,7 +11,7 @@ import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
  * @date: 2016/10/14
  */
 
-public class TypefaceMaterialDialogBuilder extends MaterialDialog.Builder {
+public class TypefaceMaterialDialogBuilder extends ThemeMaterialDialogBuilder {
     public TypefaceMaterialDialogBuilder(
             @NonNull Context context) {
         super(context);

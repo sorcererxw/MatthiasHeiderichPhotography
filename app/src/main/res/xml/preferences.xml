@@ -21,6 +21,7 @@
         android:title="Theme">
         <com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefaceSwitchPreference
             android:key="KEY_THEME_NIGHT_MODE"
-            android:title="Night Mode"/>
+            android:title="Night Mode (experiment)"/>
     </com.sorcererxw.matthiasheiderichphotography.ui.views.Preferences.TypefacePreferenceCategory>
+
 </PreferenceScreen>

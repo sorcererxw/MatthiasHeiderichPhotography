@@ -1,7 +1,5 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,20 +9,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.iconics.Iconics;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
+import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 
@@ -79,10 +77,7 @@ public class FavoriteFragment extends BaseFragment {
             @Override
             public void onLongClick(View view, final String data, final int position,
                                     final MHAdapter.MHViewHolder holder) {
-                new MaterialDialog.Builder(getContext())
-                        .typeface(
-                                TypefaceHelper.getTypeface(getContext(), TypefaceHelper.Type.Demi),
-                                TypefaceHelper.getTypeface(getContext(), TypefaceHelper.Type.Book))
+                new TypefaceMaterialDialogBuilder(getContext())
                         .positiveText("Yes")
                         .negativeText("No")
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -141,6 +136,23 @@ public class FavoriteFragment extends BaseFragment {
     public void onToolbarDoubleTap() {
         super.onToolbarDoubleTap();
         mRecyclerView.smoothScrollToPosition(0);
+    }
+
+    @Override
+    protected void refreshUI() {
+        super.refreshUI();
+        mAdapter.setNightMode(MHApp.getInstance().getPrefs().getThemeNightMode().getValue());
+
+        mEmptyView.setTextColor(
+                ResourceUtil.getColor(getContext(), StyleUtil.getAccentColorRes(getContext())));
+
+        mEmptyView.setCompoundDrawables(null,
+                new IconicsDrawable(getContext())
+                        .icon(GoogleMaterial.Icon.gmd_favorite)
+                        .color(ResourceUtil
+                                .getColor(getContext(), StyleUtil.getAccentColorRes(getContext())))
+                        .sizeDp(56),
+                null, null);
     }
 
     public void initData() {

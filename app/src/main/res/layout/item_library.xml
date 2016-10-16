@@ -18,10 +18,10 @@
         android:textSize="14sp"/>
 
     <FrameLayout
+        android:id="@+id/frameLayout_item_library_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:background="@color/colorLibCopyrightBackground">
+        android:layout_marginTop="4dp">
 
         <TextView
             android:id="@+id/textView_item_library_licence"
