@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     def Properties versionProps = new Properties()
     def versionPropsFile = file('version.properties')
@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId 'com.sorcererxw.matthiasheiderichphotography'
         minSdkVersion 21
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionName "2.0." + code
         versionCode code
     }
@@ -47,44 +47,44 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:cardview-v7:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:palette-v7:24.2.1'
-    // material dialog
-    compile('com.github.afollestad.material-dialogs:core:0.9.0.0') {
-        transitive = true
-    }
-    compile('com.github.afollestad.material-dialogs:commons:0.9.0.0') {
-        transitive = true
-    }
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:cardview-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.android.support:palette-v7:25.0.1'
+    // dagger
+    compile 'com.google.dagger:dagger:2.8'
+    apt 'com.google.dagger:dagger-compiler:2.8'
     // butterknife
-    compile 'com.jakewharton:butterknife:8.2.1'
-    apt 'com.jakewharton:butterknife-compiler:8.2.1'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    // material dialog
+    compile 'com.afollestad.material-dialogs:core:0.9.1.0'
+    compile 'com.afollestad.material-dialogs:commons:0.9.1.0'
     // material drawer
-    compile('com.mikepenz:materialdrawer:5.5.0@aar') {
+    compile('com.mikepenz:materialdrawer:5.8.0@aar') {
         transitive = true
     }
     // rx
-    compile 'io.reactivex:rxjava:1.1.9'
+    compile 'io.reactivex:rxjava:1.2.2'
     compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'com.artemzin.rxjava:proguard-rules:1.1.9.0'
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.1@aar'
+    compile 'com.artemzin.rxjava:proguard-rules:1.2.2.0'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.0@aar'
     // indicator
     compile 'com.wang.avi:library:2.1.3'
     // iconics
-    compile 'com.mikepenz:iconics-core:2.8.0@aar'
+    compile 'com.mikepenz:iconics-core:2.8.1@aar'
     compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
     // fab
     compile 'com.github.clans:fab:1.6.4'
     // photo view
-    compile 'com.github.chrisbanes:PhotoView:1.3.0'
+    compile 'com.github.chrisbanes:PhotoView:1.3.1'
     // muzei
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
     // svg anim
     compile 'com.eftimoff:android-pathview:1.0.8@aar'
     // glide
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile project(':typeface-views')
 }

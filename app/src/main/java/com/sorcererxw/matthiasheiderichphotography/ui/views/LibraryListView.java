@@ -41,7 +41,6 @@ public class LibraryListView extends LinearLayout {
 
     }
 
-
     public void addItem(LibraryBean bean) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.item_library, null);
         TextView name = (TextView) view.findViewById(R.id.textView_item_library_name);

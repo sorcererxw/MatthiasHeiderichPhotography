@@ -31,14 +31,14 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceSnackbar;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
-import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
+import com.sorcererxw.typefaceviews.TypefaceSnackbar;
+import com.sorcererxw.typefaceviews.TypefaceToolbar;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
@@ -144,6 +144,7 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mLink = getIntent().getStringExtra("link");
         initImage();
+
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -151,8 +152,7 @@ public class DetailActivity extends AppCompatActivity {
 
         mFAB.hideMenuButton(false);
 
-        mRxPermissions = RxPermissions.getInstance(this);
-
+        mRxPermissions = new RxPermissions(this);
     }
 
     private void initImage() {
@@ -405,7 +405,7 @@ public class DetailActivity extends AppCompatActivity {
                                 @Override
                                 public void call(Boolean aBoolean) {
                                     if (aBoolean) {
-                                        Snackbar snackbar = TypefaceSnackbar
+                                        TypefaceSnackbar snackbar = TypefaceSnackbar
                                                 .make(mCoordinatorLayout, "Success",
                                                         Snackbar.LENGTH_LONG)
                                                 .setCallback(mSnackbarCallback);

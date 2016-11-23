@@ -1,9 +1,12 @@
 package com.sorcererxw.matthiasheiderichphotography;
 
 import android.app.Application;
+import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 
 import com.sorcererxw.matthiasheiderichphotography.util.Prefs;
+import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
+import com.sorcererxw.typefaceviews.TypefaceViews;
 
 /**
  * @description:
@@ -47,6 +50,10 @@ public class MHApp extends Application {
         super.onCreate();
         mApp = this;
 
+        TypefaceViews.install(
+                TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Demi),
+                TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book)
+        );
         mPrefs = new Prefs(this);
     }
 

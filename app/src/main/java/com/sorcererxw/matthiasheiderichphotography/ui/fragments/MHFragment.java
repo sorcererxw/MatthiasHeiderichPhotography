@@ -15,7 +15,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceSnackbar;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
@@ -23,6 +22,7 @@ import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
 import com.sorcererxw.matthiasheidericphotography.R;
+import com.sorcererxw.typefaceviews.TypefaceSnackbar;
 
 import java.util.List;
 

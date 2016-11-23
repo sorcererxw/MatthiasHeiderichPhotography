@@ -1,18 +1,13 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.StyleRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -20,7 +15,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.engine.Resource;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -35,16 +29,13 @@ import com.sorcererxw.matthiasheiderichphotography.ui.fragments.FavoriteFragment
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.TypefaceToolbar;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
+import com.sorcererxw.typefaceviews.TypefaceToolbar;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
