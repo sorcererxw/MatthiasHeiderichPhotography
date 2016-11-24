@@ -34,7 +34,6 @@ import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMater
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
-import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.TypefaceSnackbar;
