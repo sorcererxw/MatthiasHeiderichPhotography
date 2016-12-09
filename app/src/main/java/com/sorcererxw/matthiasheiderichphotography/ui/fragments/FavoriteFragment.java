@@ -1,6 +1,6 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,11 +30,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @description:
@@ -72,7 +73,7 @@ public class FavoriteFragment extends BaseFragment {
 
         mProjectDBHelper = new ProjectDBHelper(getContext(), "favorite");
 
-        mAdapter = new MHAdapter(getContext());
+        mAdapter = new MHAdapter(mActivity);
         mAdapter.setOnItemLongClickListener(new MHAdapter.OnItemLongClickListener() {
             @Override
             public void onLongClick(View view, final String data, final int position,
@@ -113,13 +114,15 @@ public class FavoriteFragment extends BaseFragment {
         mEmptyView.setCompoundDrawablePadding(DisplayUtil.dip2px(getContext(), 16));
 
         initData();
-
         return view;
     }
 
+    private Activity mActivity;
+
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mActivity = activity;
     }
 
     @Override
@@ -156,17 +159,17 @@ public class FavoriteFragment extends BaseFragment {
     }
 
     public void initData() {
-        Observable.create(new Observable.OnSubscribe<List<String>>() {
+        Observable.create(new ObservableOnSubscribe<List<String>>() {
             @Override
-            public void call(Subscriber<? super List<String>> subscriber) {
-                subscriber.onNext(mProjectDBHelper.getLinks());
+            public void subscribe(ObservableEmitter<List<String>> e) throws Exception {
+                e.onNext(mProjectDBHelper.getLinks());
             }
         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<String>>() {
+                .subscribe(new Consumer<List<String>>() {
                     @Override
-                    public void call(List<String> list) {
+                    public void accept(List<String> list) throws Exception {
                         if (list != null && list.size() > 0) {
                             mAdapter.setData(list);
                             mEmptyView.setVisibility(View.INVISIBLE);

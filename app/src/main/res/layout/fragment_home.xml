@@ -1,79 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/scrollView_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nestedScrollView_home"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/cardView_home_introduce"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            app:cardCornerRadius="1dp"
-            app:cardElevation="2dp">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardView_home_introduce"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp">
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="1dp"
+                app:cardElevation="2dp">
 
-                <TextView
-                    android:id="@+id/textView_home_introduce"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/cardView_home_project"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="4dp"
-            app:cardCornerRadius="1dp"
-            app:cardElevation="2dp">
+                    <TextView
+                        android:id="@+id/textView_home_introduce"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
-            <LinearLayout
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardView_home_project"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp">
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="4dp"
+                app:cardCornerRadius="1dp"
+                app:cardElevation="2dp">
 
-                <TextView
-                    android:id="@+id/textView_home_project"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/cardView_home_lib"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="4dp"
-            app:cardCornerRadius="1dp"
-            app:cardElevation="2dp">
+                    <TextView
+                        android:id="@+id/textView_home_project"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
-            <com.sorcererxw.matthiasheiderichphotography.ui.views.LibraryListView
-                android:id="@+id/libraryListView"
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardView_home_lib"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:orientation="vertical"/>
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="4dp"
+                app:cardCornerRadius="1dp"
+                app:cardElevation="2dp">
 
-        </android.support.v7.widget.CardView>
-    </LinearLayout>
-</ScrollView>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView_fragment_home_lib"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"/>
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</LinearLayout>

@@ -1,6 +1,6 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -21,6 +21,7 @@ import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
 import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
+import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.TypefaceSnackbar;
 
@@ -28,8 +29,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 
 /**
  * @description:
@@ -66,7 +67,7 @@ public class MHFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_mh, container, false);
         ButterKnife.bind(this, view);
         mProjectName = getArguments().getString(PROJECT_KEY);
-        initViews();
+        initViews(mActivity);
         initData();
         return view;
     }
@@ -79,8 +80,8 @@ public class MHFragment extends BaseFragment {
     private MHAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
 
-    private void initViews() {
-        mAdapter = new MHAdapter(getContext());
+    private void initViews(Activity activity) {
+        mAdapter = new MHAdapter(activity);
         mAdapter.setOnItemLongClickListener(new MHAdapter.OnItemLongClickListener() {
             @Override
             public void onLongClick(View view, String data, int position,
@@ -111,8 +112,9 @@ public class MHFragment extends BaseFragment {
     private void initData() {
         final ProjectDBHelper dbHelper =
                 new ProjectDBHelper(getContext(), StringUtil.onlyLetter(mProjectName));
-        final MHPreference<Long> lastSync = MHApp.getInstance().getPrefs().getLastSync(mProjectName, 0L);
-        if (System.currentTimeMillis() - lastSync.getValue() < 86400000) {
+        final MHPreference<Long> lastSync =
+                MHApp.getInstance().getPrefs().getLastSync(mProjectName, 0L);
+        if (!BuildConfig.DEBUG && System.currentTimeMillis() - lastSync.getValue() < 86400000) {
             List<String> list = dbHelper.getLinks();
             if (list.size() == 0) {
                 lastSync.setValue(0L);
@@ -126,9 +128,9 @@ public class MHFragment extends BaseFragment {
             WebCatcher.catchImageLinks(
                     "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<String>>() {
+                    .subscribe(new Consumer<List<String>>() {
                         @Override
-                        public void call(List<String> strings) {
+                        public void accept(List<String> strings) {
                             mAdapter.setData(strings);
                             lastSync.setValue(System.currentTimeMillis());
                             dbHelper.saveLinks(strings);
@@ -138,9 +140,12 @@ public class MHFragment extends BaseFragment {
         }
     }
 
+    private Activity mActivity;
+
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mActivity = activity;
     }
 
     @Override

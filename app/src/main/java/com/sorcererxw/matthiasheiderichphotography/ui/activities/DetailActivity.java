@@ -38,23 +38,25 @@ import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.TypefaceSnackbar;
 import com.sorcererxw.typefaceviews.TypefaceToolbar;
-import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
 import uk.co.senab.photoview.PhotoView;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -144,6 +146,7 @@ public class DetailActivity extends AppCompatActivity {
         mLink = getIntent().getStringExtra("link");
         initImage();
 
+        mToolbar.setHasText(false);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -151,7 +154,7 @@ public class DetailActivity extends AppCompatActivity {
 
         mFAB.hideMenuButton(false);
 
-        mRxPermissions = new RxPermissions(this);
+        mRxPermissions = RxPermissions.getInstance(this);
     }
 
     private void initImage() {
@@ -160,10 +163,16 @@ public class DetailActivity extends AppCompatActivity {
         if (MHApp.getInstance().getTmpDrawable() != null) {
             mImageView.setImageDrawable(MHApp.getInstance().getTmpDrawable());
         }
-        Observable.just(mLink + "?format=1000w")
-                .map(new Func1<String, Drawable>() {
+        Observable.timer(1000, TimeUnit.MICROSECONDS)
+                .map(new Function<Long, String>() {
                     @Override
-                    public Drawable call(String s) {
+                    public String apply(Long aLong) throws Exception {
+                        return mLink + "?format=1000w";
+                    }
+                })
+                .map(new Function<String, Drawable>() {
+                    @Override
+                    public Drawable apply(String s) {
                         try {
                             return Glide.with(DetailActivity.this)
                                     .load(s)
@@ -178,9 +187,9 @@ public class DetailActivity extends AppCompatActivity {
                 })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Drawable>() {
+                .subscribe(new Consumer<Drawable>() {
                     @Override
-                    public void call(Drawable drawable) {
+                    public void accept(Drawable drawable) {
                         if (drawable != null) {
                             mImageView.setImageDrawable(drawable);
                             setupFAB();
@@ -193,9 +202,9 @@ public class DetailActivity extends AppCompatActivity {
 
     private Observable<Boolean> requestPermission() {
         return mRxPermissions.request(WRITE_EXTERNAL_STORAGE)
-                .doOnNext(new Action1<Boolean>() {
+                .doOnNext(new Consumer<Boolean>() {
                     @Override
-                    public void call(Boolean aBoolean) {
+                    public void accept(Boolean aBoolean) {
                         if (!aBoolean) {
                             TypefaceSnackbar.make(mCoordinatorLayout, "No permission :(",
                                     Snackbar.LENGTH_LONG)
@@ -203,18 +212,18 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     }
                 })
-                .filter(new Func1<Boolean, Boolean>() {
+                .filter(new Predicate<Boolean>() {
                     @Override
-                    public Boolean call(Boolean aBoolean) {
+                    public boolean test(Boolean aBoolean) throws Exception {
                         return aBoolean;
                     }
                 });
     }
 
     private Observable<Uri> download() {
-        return Observable.just(mLink).map(new Func1<String, Bitmap>() {
+        return Observable.just(mLink).map(new Function<String, Bitmap>() {
             @Override
-            public Bitmap call(String s) {
+            public Bitmap apply(String s) {
                 try {
                     return Glide.with(DetailActivity.this)
                             .load(mLink)
@@ -241,9 +250,9 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 return null;
             }
-        }).subscribeOn(Schedulers.io()).map(new Func1<Bitmap, Uri>() {
+        }).subscribeOn(Schedulers.io()).map(new Function<Bitmap, Uri>() {
             @Override
-            public Uri call(Bitmap bitmap) {
+            public Uri apply(Bitmap bitmap) {
                 if (bitmap == null) {
                     return null;
                 }
@@ -284,9 +293,9 @@ public class DetailActivity extends AppCompatActivity {
         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<Uri, Uri>() {
+                .map(new Function<Uri, Uri>() {
                     @Override
-                    public Uri call(Uri uri) {
+                    public Uri apply(Uri uri) {
                         mUri = uri;
                         return uri;
                     }
@@ -294,15 +303,15 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void saveToLocal() {
-        requestPermission().subscribe(new Action1<Boolean>() {
+        requestPermission().subscribe(new Consumer<Boolean>() {
             @Override
-            public void call(Boolean aBoolean) {
+            public void accept(Boolean aBoolean) {
                 String progressText = "Saving To Local...";
                 if (mUri == null) {
                     showDialog(progressText);
-                    download().subscribe(new Action1<Uri>() {
+                    download().subscribe(new Consumer<Uri>() {
                         @Override
-                        public void call(final Uri uri) {
+                        public void accept(final Uri uri) {
                             dismissDialog();
                             if (uri != null) {
                                 TypefaceSnackbar.make(mCoordinatorLayout, "Success",
@@ -345,22 +354,22 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setWallpapers(final boolean homeScreen, final boolean lockScreen) {
-        requestPermission().subscribe(new Action1<Boolean>() {
+        requestPermission().subscribe(new Consumer<Boolean>() {
             @Override
-            public void call(Boolean aBoolean) {
+            public void accept(Boolean aBoolean) {
                 String progressText = "Setting wallpaper...";
                 showDialog(progressText);
                 if (mUri == null) {
-                    download().subscribe(new Action1<Uri>() {
+                    download().subscribe(new Consumer<Uri>() {
                         @Override
-                        public void call(Uri uri) {
+                        public void accept(Uri uri) {
                             setWallpapers(homeScreen, lockScreen);
                         }
                     });
                 } else {
-                    Observable.just(mUri).map(new Func1<Uri, Boolean>() {
+                    Observable.just(mUri).map(new Function<Uri, Boolean>() {
                         @Override
-                        public Boolean call(Uri uri) {
+                        public Boolean apply(Uri uri) {
                             try {
                                 WallpaperManager wallpaperManager
                                         = WallpaperManager
@@ -400,9 +409,9 @@ public class DetailActivity extends AppCompatActivity {
                     })
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Action1<Boolean>() {
+                            .subscribe(new Consumer<Boolean>() {
                                 @Override
-                                public void call(Boolean aBoolean) {
+                                public void accept(Boolean aBoolean) {
                                     if (aBoolean) {
                                         TypefaceSnackbar snackbar = TypefaceSnackbar
                                                 .make(mCoordinatorLayout, "Success",
@@ -443,16 +452,16 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setWallpapersMore() {
-        requestPermission().subscribe(new Action1<Boolean>() {
+        requestPermission().subscribe(new Consumer<Boolean>() {
             @Override
-            public void call(Boolean aBoolean) {
+            public void accept(Boolean aBoolean) {
                 String progressText = "Preparing...";
 
                 if (mUri == null) {
                     showDialog(progressText);
-                    download().subscribe(new Action1<Uri>() {
+                    download().subscribe(new Consumer<Uri>() {
                         @Override
-                        public void call(Uri uri) {
+                        public void accept(Uri uri) {
                             dismissDialog();
                             setWallpapersMore();
                         }
@@ -501,9 +510,9 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupFAB() {
-        Observable.just(mLink + "?format=1000w").map(new Func1<String, Palette.Swatch>() {
+        Observable.just(mLink + "?format=1000w").map(new Function<String, Palette.Swatch>() {
             @Override
-            public Palette.Swatch call(String s) {
+            public Palette.Swatch apply(String s) {
                 Bitmap bitmap = null;
                 try {
                     bitmap = Glide.with(DetailActivity.this)
@@ -537,9 +546,9 @@ public class DetailActivity extends AppCompatActivity {
         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Palette.Swatch>() {
+                .subscribe(new Consumer<Palette.Swatch>() {
                     @Override
-                    public void call(Palette.Swatch swatch) {
+                    public void accept(Palette.Swatch swatch) {
                         int color = ResourceUtil.getColor(DetailActivity.this, R.color.accent);
                         if (swatch != null) {
                             color = swatch.getRgb();

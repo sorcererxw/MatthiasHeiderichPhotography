@@ -1,7 +1,6 @@
 package com.sorcererxw.matthiasheiderichphotography.util;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -9,7 +8,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.wang.avi.AVLoadingIndicatorView;
-import com.wang.avi.Indicator;
 
 /**
  * @description:

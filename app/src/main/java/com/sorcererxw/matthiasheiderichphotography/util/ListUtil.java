@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 
 public class ListUtil {
-    public static <T, E> List<T> getPairFisrtList(List<Pair<T, E>> pairList) {
+    public static <T, E> List<T> getPairFirstList(List<Pair<T, E>> pairList) {
         List<T> list = new ArrayList<>();
         for (Pair<T, E> pair : pairList) {
             list.add(pair.first);

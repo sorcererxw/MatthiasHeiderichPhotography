@@ -114,7 +114,7 @@ public class SettingsFragment extends BaseFragment {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             new TypefaceMaterialDialogBuilder(getActivity())
-                                    .items(ListUtil.getPairFisrtList(mMuzeiRotateTimeOptionList))
+                                    .items(ListUtil.getPairFirstList(mMuzeiRotateTimeOptionList))
                                     .itemsCallback(new MaterialDialog.ListCallback() {
                                         @Override
                                         public void onSelection(MaterialDialog dialog,

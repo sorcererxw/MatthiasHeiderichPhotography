@@ -36,11 +36,26 @@ public class TypefaceToolbar extends Toolbar {
     private Typeface mSubtitleTypeface = TypefaceViews.getRegularTypeface();
 
     private void init() {
-        if (getTitle() != null && getTitle().length() > 0) {
-            setTitle(getTitle());
+        if (mHasText) {
+            if (getTitle() != null && getTitle().length() > 0) {
+                setTitle(getTitle());
+            }
+            if (getSubtitle() != null && getSubtitle().length() > 0) {
+                setSubtitle(getSubtitle());
+            }
         }
-        if (getSubtitle() != null && getSubtitle().length() > 0) {
+    }
+
+    private boolean mHasText = true;
+
+    public void setHasText(boolean hasText) {
+        mHasText = hasText;
+        if (mHasText){
+            setTitle(getTitle());
             setSubtitle(getSubtitle());
+        }else {
+            setTitle("");
+            setSubtitle("");
         }
     }
 

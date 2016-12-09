@@ -2,6 +2,8 @@ package com.sorcererxw.matthiasheiderichphotography.ui.adapters;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -115,9 +117,9 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
     }
 
     private List<String> mList = new ArrayList<>();
-    private Context mContext;
+    private Activity mContext;
 
-    public MHAdapter(Context context) {
+    public MHAdapter(Activity context) {
         mContext = context;
     }
 
@@ -196,7 +198,10 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                 } else {
                     MHApp.getInstance().setTmpDrawable(null);
                 }
-                mContext.startActivity(intent);
+                mContext.startActivityForResult(intent, 0,
+                        ActivityOptions
+                                .makeSceneTransitionAnimation(mContext, holder.image, "image")
+                                .toBundle());
             }
         });
 

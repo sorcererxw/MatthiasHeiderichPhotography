@@ -5,7 +5,10 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -16,9 +19,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.sorcererxw.matthiasheiderichphotography.models.LibraryBean;
+import com.sorcererxw.matthiasheiderichphotography.ui.adapters.LibAdapter;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.LibraryListView;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,14 +39,11 @@ public class HomeFragment extends BaseFragment {
         return new HomeFragment();
     }
 
-    @BindView(R.id.scrollView_home)
-    ScrollView mScrollView;
+    @BindView(R.id.nestedScrollView_home)
+    NestedScrollView mScrollView;
 
     @BindView(R.id.textView_home_introduce)
     TextView mIntroduce;
-
-    @BindView(R.id.libraryListView)
-    LibraryListView mLibraryListView;
 
     @BindView(R.id.textView_home_project)
     TextView mProject;
@@ -54,6 +56,9 @@ public class HomeFragment extends BaseFragment {
 
     @BindView(R.id.cardView_home_project)
     CardView mProjectCard;
+
+    @BindView(R.id.recyclerView_fragment_home_lib)
+    RecyclerView mLibRecyclerView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,9 +83,10 @@ public class HomeFragment extends BaseFragment {
                 "This project address <a href='https://github.com/sorcererXW/MatthiasHeiderichPhotography'>Github</a>"));
         mProject.setMovementMethod(LinkMovementMethod.getInstance());
 
-        for (LibraryBean aMLibraryBeen : mLibraryBeen) {
-            mLibraryListView.addItem(aMLibraryBeen);
-        }
+        mLibRecyclerView.setLayoutManager(
+                new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mLibRecyclerView.setAdapter(new LibAdapter(getActivity(), Arrays.asList(mLibraryBeen)));
+        mLibRecyclerView.setNestedScrollingEnabled(false);
 
         return view;
     }
@@ -102,6 +108,8 @@ public class HomeFragment extends BaseFragment {
         theme.resolveAttribute(R.attr.colorSecondaryText, secondaryColor, true);
         theme.resolveAttribute(R.attr.colorLibCopyrightBackground, libColor, true);
 
+        mLibRecyclerView.getAdapter().notifyDataSetChanged();
+
         mIntroduceCard.setCardBackgroundColor(
                 ContextCompat.getColor(getContext(), cardColor.resourceId));
         mLibCard.setCardBackgroundColor(
@@ -111,24 +119,6 @@ public class HomeFragment extends BaseFragment {
 
         mProject.setTextColor(ContextCompat.getColor(getContext(), secondaryColor.resourceId));
         mIntroduce.setTextColor(ContextCompat.getColor(getContext(), secondaryColor.resourceId));
-
-        for (int i = 0; i < mLibraryListView.getChildCount(); i++) {
-            ((TextView) mLibraryListView.getChildAt(i)
-                    .findViewById(R.id.textView_item_library_name)).setTextColor(
-                    ContextCompat.getColor(getContext(), secondaryColor.resourceId)
-            );
-            ((TextView) mLibraryListView.getChildAt(i)
-                    .findViewById(R.id.textView_item_library_author)).setTextColor(
-                    ContextCompat.getColor(getContext(), secondaryColor.resourceId)
-            );
-            ((TextView) mLibraryListView.getChildAt(i)
-                    .findViewById(R.id.textView_item_library_licence))
-                    .setTextColor(ContextCompat.getColor(getContext(), secondaryColor.resourceId)
-                    );
-            mLibraryListView.getChildAt(i).findViewById(R.id.frameLayout_item_library_container)
-                    .setBackgroundResource(libColor.resourceId);
-        }
-
     }
 
     @Override
