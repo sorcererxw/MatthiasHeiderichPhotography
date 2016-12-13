@@ -1,12 +1,16 @@
 package com.sorcererxw.matthiasheiderichphotography;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 
 import com.sorcererxw.matthiasheiderichphotography.util.Prefs;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
+import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.typefaceviews.TypefaceViews;
+
+import timber.log.Timber;
 
 /**
  * @description:
@@ -55,6 +59,12 @@ public class MHApp extends Application {
                 TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book)
         );
         mPrefs = new Prefs(this);
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+
+//        mMHComponent = DaggerMHComponent.builder().build();
     }
 
     private static MHApp mApp;
@@ -65,12 +75,17 @@ public class MHApp extends Application {
 
     private Drawable mTmpDrawable;
 
-    public void setTmpDrawable(Drawable drawable) {
-        mTmpDrawable = drawable;
+    public static void setTmpDrawable(Context context, Drawable drawable) {
+        ((MHApp) context.getApplicationContext()).mTmpDrawable = drawable;
     }
 
-    public Drawable getTmpDrawable() {
-        return mTmpDrawable;
+    public static Drawable getTmpDrawable(Context context) {
+        return ((MHApp) context.getApplicationContext()).mTmpDrawable;
     }
 
+//    private MHComponent mMHComponent;
+//
+//    public static MHComponent getComponent(Context context) {
+//        return ((MHApp) context.getApplicationContext()).mMHComponent;
+//    }
 }

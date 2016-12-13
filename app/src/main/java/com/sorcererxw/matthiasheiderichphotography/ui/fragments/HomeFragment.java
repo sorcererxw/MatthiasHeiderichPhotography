@@ -68,7 +68,7 @@ public class HomeFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View provideContentView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -97,13 +97,18 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void refreshUI() {
         TypedValue cardColor = new TypedValue();
         TypedValue primaryColor = new TypedValue();
         TypedValue secondaryColor = new TypedValue();
         TypedValue libColor = new TypedValue();
         Resources.Theme theme = getActivity().getTheme();
-        theme.resolveAttribute(R.attr.colorPrimary, cardColor, true);
+        theme.resolveAttribute(R.attr.colorCard, cardColor,true);
         theme.resolveAttribute(R.attr.colorPrimaryText, primaryColor, true);
         theme.resolveAttribute(R.attr.colorSecondaryText, secondaryColor, true);
         theme.resolveAttribute(R.attr.colorLibCopyrightBackground, libColor, true);

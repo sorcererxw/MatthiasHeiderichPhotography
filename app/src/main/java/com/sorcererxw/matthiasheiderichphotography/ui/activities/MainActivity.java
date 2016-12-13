@@ -198,9 +198,12 @@ public class MainActivity extends AppCompatActivity {
     public static final String FRAGMENT_TAG_HOME = "Home";
     public static final String FRAGMENT_TAG_SETTINGS = "Settings";
 
-    private String mFragmentTag = FRAGMENT_TAG_HOME;
+    private String mFragmentTag;
 
     private void showFragment(String tag) {
+        if (tag.equals(mFragmentTag)) {
+            return;
+        }
         mFragmentTag = tag;
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         mCurrentFragment = (BaseFragment) mFragmentManager

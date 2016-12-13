@@ -16,8 +16,9 @@ import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import java.util.List;
 import java.util.Random;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -92,9 +93,9 @@ public class MHArtSource extends RemoteMuzeiArtSource {
 
         WebCatcher.catchImageLinks("http://www.matthias-heiderich.de/" + category)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<String>>() {
+                .subscribe(new Action1<List<String>>() {
                     @Override
-                    public void accept(List<String> list) {
+                    public void call(List<String> list) {
                         String uri = list.get(random.nextInt(list.size()));
 
                         publishArtwork(new Artwork.Builder()
@@ -105,9 +106,9 @@ public class MHArtSource extends RemoteMuzeiArtSource {
                                 .imageUri(Uri.parse(uri))
                                 .build());
                     }
-                }, new Consumer<Throwable>() {
+                }, new Action1<Throwable>() {
                     @Override
-                    public void accept(Throwable throwable) {
+                    public void call(Throwable throwable) {
                         if (BuildConfig.DEBUG) {
                             throwable.printStackTrace();
                         }

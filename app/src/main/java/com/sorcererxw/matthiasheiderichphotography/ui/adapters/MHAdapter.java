@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
@@ -17,11 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.ViewPropertyAnimation;
 import com.bumptech.glide.request.target.Target;
 import com.eftimoff.androipathview.PathView;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
@@ -32,9 +36,11 @@ import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 
@@ -46,6 +52,8 @@ import static android.view.View.GONE;
 public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
     public static class MHViewHolder extends RecyclerView.ViewHolder {
+        Drawable drawable;
+
         @BindView(R.id.pathView_item)
         PathView pathView;
 
@@ -118,9 +126,11 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
     private List<String> mList = new ArrayList<>();
     private Activity mContext;
+    private RequestManager mGlideRequestManager;
 
     public MHAdapter(Activity context) {
         mContext = context;
+        mGlideRequestManager = Glide.with(context);
     }
 
     public void setData(List<String> list) {
@@ -161,6 +171,16 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
         } else {
             holder.loadingIndicatorView.setVisibility(View.VISIBLE);
         }
+//        try {
+//            holder.drawable = mGlideRequestManager
+//                    .load(mList.get(position) + "?format=" + 1000 + "w")
+//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    .into(-1, -1).get();
+//            mGlideRequestManager.load(holder.drawable).into(holder.image);
+//
+//        } catch (InterruptedException | ExecutionException e) {
+//            e.printStackTrace();
+//        }
         Glide.with(mContext)
                 .load(mList.get(position) + "?format=" + 1000 + "w")
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -170,6 +190,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                                                String model,
                                                Target<GlideDrawable> target,
                                                boolean isFirstResource) {
+                        Timber.e(e);
                         return false;
                     }
 
@@ -181,6 +202,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                                                    boolean isFirstResource) {
                         holder.loadingIndicatorView.setVisibility(GONE);
                         mShowedMap.put(holder.getAdapterPosition(), true);
+                        holder.drawable = resource;
                         return false;
                     }
                 })
@@ -194,14 +216,13 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 intent.putExtra("link", mList.get(holder.getAdapterPosition()));
                 if (mShowedMap.get(holder.getAdapterPosition())) {
-                    MHApp.getInstance().setTmpDrawable(holder.image.getDrawable());
+                    MHApp.setTmpDrawable(mContext, holder.drawable);
                 } else {
-                    MHApp.getInstance().setTmpDrawable(null);
+                    MHApp.setTmpDrawable(mContext, null);
                 }
-                mContext.startActivityForResult(intent, 0,
-                        ActivityOptions
-                                .makeSceneTransitionAnimation(mContext, holder.image, "image")
-                                .toBundle());
+                mContext.startActivityForResult(intent, 0, ActivityOptions
+                        .makeSceneTransitionAnimation(mContext, holder.image, "image")
+                        .toBundle());
             }
         });
 

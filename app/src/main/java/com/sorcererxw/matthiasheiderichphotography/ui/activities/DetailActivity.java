@@ -16,8 +16,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
-import android.util.Log;
+import android.transition.Transition;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,7 +31,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
+import com.sorcererxw.matthiasheiderichphotography.ui.others.Dialogs;
+import com.sorcererxw.matthiasheiderichphotography.ui.others.SimpleTransitionListener;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
@@ -38,26 +40,25 @@ import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.TypefaceSnackbar;
 import com.sorcererxw.typefaceviews.TypefaceToolbar;
-import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
-import io.reactivex.schedulers.Schedulers;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.WallpaperManager.FLAG_LOCK;
@@ -80,7 +81,7 @@ public class DetailActivity extends AppCompatActivity {
     @OnClick(R.id.fab_detail_apply)
     void clickApply() {
         if (Build.VERSION.SDK_INT >= 24) {
-            TypefaceMaterialDialogBuilder builder = new TypefaceMaterialDialogBuilder(this);
+            MaterialDialog.Builder builder = Dialogs.TypefaceMaterialDialogBuilder(this);
             builder.items("Home Screen", "Lock Screen", "Home And Lock Screen");
             builder.itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
@@ -153,58 +154,81 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         mFAB.hideMenuButton(false);
-
-        mRxPermissions = RxPermissions.getInstance(this);
+        mRxPermissions = new RxPermissions(this);
     }
 
     private void initImage() {
+        mImageView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+            @Override
+            public void onViewTap(View view, float x, float y) {
+                if (mFAB.isOpened()) {
+                    mFAB.close(true);
+                    return;
+                }
+                if (mFAB.isMenuButtonHidden()) {
+                    mFAB.showMenuButton(true);
+                    mFAB.setClickable(true);
+                    mToolbar.animate().alpha(1).start();
+                } else {
+                    mFAB.hideMenuButton(true);
+                    mFAB.setClickable(false);
+                    mToolbar.animate().alpha(0).start();
+                }
+            }
+        });
+        mImageView.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+                return false;
+            }
+        });
         mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        if (MHApp.getInstance().getTmpDrawable() != null) {
-            mImageView.setImageDrawable(MHApp.getInstance().getTmpDrawable());
+        if (MHApp.getTmpDrawable(this) != null) {
+            mImageView.setImageDrawable(MHApp.getTmpDrawable(this));
         }
-        Observable.timer(1000, TimeUnit.MICROSECONDS)
-                .map(new Function<Long, String>() {
+        getWindow().getSharedElementEnterTransition().addListener(
+                new SimpleTransitionListener() {
                     @Override
-                    public String apply(Long aLong) throws Exception {
-                        return mLink + "?format=1000w";
-                    }
-                })
-                .map(new Function<String, Drawable>() {
-                    @Override
-                    public Drawable apply(String s) {
-                        try {
-                            return Glide.with(DetailActivity.this)
-                                    .load(s)
-                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                    .into(-1, -1)
-                                    .get();
-                        } catch (InterruptedException | ExecutionException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Drawable>() {
-                    @Override
-                    public void accept(Drawable drawable) {
-                        if (drawable != null) {
-                            mImageView.setImageDrawable(drawable);
-                            setupFAB();
-                        } else {
-                            finish();
-                        }
+                    public void onTransitionEnd(Transition transition) {
+                        Observable.just(mLink + "?format=1000w")
+                                .map(new Func1<String, Drawable>() {
+                                    @Override
+                                    public Drawable call(String s) {
+                                        try {
+                                            return Glide.with(DetailActivity.this)
+                                                    .load(s)
+                                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                                    .into(-1, -1)
+                                                    .get();
+                                        } catch (InterruptedException | ExecutionException e) {
+                                            e.printStackTrace();
+                                        }
+                                        return null;
+                                    }
+                                })
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Action1<Drawable>() {
+                                    @Override
+                                    public void call(Drawable drawable) {
+                                        if (drawable != null) {
+                                            mImageView.setImageDrawable(drawable);
+                                            setupFAB();
+                                        } else {
+                                            finish();
+                                        }
+                                    }
+                                });
                     }
                 });
     }
 
     private Observable<Boolean> requestPermission() {
         return mRxPermissions.request(WRITE_EXTERNAL_STORAGE)
-                .doOnNext(new Consumer<Boolean>() {
+                .doOnNext(new Action1<Boolean>() {
                     @Override
-                    public void accept(Boolean aBoolean) {
+                    public void call(Boolean aBoolean) {
                         if (!aBoolean) {
                             TypefaceSnackbar.make(mCoordinatorLayout, "No permission :(",
                                     Snackbar.LENGTH_LONG)
@@ -212,18 +236,18 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     }
                 })
-                .filter(new Predicate<Boolean>() {
+                .filter(new Func1<Boolean, Boolean>() {
                     @Override
-                    public boolean test(Boolean aBoolean) throws Exception {
+                    public Boolean call(Boolean aBoolean) {
                         return aBoolean;
                     }
                 });
     }
 
     private Observable<Uri> download() {
-        return Observable.just(mLink).map(new Function<String, Bitmap>() {
+        return Observable.just(mLink).map(new Func1<String, Bitmap>() {
             @Override
-            public Bitmap apply(String s) {
+            public Bitmap call(String s) {
                 try {
                     return Glide.with(DetailActivity.this)
                             .load(mLink)
@@ -250,9 +274,9 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 return null;
             }
-        }).subscribeOn(Schedulers.io()).map(new Function<Bitmap, Uri>() {
+        }).subscribeOn(Schedulers.io()).map(new Func1<Bitmap, Uri>() {
             @Override
-            public Uri apply(Bitmap bitmap) {
+            public Uri call(Bitmap bitmap) {
                 if (bitmap == null) {
                     return null;
                 }
@@ -293,9 +317,9 @@ public class DetailActivity extends AppCompatActivity {
         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<Uri, Uri>() {
+                .map(new Func1<Uri, Uri>() {
                     @Override
-                    public Uri apply(Uri uri) {
+                    public Uri call(Uri uri) {
                         mUri = uri;
                         return uri;
                     }
@@ -303,15 +327,15 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void saveToLocal() {
-        requestPermission().subscribe(new Consumer<Boolean>() {
+        requestPermission().subscribe(new Action1<Boolean>() {
             @Override
-            public void accept(Boolean aBoolean) {
+            public void call(Boolean aBoolean) {
                 String progressText = "Saving To Local...";
                 if (mUri == null) {
                     showDialog(progressText);
-                    download().subscribe(new Consumer<Uri>() {
+                    download().subscribe(new Action1<Uri>() {
                         @Override
-                        public void accept(final Uri uri) {
+                        public void call(final Uri uri) {
                             dismissDialog();
                             if (uri != null) {
                                 TypefaceSnackbar.make(mCoordinatorLayout, "Success",
@@ -354,22 +378,22 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setWallpapers(final boolean homeScreen, final boolean lockScreen) {
-        requestPermission().subscribe(new Consumer<Boolean>() {
+        requestPermission().subscribe(new Action1<Boolean>() {
             @Override
-            public void accept(Boolean aBoolean) {
+            public void call(Boolean aBoolean) {
                 String progressText = "Setting wallpaper...";
                 showDialog(progressText);
                 if (mUri == null) {
-                    download().subscribe(new Consumer<Uri>() {
+                    download().subscribe(new Action1<Uri>() {
                         @Override
-                        public void accept(Uri uri) {
+                        public void call(Uri uri) {
                             setWallpapers(homeScreen, lockScreen);
                         }
                     });
                 } else {
-                    Observable.just(mUri).map(new Function<Uri, Boolean>() {
+                    Observable.just(mUri).map(new Func1<Uri, Boolean>() {
                         @Override
-                        public Boolean apply(Uri uri) {
+                        public Boolean call(Uri uri) {
                             try {
                                 WallpaperManager wallpaperManager
                                         = WallpaperManager
@@ -409,9 +433,9 @@ public class DetailActivity extends AppCompatActivity {
                     })
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Consumer<Boolean>() {
+                            .subscribe(new Action1<Boolean>() {
                                 @Override
-                                public void accept(Boolean aBoolean) {
+                                public void call(Boolean aBoolean) {
                                     if (aBoolean) {
                                         TypefaceSnackbar snackbar = TypefaceSnackbar
                                                 .make(mCoordinatorLayout, "Success",
@@ -452,16 +476,16 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setWallpapersMore() {
-        requestPermission().subscribe(new Consumer<Boolean>() {
+        requestPermission().subscribe(new Action1<Boolean>() {
             @Override
-            public void accept(Boolean aBoolean) {
+            public void call(Boolean aBoolean) {
                 String progressText = "Preparing...";
 
                 if (mUri == null) {
                     showDialog(progressText);
-                    download().subscribe(new Consumer<Uri>() {
+                    download().subscribe(new Action1<Uri>() {
                         @Override
-                        public void accept(Uri uri) {
+                        public void call(Uri uri) {
                             dismissDialog();
                             setWallpapersMore();
                         }
@@ -504,15 +528,20 @@ public class DetailActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            super.onBackPressed();
+            onBackPressed();
         }
         return false;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     private void setupFAB() {
-        Observable.just(mLink + "?format=1000w").map(new Function<String, Palette.Swatch>() {
+        Observable.just(mLink + "?format=1000w").map(new Func1<String, Palette.Swatch>() {
             @Override
-            public Palette.Swatch apply(String s) {
+            public Palette.Swatch call(String s) {
                 Bitmap bitmap = null;
                 try {
                     bitmap = Glide.with(DetailActivity.this)
@@ -546,9 +575,9 @@ public class DetailActivity extends AppCompatActivity {
         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Palette.Swatch>() {
+                .subscribe(new Action1<Palette.Swatch>() {
                     @Override
-                    public void accept(Palette.Swatch swatch) {
+                    public void call(Palette.Swatch swatch) {
                         int color = ResourceUtil.getColor(DetailActivity.this, R.color.accent);
                         if (swatch != null) {
                             color = swatch.getRgb();
@@ -591,18 +620,13 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setWallpaperSimple(WallpaperManager manager, Bitmap wallPaperBitmap) {
-        //get screen height
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int screenHeight = size.y;
 
-        //adjust the aspect ratio of the Image
-        //this is the main part
         int width = wallPaperBitmap.getWidth();
         width = (width * screenHeight) / wallPaperBitmap.getHeight();
-        //set the wallpaper
-        //this may not be the most efficent way but it works
         try {
             manager.setBitmap(
                     Bitmap.createScaledBitmap(wallPaperBitmap, width, screenHeight, true));
@@ -624,15 +648,9 @@ public class DetailActivity extends AppCompatActivity {
         screenWidth = display.getWidth();
         screenHeight = display.getHeight();
 
-        Log.i("TAG", "bitmap_width " + bitmap_width);
-        Log.i("TAG", "bitmap_height " + bitmap_height);
-
         float bitmap_ratio = bitmap_width / bitmap_height;
         float screen_ratio = screenWidth / screenHeight;
         int bitmapNewWidth, bitmapNewHeight;
-
-        Log.i("TAG", "bitmap_ratio " + bitmap_ratio);
-        Log.i("TAG", "screen_ratio " + screen_ratio);
 
         if (screen_ratio > bitmap_ratio) {
             bitmapNewWidth = (int) screenWidth;
@@ -645,17 +663,10 @@ public class DetailActivity extends AppCompatActivity {
         bitmap = Bitmap.createScaledBitmap(bitmap, bitmapNewWidth,
                 bitmapNewHeight, true);
 
-        Log.i("TAG", "screenWidth " + screenWidth);
-        Log.i("TAG", "screenHeight " + screenHeight);
-        Log.i("TAG", "bitmapNewWidth " + bitmapNewWidth);
-        Log.i("TAG", "bitmapNewHeight " + bitmapNewHeight);
-
         int bitmapGapX, bitmapGapY;
         bitmapGapX = (int) ((bitmapNewWidth - screenWidth) / 2.0f);
         bitmapGapY = (int) ((bitmapNewHeight - screenHeight) / 2.0f);
 
-        Log.i("TAG", "bitmapGapX " + bitmapGapX);
-        Log.i("TAG", "bitmapGapY " + bitmapGapY);
         bitmap = Bitmap.createBitmap(bitmap,
                 bitmapGapX, bitmapGapY,
                 (int) screenWidth, (int) screenHeight);

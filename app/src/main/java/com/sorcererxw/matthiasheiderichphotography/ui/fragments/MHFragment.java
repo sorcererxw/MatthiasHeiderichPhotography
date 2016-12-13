@@ -18,19 +18,22 @@ import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecorati
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
-import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
+import com.sorcererxw.matthiasheiderichphotography.db.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.TypefaceSnackbar;
+import com.squareup.sqlbrite.BriteDatabase;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * @description:
@@ -51,7 +54,19 @@ public class MHFragment extends BaseFragment {
         return fragment;
     }
 
-    private ProjectDBHelper mFavoriteDBHelper;
+    ProjectDBHelper mFavoriteDBHelper;
+
+//    @Inject
+//    BriteDatabase mDatabase;
+
+    private Activity mActivity;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mActivity = activity;
+//        MHApp.getComponent(getContext()).inject(this);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,8 +77,8 @@ public class MHFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View provideContentView(LayoutInflater inflater, @Nullable ViewGroup container,
+                                   @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mh, container, false);
         ButterKnife.bind(this, view);
         mProjectName = getArguments().getString(PROJECT_KEY);
@@ -128,9 +143,9 @@ public class MHFragment extends BaseFragment {
             WebCatcher.catchImageLinks(
                     "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<List<String>>() {
+                    .subscribe(new Action1<List<String>>() {
                         @Override
-                        public void accept(List<String> strings) {
+                        public void call(List<String> strings) {
                             mAdapter.setData(strings);
                             lastSync.setValue(System.currentTimeMillis());
                             dbHelper.saveLinks(strings);
@@ -138,14 +153,6 @@ public class MHFragment extends BaseFragment {
                         }
                     });
         }
-    }
-
-    private Activity mActivity;
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mActivity = activity;
     }
 
     @Override

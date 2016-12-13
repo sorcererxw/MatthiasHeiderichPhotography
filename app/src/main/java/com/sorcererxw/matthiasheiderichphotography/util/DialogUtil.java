@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
+import com.sorcererxw.matthiasheiderichphotography.ui.others.Dialogs;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -27,7 +27,7 @@ public class DialogUtil {
                 (AVLoadingIndicatorView) view.findViewById(R.id.loadingIndicator_progress_dialog);
         indicator.setIndicatorColor(
                 ResourceUtil.getColor(context, StyleUtil.getAccentColorRes(context)));
-        return new TypefaceMaterialDialogBuilder(context)
+        return Dialogs.TypefaceMaterialDialogBuilder(context)
                 .customView(view, true)
                 .cancelable(false)
                 .canceledOnTouchOutside(false)

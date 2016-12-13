@@ -10,11 +10,6 @@
     android:layout_height="match_parent"
     tools:context="com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity">
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fitsSystemWindows="true"/>
-
     <com.sorcererxw.typefaceviews.TypefaceToolbar
         android:id="@+id/toolbar_detail"
         android:layout_width="match_parent"

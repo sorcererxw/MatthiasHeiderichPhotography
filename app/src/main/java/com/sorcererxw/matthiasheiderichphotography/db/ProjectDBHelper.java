@@ -1,11 +1,15 @@
-package com.sorcererxw.matthiasheiderichphotography.util;
+package com.sorcererxw.matthiasheiderichphotography.db;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.squareup.sqlbrite.SqlBrite;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * @description:
@@ -18,6 +22,13 @@ public class ProjectDBHelper {
 
     private String mTable;
 
+    private SqlBrite mSqlBrite = new SqlBrite.Builder().logger(new SqlBrite.Logger() {
+        @Override
+        public void log(String message) {
+            Timber.v(message);
+        }
+    }).build();
+
     public ProjectDBHelper(Context context, String table) {
         mTable = table;
         mDB = context.openOrCreateDatabase("PROJECT", Context.MODE_PRIVATE, null);
@@ -27,8 +38,7 @@ public class ProjectDBHelper {
     }
 
     private boolean isTableExisted(String name) {
-        String sql =
-                "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
+        String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
         Cursor cursor = mDB.rawQuery(sql, new String[]{name});
         boolean has = cursor.moveToNext();
         cursor.close();
@@ -73,8 +83,7 @@ public class ProjectDBHelper {
     }
 
     public List<String> getLinks() {
-        String sql =
-                "SELECT link FROM " + mTable;
+        String sql = "SELECT link FROM " + mTable;
         Cursor cursor = mDB.rawQuery(sql, null);
         List<String> list = new ArrayList<>();
         while (cursor.moveToNext()) {

@@ -17,10 +17,10 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
+import com.sorcererxw.matthiasheiderichphotography.ui.others.Dialogs;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
-import com.sorcererxw.matthiasheiderichphotography.util.ProjectDBHelper;
+import com.sorcererxw.matthiasheiderichphotography.db.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
@@ -30,12 +30,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * @description:
@@ -65,8 +64,8 @@ public class FavoriteFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View provideContentView(LayoutInflater inflater, @Nullable ViewGroup container,
+                                   @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         ButterKnife.bind(this, view);
@@ -78,7 +77,7 @@ public class FavoriteFragment extends BaseFragment {
             @Override
             public void onLongClick(View view, final String data, final int position,
                                     final MHAdapter.MHViewHolder holder) {
-                new TypefaceMaterialDialogBuilder(getContext())
+                Dialogs.TypefaceMaterialDialogBuilder(getContext())
                         .positiveText("Yes")
                         .negativeText("No")
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -159,17 +158,17 @@ public class FavoriteFragment extends BaseFragment {
     }
 
     public void initData() {
-        Observable.create(new ObservableOnSubscribe<List<String>>() {
+        Observable.create(new Observable.OnSubscribe<List<String>>() {
             @Override
-            public void subscribe(ObservableEmitter<List<String>> e) throws Exception {
-                e.onNext(mProjectDBHelper.getLinks());
+            public void call(Subscriber<? super List<String>> subscriber) {
+                subscriber.onNext(mProjectDBHelper.getLinks());
             }
         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<String>>() {
+                .subscribe(new Action1<List<String>>() {
                     @Override
-                    public void accept(List<String> list) throws Exception {
+                    public void call(List<String> list) {
                         if (list != null && list.size() > 0) {
                             mAdapter.setData(list);
                             mEmptyView.setVisibility(View.INVISIBLE);

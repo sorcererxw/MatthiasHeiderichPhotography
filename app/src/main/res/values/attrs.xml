@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="colorCard" format="color"/>
     <attr name="colorBackground" format="color"/>
     <attr name="colorPrimaryText" format="color"/>
     <attr name="colorSecondaryText" format="color"/>

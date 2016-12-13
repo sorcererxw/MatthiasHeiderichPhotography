@@ -25,6 +25,7 @@
         <item name="android:colorControlNormal">@color/colorPrimaryText</item>
         <item name="android:colorControlActivated">@color/colorPrimaryText</item>
         <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorCard">@color/colorCard</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorBackground">@color/colorBackground</item>
@@ -44,6 +45,7 @@
         <item name="android:colorControlNormal">@color/colorNightPrimaryText</item>
         <item name="android:colorControlActivated">@color/colorNightPrimaryText</item>
         <item name="colorPrimary">@color/colorNightPrimary</item>
+        <item name="colorCard">@color/colorNightCard</item>
         <item name="colorPrimaryDark">@color/colorNightPrimaryDark</item>
         <item name="colorAccent">@color/colorNightAccent</item>
         <item name="colorBackground">@color/colorNightBackground</item>

@@ -6,8 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.CLEAR_APP_CACHE"/>
 
     <application
@@ -18,8 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:screenOrientation="portrait"
-            android:name="com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity">
+            android:name="com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -30,25 +30,29 @@
             android:name="com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity"
             android:theme="@style/AppTheme.Detail">
         </activity>
+        <activity android:name="com.sorcererxw.matthiasheiderichphotography.ui.activities.NewDetailActivity"/>
 
-        <service android:name="com.sorcererxw.matthiasheiderichphotography.muzei.MHArtSource"
-            android:label="@string/muzei_source_name"
+        <service
+            android:name="com.sorcererxw.matthiasheiderichphotography.muzei.MHArtSource"
             android:description="@string/muzei_source_description"
-            android:icon="@drawable/muzei">
+            android:icon="@drawable/muzei"
+            android:label="@string/muzei_source_name">
             <intent-filter>
-                <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
+                <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource"/>
             </intent-filter>
-            <meta-data android:name="color" android:value="#fa0" />
+            <meta-data
+                android:name="color"
+                android:value="#fa0"/>
         </service>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.sorcererxw.matthiasheiderichphotography.fileProvider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
+                android:resource="@xml/filepaths"/>
         </provider>
 
         <meta-data

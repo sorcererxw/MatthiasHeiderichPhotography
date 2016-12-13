@@ -3,6 +3,7 @@
     <color name="colorPrimary">#f5f5f5</color>
     <color name="colorPrimaryDark">#e0e0e0</color>
     <color name="colorAccent">#212121</color>
+    <color name="colorCard">#fff</color>
     <color name="colorBackground">#fff</color>
     <color name="colorPrimaryText">#DE000000</color>
     <color name="colorSecondaryText">#8A000000</color>
@@ -17,6 +18,7 @@
     <color name="colorNightPrimary">#263238</color>
     <color name="colorNightPrimaryDark">#1e282d</color>
     <color name="colorNightAccent">#546e7a</color>
+    <color name="colorNightCard">#263238</color>
     <color name="colorNightBackground">#212b30</color>
     <color name="colorNightPrimaryText">#E5E7E8</color>
     <color name="colorNightSecondaryText">#A3ABAE</color>

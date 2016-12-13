@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity;
-import com.sorcererxw.matthiasheiderichphotography.ui.views.dialog.TypefaceMaterialDialogBuilder;
+import com.sorcererxw.matthiasheiderichphotography.ui.others.Dialogs;
 import com.sorcererxw.matthiasheiderichphotography.util.ApplicationUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ListUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
@@ -39,7 +39,7 @@ public class SettingsFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View provideContentView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
@@ -113,7 +113,7 @@ public class SettingsFragment extends BaseFragment {
                     new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
-                            new TypefaceMaterialDialogBuilder(getActivity())
+                            Dialogs.TypefaceMaterialDialogBuilder(getActivity())
                                     .items(ListUtil.getPairFirstList(mMuzeiRotateTimeOptionList))
                                     .itemsCallback(new MaterialDialog.ListCallback() {
                                         @Override
@@ -141,7 +141,7 @@ public class SettingsFragment extends BaseFragment {
                             List<String> items = new ArrayList<>();
                             items.add(MUZEI_ROTATE_CATEGORY_ALL);
                             items.addAll(Arrays.asList(MHApp.PROJECTS_NAME));
-                            new TypefaceMaterialDialogBuilder(getActivity()).items(items)
+                            Dialogs.TypefaceMaterialDialogBuilder(getActivity()).items(items)
                                     .itemsCallback(new MaterialDialog.ListCallback() {
                                         @Override
                                         public void onSelection(MaterialDialog dialog,
