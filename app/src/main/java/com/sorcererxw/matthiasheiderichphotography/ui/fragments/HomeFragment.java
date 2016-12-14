@@ -69,7 +69,7 @@ public class HomeFragment extends BaseFragment {
     @Nullable
     @Override
     public View provideContentView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+                                   @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
@@ -104,13 +104,13 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void refreshUI() {
         TypedValue cardColor = new TypedValue();
-        TypedValue primaryColor = new TypedValue();
-        TypedValue secondaryColor = new TypedValue();
+        TypedValue primaryTextColor = new TypedValue();
+        TypedValue secondaryTextColor = new TypedValue();
         TypedValue libColor = new TypedValue();
         Resources.Theme theme = getActivity().getTheme();
-        theme.resolveAttribute(R.attr.colorCard, cardColor,true);
-        theme.resolveAttribute(R.attr.colorPrimaryText, primaryColor, true);
-        theme.resolveAttribute(R.attr.colorSecondaryText, secondaryColor, true);
+        theme.resolveAttribute(R.attr.colorCard, cardColor, true);
+        theme.resolveAttribute(R.attr.colorPrimaryText, primaryTextColor, true);
+        theme.resolveAttribute(R.attr.colorSecondaryText, secondaryTextColor, true);
         theme.resolveAttribute(R.attr.colorLibCopyrightBackground, libColor, true);
 
         mLibRecyclerView.getAdapter().notifyDataSetChanged();
@@ -122,8 +122,9 @@ public class HomeFragment extends BaseFragment {
         mProjectCard.setCardBackgroundColor(
                 ContextCompat.getColor(getContext(), cardColor.resourceId));
 
-        mProject.setTextColor(ContextCompat.getColor(getContext(), secondaryColor.resourceId));
-        mIntroduce.setTextColor(ContextCompat.getColor(getContext(), secondaryColor.resourceId));
+        mProject.setTextColor(ContextCompat.getColor(getContext(), secondaryTextColor.resourceId));
+        mIntroduce
+                .setTextColor(ContextCompat.getColor(getContext(), secondaryTextColor.resourceId));
     }
 
     @Override

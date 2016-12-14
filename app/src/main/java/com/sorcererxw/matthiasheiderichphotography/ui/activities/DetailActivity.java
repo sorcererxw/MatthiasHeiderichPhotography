@@ -18,8 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.transition.Transition;
 import android.view.Display;
-import android.view.DragEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -57,6 +57,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -158,6 +159,32 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void initImage() {
+        mImageView.setOnSingleFlingListener(new PhotoViewAttacher.OnSingleFlingListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                                   float velocityY) {
+                Timber.d(e1.getY() + "  " + e2.getY());
+                // if (Math.abs(e1.getRawX() - e2.getRawX()) > 250) {
+                // // System.out.println("水平方向移动距离过大");
+                // return true;
+                // }
+//                if (Math.abs(velocityY) < 100) {
+//                    // System.out.println("手指移动的太慢了");
+//                    return true;
+//                }
+//
+//                // 手势向下 down
+//                if ((e2.getRawY() - e1.getRawY()) > 200) {
+//                    DetailActivity.this.finish();//在此处控制关闭
+//                    return true;
+//                }
+//                // 手势向上 up
+//                if ((e1.getRawY() - e2.getRawY()) > 200) {
+//                    return true;
+//                }
+                return false;
+            }
+        });
         mImageView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
             @Override
             public void onViewTap(View view, float x, float y) {
@@ -174,12 +201,6 @@ public class DetailActivity extends AppCompatActivity {
                     mFAB.setClickable(false);
                     mToolbar.animate().alpha(0).start();
                 }
-            }
-        });
-        mImageView.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-                return false;
             }
         });
         mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -582,6 +603,8 @@ public class DetailActivity extends AppCompatActivity {
                         if (swatch != null) {
                             color = swatch.getRgb();
                         }
+
+                        mFAB.setVisibility(View.VISIBLE);
                         mFAB.setMenuButtonColorNormal(color);
                         mFAB.setMenuButtonColorPressed(color);
                         mApplyFAB.setColorNormal(color);

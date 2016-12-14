@@ -19,6 +19,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.holder.DimenHolder;
+import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -301,11 +302,11 @@ public class MainActivity extends AppCompatActivity {
                 ExpandableDrawerItem expandableDrawerItem = (ExpandableDrawerItem) drawerItem;
                 expandableDrawerItem.withTextColorRes(textSecondary.resourceId);
                 for (IDrawerItem subDrawable : expandableDrawerItem.getSubItems()) {
-                    if (subDrawable instanceof PrimaryDrawerItem) {
-                        PrimaryDrawerItem primarySubDrawerItem = (PrimaryDrawerItem) subDrawable;
-                        primarySubDrawerItem.withTextColorRes(textSecondary.resourceId);
-                        primarySubDrawerItem.withSelectedTextColorRes(textPrimary.resourceId);
-                        primarySubDrawerItem.withSelectedColorRes(primaryDark.resourceId);
+                    if (subDrawable instanceof BaseDrawerItem) {
+                        BaseDrawerItem subDrawerItem = (BaseDrawerItem) subDrawable;
+                        subDrawerItem.withTextColorRes(textSecondary.resourceId);
+                        subDrawerItem.withSelectedTextColorRes(textPrimary.resourceId);
+                        subDrawerItem.withSelectedColorRes(primaryDark.resourceId);
                     }
                 }
                 expandableDrawerItem.withIconColorRes(textSecondary.resourceId);

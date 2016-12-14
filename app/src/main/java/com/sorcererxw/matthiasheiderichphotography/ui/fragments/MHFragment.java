@@ -1,34 +1,33 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.db.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
-import com.sorcererxw.matthiasheiderichphotography.db.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
-import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.TypefaceSnackbar;
-import com.squareup.sqlbrite.BriteDatabase;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,16 +55,12 @@ public class MHFragment extends BaseFragment {
 
     ProjectDBHelper mFavoriteDBHelper;
 
-//    @Inject
-//    BriteDatabase mDatabase;
-
     private Activity mActivity;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = activity;
-//        MHApp.getComponent(getContext()).inject(this);
     }
 
     @Override
@@ -74,6 +69,10 @@ public class MHFragment extends BaseFragment {
         setRetainInstance(true);
         mFavoriteDBHelper = new ProjectDBHelper(getContext(), "favorite");
     }
+
+    private ProjectDBHelper mDbHelper;
+
+    private MHPreference<Long> mLastSync;
 
     @Nullable
     @Override
@@ -89,6 +88,9 @@ public class MHFragment extends BaseFragment {
 
     @BindView(R.id.coordinatorLayout_fragment_mh)
     CoordinatorLayout mRoot;
+
+    @BindView(R.id.swipeRefreshLayout_fragment_mh)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @BindView(R.id.recyclerView_fragment_mh)
     RecyclerView mRecyclerView;
@@ -122,37 +124,56 @@ public class MHFragment extends BaseFragment {
         mRecyclerView
                 .addItemDecoration(new LinerMarginDecoration(DisplayUtil.dip2px(getContext(), 4)));
         mRecyclerView.setHasFixedSize(true);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                catchData();
+            }
+        });
     }
 
     private void initData() {
-        final ProjectDBHelper dbHelper =
-                new ProjectDBHelper(getContext(), StringUtil.onlyLetter(mProjectName));
-        final MHPreference<Long> lastSync =
-                MHApp.getInstance().getPrefs().getLastSync(mProjectName, 0L);
-        if (!BuildConfig.DEBUG && System.currentTimeMillis() - lastSync.getValue() < 86400000) {
-            List<String> list = dbHelper.getLinks();
+        mDbHelper = new ProjectDBHelper(getContext(), StringUtil.onlyLetter(mProjectName));
+        mLastSync = MHApp.getInstance().getPrefs().getLastSync(mProjectName, 0L);
+        if (System.currentTimeMillis() - mLastSync.getValue() < 86400000) {
+            List<String> list = mDbHelper.getLinks();
             if (list.size() == 0) {
-                lastSync.setValue(0L);
+                mLastSync.setValue(0L);
                 initData();
             } else {
                 mAdapter.setData(list);
             }
         } else {
-            final MaterialDialog dialog = DialogUtil.getProgressDialog(getContext(), "Loading");
-            dialog.show();
-            WebCatcher.catchImageLinks(
-                    "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY))
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<String>>() {
-                        @Override
-                        public void call(List<String> strings) {
-                            mAdapter.setData(strings);
-                            lastSync.setValue(System.currentTimeMillis());
-                            dbHelper.saveLinks(strings);
-                            dialog.dismiss();
-                        }
-                    });
+            catchData();
         }
+    }
+
+    public void catchData() {
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
+
+        WebCatcher.catchImageLinks(
+                "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<String>>() {
+                    @Override
+                    public void call(List<String> strings) {
+                        mAdapter.setData(strings);
+                        mLastSync.setValue(System.currentTimeMillis());
+                        mDbHelper.saveLinks(strings);
+                        mSwipeRefreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+                });
     }
 
     @Override
@@ -164,6 +185,13 @@ public class MHFragment extends BaseFragment {
     protected void refreshUI() {
         super.refreshUI();
         mAdapter.setNightMode(MHApp.getInstance().getPrefs().getThemeNightMode().getValue());
+        TypedValue primaryColor = new TypedValue();
+        TypedValue accentColor = new TypedValue();
+        Resources.Theme theme = getActivity().getTheme();
+        theme.resolveAttribute(R.attr.colorPrimary, primaryColor, true);
+        theme.resolveAttribute(R.attr.colorAccent, accentColor, true);
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(primaryColor.resourceId);
+        mSwipeRefreshLayout.setColorSchemeResources(accentColor.resourceId);
     }
 
     @Override

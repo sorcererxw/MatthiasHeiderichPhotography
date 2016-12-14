@@ -25,12 +25,19 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts"
+                       android:resource="@xml/shortcuts" />
         </activity>
         <activity
             android:name="com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity"
             android:theme="@style/AppTheme.Detail">
         </activity>
-        <activity android:name="com.sorcererxw.matthiasheiderichphotography.ui.activities.NewDetailActivity"/>
+
+        <activity android:name="com.sorcererxw.matthiasheiderichphotography.ui.activities.ShortcutActivity"
+            android:theme="@style/Theme.Transparent"/>
+
+        <service android:name="com.sorcererxw.matthiasheiderichphotography.services.WallpaperChangeService"/>
 
         <service
             android:name="com.sorcererxw.matthiasheiderichphotography.muzei.MHArtSource"

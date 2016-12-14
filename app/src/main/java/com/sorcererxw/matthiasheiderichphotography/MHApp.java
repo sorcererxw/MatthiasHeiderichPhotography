@@ -83,9 +83,4 @@ public class MHApp extends Application {
         return ((MHApp) context.getApplicationContext()).mTmpDrawable;
     }
 
-//    private MHComponent mMHComponent;
-//
-//    public static MHComponent getComponent(Context context) {
-//        return ((MHApp) context.getApplicationContext()).mMHComponent;
-//    }
 }

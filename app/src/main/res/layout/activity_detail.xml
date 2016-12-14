@@ -5,39 +5,45 @@
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout_detail"
-    android:background="?attr/colorImagePlaceHolder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorImagePlaceHolder"
     tools:context="com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity">
 
-    <com.sorcererxw.typefaceviews.TypefaceToolbar
-        android:id="@+id/toolbar_detail"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginTop="@dimen/status_bar_height"
-        android:background="@color/transparent"
-        android:elevation="4dp"
-        app:popupTheme="@style/AppTheme.PopupOverlay"/>
+        android:layout_height="match_parent">
 
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/loadingIndicator_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        app:indicatorColor="?attr/colorAccent"
-        app:indicatorName="LineScalePulseOutIndicator"/>
+        <com.sorcererxw.typefaceviews.TypefaceToolbar
+            android:id="@+id/toolbar_detail"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginTop="@dimen/status_bar_height"
+            android:background="@color/transparent"
+            android:elevation="4dp"
+            android:layout_alignParentTop="true"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-    <uk.co.senab.photoview.PhotoView
-        android:id="@+id/imageView_detail"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:scaleType="centerCrop"
-        android:transitionName="image"/>
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/loadingIndicator_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            app:indicatorColor="?attr/colorAccent"
+            app:indicatorName="LineScalePulseOutIndicator"/>
+
+        <uk.co.senab.photoview.PhotoView
+            android:id="@+id/imageView_detail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
+            android:transitionName="image"/>
+
+    </RelativeLayout>
 
     <com.github.clans.fab.FloatingActionMenu
-
         android:id="@+id/fab_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,11 +51,12 @@
         android:paddingBottom="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:visibility="gone"
         app:layout_behavior="com.sorcererxw.matthiasheiderichphotography.ui.others.FloatingActionButtonBehavior"
         fab:menu_colorNormal="@color/colorAccent"
         fab:menu_colorPressed="@color/colorPrimary"
-        fab:menu_labels_ellipsize="end"
         fab:menu_labels_customFont="FuturaPTBook.otf"
+        fab:menu_labels_ellipsize="end"
         fab:menu_labels_singleLine="true">
 
         <com.github.clans.fab.FloatingActionButton

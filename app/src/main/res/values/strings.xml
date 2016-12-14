@@ -3,4 +3,10 @@
 
     <string name="muzei_source_description">Matthias Heiderich description</string>
     <string name="muzei_source_name">Matthias Heiderich name</string>
+
+    <string name="shortcuts_getting_lucky_disable_message">Getting Lucky</string>
+    <string name="shortcuts_getting_lucky_id">Getting Lucky</string>
+    <string name="shortcuts_getting_lucky_long_label">Getting Lucky</string>
+    <string name="shortcuts_getting_lucky_short_label">Getting Lucky</string>
+
 </resources>
