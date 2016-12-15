@@ -3,7 +3,7 @@ package com.sorcererxw.matthiasheiderichphotography.ui.others;
 import android.content.Context;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 
 /**
@@ -15,7 +15,7 @@ import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 public class Dialogs {
     private static MaterialDialog.Builder ThemeMaterialDialogBuilder(Context context) {
         return new MaterialDialog.Builder(context)
-                .backgroundColorRes(StyleUtil.getPrimaryColorRes(context));
+                .backgroundColor(ThemeHelper.getBackgroundColor(context));
     }
 
     public static MaterialDialog.Builder TypefaceMaterialDialogBuilder(Context context) {

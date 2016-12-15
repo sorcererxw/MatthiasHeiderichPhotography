@@ -44,7 +44,6 @@ public class SettingsFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
-
     public static class MHPreferenceFragment extends PreferenceFragment {
 
         private PreferenceGroup mMuzeiPreferenceGroup;

@@ -1,11 +1,8 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +10,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sorcererxw.matthiasheiderichphotography.models.LibraryBean;
+import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 
@@ -71,20 +70,19 @@ public class LibAdapter extends RecyclerView.Adapter<LibAdapter.LibViewHolder> {
 
     @Override
     public void onBindViewHolder(LibViewHolder holder, int position) {
-        TypedValue cardColor = new TypedValue();
-        TypedValue primaryColor = new TypedValue();
-        TypedValue secondaryColor = new TypedValue();
-        TypedValue libColor = new TypedValue();
-        Resources.Theme theme = mContext.getTheme();
-        theme.resolveAttribute(R.attr.colorPrimary, cardColor, true);
-        theme.resolveAttribute(R.attr.colorPrimaryText, primaryColor, true);
-        theme.resolveAttribute(R.attr.colorSecondaryText, secondaryColor, true);
-        theme.resolveAttribute(R.attr.colorLibCopyrightBackground, libColor, true);
 
-        holder.name.setTextColor(ContextCompat.getColor(mContext, secondaryColor.resourceId));
-        holder.author.setTextColor(ContextCompat.getColor(mContext, secondaryColor.resourceId));
-        holder.licence.setTextColor(ContextCompat.getColor(mContext, secondaryColor.resourceId));
-        holder.licenceContainer.setBackgroundResource(libColor.resourceId);
+        int colorPrimary = ResourceUtil.getColor(mContext, ThemeHelper.getPrimaryColorRes(mContext));
+        int colorPrimaryText =
+                ResourceUtil.getColor(mContext, ThemeHelper.getPrimaryTextColorRes(mContext));
+        int colorSecondaryText =
+                ResourceUtil.getColor(mContext, ThemeHelper.getSecondaryTextColorRes(mContext));
+        int colorLibCopyrightBackground =
+                ResourceUtil.getColor(mContext, ThemeHelper.getLibCopyrightBackgroundRes(mContext));
+
+        holder.name.setTextColor(colorSecondaryText);
+        holder.author.setTextColor(colorSecondaryText);
+        holder.licence.setTextColor(colorSecondaryText);
+        holder.licenceContainer.setBackgroundColor(colorLibCopyrightBackground);
 
         holder.name.setText(mLibraryBeanList.get(position).getName());
         holder.author.setText(mLibraryBeanList.get(position).getAuthor());

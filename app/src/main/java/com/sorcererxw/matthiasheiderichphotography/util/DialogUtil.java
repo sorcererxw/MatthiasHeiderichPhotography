@@ -19,14 +19,12 @@ public class DialogUtil {
         View view = View.inflate(context, R.layout.layout_progressdialog, null);
         TextView textView = (TextView) view.findViewById(R.id.textView_progress_message);
         textView.setText(message);
-        textView.setTextColor(
-                ResourceUtil.getColor(context, StyleUtil.getSecondaryTextColor(context)));
+        textView.setTextColor(ThemeHelper.getSecondaryTextColor(context));
         textView.setTypeface(TypefaceHelper.getTypeface(context, TypefaceHelper.Type.Book));
 
         AVLoadingIndicatorView indicator =
                 (AVLoadingIndicatorView) view.findViewById(R.id.loadingIndicator_progress_dialog);
-        indicator.setIndicatorColor(
-                ResourceUtil.getColor(context, StyleUtil.getAccentColorRes(context)));
+        indicator.setIndicatorColor(ThemeHelper.getAccentColor(context));
         return Dialogs.TypefaceMaterialDialogBuilder(context)
                 .customView(view, true)
                 .cancelable(false)

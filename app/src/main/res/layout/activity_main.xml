@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorBackground"
+    android:background="?android:attr/colorBackground"
     tools:context="com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -17,8 +17,8 @@
         <com.sorcererxw.typefaceviews.TypefaceToolbar
             android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="?android:attr/colorPrimary"
             android:elevation="4dp"
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
     </android.support.design.widget.AppBarLayout>

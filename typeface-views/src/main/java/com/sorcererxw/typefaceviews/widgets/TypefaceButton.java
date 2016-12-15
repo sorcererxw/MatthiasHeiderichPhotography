@@ -2,28 +2,28 @@ package com.sorcererxw.typefaceviews.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.sorcererxw.typefaceviews.TypefaceViews;
 
 /**
  * @description:
  * @author: Sorcerer
- * @date: 2016/11/25
+ * @date: 2016/12/15
  */
 
-public class TypefaceTextView extends TextView {
-    public TypefaceTextView(Context context) {
+public class TypefaceButton extends Button {
+    public TypefaceButton(Context context) {
         super(context);
         init();
     }
 
-    public TypefaceTextView(Context context, AttributeSet attrs) {
+    public TypefaceButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public TypefaceTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TypefaceButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

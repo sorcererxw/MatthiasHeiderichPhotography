@@ -2,6 +2,7 @@ package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
 import android.app.WallpaperManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
@@ -32,6 +34,7 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.Dialogs;
+import com.sorcererxw.matthiasheiderichphotography.ui.others.FilePickerSheetView;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.SimpleTransitionListener;
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
@@ -117,6 +120,7 @@ public class DetailActivity extends AppCompatActivity {
 
     @OnLongClick(R.id.fab_detail_save)
     boolean longClickSave() {
+        showFileChooser();
         return true;
     }
 
@@ -163,25 +167,6 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
                                    float velocityY) {
-                Timber.d(e1.getY() + "  " + e2.getY());
-                // if (Math.abs(e1.getRawX() - e2.getRawX()) > 250) {
-                // // System.out.println("水平方向移动距离过大");
-                // return true;
-                // }
-//                if (Math.abs(velocityY) < 100) {
-//                    // System.out.println("手指移动的太慢了");
-//                    return true;
-//                }
-//
-//                // 手势向下 down
-//                if ((e2.getRawY() - e1.getRawY()) > 200) {
-//                    DetailActivity.this.finish();//在此处控制关闭
-//                    return true;
-//                }
-//                // 手势向上 up
-//                if ((e1.getRawY() - e2.getRawY()) > 200) {
-//                    return true;
-//                }
                 return false;
             }
         });
@@ -208,59 +193,54 @@ public class DetailActivity extends AppCompatActivity {
         if (MHApp.getTmpDrawable(this) != null) {
             mImageView.setImageDrawable(MHApp.getTmpDrawable(this));
         }
-        getWindow().getSharedElementEnterTransition().addListener(
-                new SimpleTransitionListener() {
-                    @Override
-                    public void onTransitionEnd(Transition transition) {
-                        Observable.just(mLink + "?format=1000w")
-                                .map(new Func1<String, Drawable>() {
-                                    @Override
-                                    public Drawable call(String s) {
-                                        try {
-                                            return Glide.with(DetailActivity.this)
-                                                    .load(s)
-                                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                                    .into(-1, -1)
-                                                    .get();
-                                        } catch (InterruptedException | ExecutionException e) {
-                                            e.printStackTrace();
-                                        }
-                                        return null;
-                                    }
-                                })
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Action1<Drawable>() {
-                                    @Override
-                                    public void call(Drawable drawable) {
-                                        if (drawable != null) {
-                                            mImageView.setImageDrawable(drawable);
-                                            setupFAB();
-                                        } else {
-                                            finish();
-                                        }
-                                    }
-                                });
-                    }
-                });
+        getWindow().getSharedElementEnterTransition().addListener(new SimpleTransitionListener() {
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                Observable.just(mLink)
+                        .map(new Func1<String, Drawable>() {
+                            @Override
+                            public Drawable call(String s) {
+                                try {
+                                    return Glide.with(DetailActivity.this)
+                                            .load(s)
+                                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                            .into(-1, -1)
+                                            .get();
+                                } catch (InterruptedException | ExecutionException e) {
+                                    e.printStackTrace();
+                                }
+                                return null;
+                            }
+                        })
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<Drawable>() {
+                            @Override
+                            public void call(Drawable drawable) {
+                                if (drawable != null) {
+                                    mImageView.setImageDrawable(drawable);
+                                    setupFAB();
+                                } else {
+                                    finish();
+                                }
+                            }
+                        });
+            }
+        });
     }
 
     private Observable<Boolean> requestPermission() {
         return mRxPermissions.request(WRITE_EXTERNAL_STORAGE)
-                .doOnNext(new Action1<Boolean>() {
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(new Func1<Boolean, Boolean>() {
                     @Override
-                    public void call(Boolean aBoolean) {
-                        if (!aBoolean) {
+                    public Boolean call(Boolean granted) {
+                        if (!granted) {
                             TypefaceSnackbar.make(mCoordinatorLayout, "No permission :(",
                                     Snackbar.LENGTH_LONG)
                                     .setCallback(mSnackbarCallback).show();
                         }
-                    }
-                })
-                .filter(new Func1<Boolean, Boolean>() {
-                    @Override
-                    public Boolean call(Boolean aBoolean) {
-                        return aBoolean;
+                        return granted;
                     }
                 });
     }
@@ -335,51 +315,24 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 return uri;
             }
-        })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<Uri, Uri>() {
-                    @Override
-                    public Uri call(Uri uri) {
-                        mUri = uri;
-                        return uri;
-                    }
-                });
+        }).subscribeOn(
+                Schedulers.newThread()
+        ).observeOn(
+                AndroidSchedulers.mainThread()
+        ).map(new Func1<Uri, Uri>() {
+            @Override
+            public Uri call(Uri uri) {
+                mUri = uri;
+                return uri;
+            }
+        });
     }
 
     private void saveToLocal() {
-        requestPermission().subscribe(new Action1<Boolean>() {
+        requestPermission().filter(new Func1<Boolean, Boolean>() {
             @Override
-            public void call(Boolean aBoolean) {
-                String progressText = "Saving To Local...";
-                if (mUri == null) {
-                    showDialog(progressText);
-                    download().subscribe(new Action1<Uri>() {
-                        @Override
-                        public void call(final Uri uri) {
-                            dismissDialog();
-                            if (uri != null) {
-                                TypefaceSnackbar.make(mCoordinatorLayout, "Success",
-                                        Snackbar.LENGTH_LONG)
-                                        .setAction("Open", new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                openOuterPhotoViewer(uri);
-                                            }
-                                        })
-                                        .setActionTextColor(
-                                                ResourceUtil.getColor(DetailActivity.this,
-                                                        R.color.white))
-                                        .setCallback(mSnackbarCallback)
-                                        .show();
-                            } else {
-                                TypefaceSnackbar.make(mCoordinatorLayout, "Fail",
-                                        Snackbar.LENGTH_LONG)
-                                        .setCallback(mSnackbarCallback).show();
-                            }
-                        }
-                    });
-                } else {
+            public Boolean call(Boolean granted) {
+                if (mUri != null) {
                     TypefaceSnackbar
                             .make(mCoordinatorLayout, "Existed", Snackbar.LENGTH_LONG)
                             .setAction("Open", new View.OnClickListener() {
@@ -393,17 +346,49 @@ public class DetailActivity extends AppCompatActivity {
                             .setCallback(mSnackbarCallback)
                             .show();
                 }
+                return mUri == null;
+            }
+        }).flatMap(new Func1<Boolean, Observable<Uri>>() {
+            @Override
+            public Observable<Uri> call(Boolean aBoolean) {
+                showDialog("Saving To Local...");
+                return download();
+            }
+        }).filter(new Func1<Uri, Boolean>() {
+            @Override
+            public Boolean call(Uri uri) {
+                dismissDialog();
+                if (uri == null) {
+                    TypefaceSnackbar.make(mCoordinatorLayout, "Failed",
+                            Snackbar.LENGTH_LONG)
+                            .setCallback(mSnackbarCallback).show();
+                }
+                return uri != null;
+            }
+        }).subscribe(new Action1<Uri>() {
+            @Override
+            public void call(final Uri uri) {
+                TypefaceSnackbar.make(mCoordinatorLayout, "Success", Snackbar.LENGTH_LONG)
+                        .setAction("Open", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                openOuterPhotoViewer(uri);
+                            }
+                        })
+                        .setActionTextColor(
+                                ResourceUtil.getColor(DetailActivity.this,
+                                        R.color.white))
+                        .setCallback(mSnackbarCallback)
+                        .show();
             }
         });
-
     }
 
     private void setWallpapers(final boolean homeScreen, final boolean lockScreen) {
-        requestPermission().subscribe(new Action1<Boolean>() {
+        requestPermission().filter(new Func1<Boolean, Boolean>() {
             @Override
-            public void call(Boolean aBoolean) {
-                String progressText = "Setting wallpaper...";
-                showDialog(progressText);
+            public Boolean call(Boolean aBoolean) {
+                showDialog("Setting wallpaper...");
                 if (mUri == null) {
                     download().subscribe(new Action1<Uri>() {
                         @Override
@@ -411,89 +396,86 @@ public class DetailActivity extends AppCompatActivity {
                             setWallpapers(homeScreen, lockScreen);
                         }
                     });
-                } else {
-                    Observable.just(mUri).map(new Func1<Uri, Boolean>() {
-                        @Override
-                        public Boolean call(Uri uri) {
-                            try {
-                                WallpaperManager wallpaperManager
-                                        = WallpaperManager
-                                        .getInstance(getApplicationContext());
-                                wallpaperManager.setWallpaperOffsets(
-                                        getWindow().getDecorView().getRootView()
-                                                .getWindowToken(), 0.5f, 1);
-                                if (lockScreen) {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                        wallpaperManager.setBitmap(
-                                                cropBitmapFromCenterAndScreenSize(mUri),
-                                                null,
-                                                true,
-                                                FLAG_LOCK);
-                                    }
-                                }
-                                if (homeScreen) {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                        wallpaperManager.setStream(
-                                                new FileInputStream(new File(mUri.getPath())),
-                                                null,
-                                                true,
-                                                FLAG_SYSTEM);
-                                    }
-                                }
-                                if (!homeScreen && !lockScreen) {
-                                    setWallpaperSimple(wallpaperManager, uriToBitmap(mUri));
-                                }
-                                return true;
-                            } catch (IOException e) {
-                                if (BuildConfig.DEBUG) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            return false;
-                        }
-                    })
-                            .subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Action1<Boolean>() {
-                                @Override
-                                public void call(Boolean aBoolean) {
-                                    if (aBoolean) {
-                                        TypefaceSnackbar snackbar = TypefaceSnackbar
-                                                .make(mCoordinatorLayout, "Success",
-                                                        Snackbar.LENGTH_LONG)
-                                                .setCallback(mSnackbarCallback);
-                                        if (!lockScreen) {
-                                            snackbar.setAction("have a look",
-                                                    new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            Intent startMain =
-                                                                    new Intent(Intent.ACTION_MAIN);
-                                                            startMain.addCategory(
-                                                                    Intent.CATEGORY_HOME);
-                                                            startMain.setFlags(
-                                                                    Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                            startActivity(startMain);
-                                                        }
-                                                    }).setActionTextColor(
-                                                    ResourceUtil.getColor(DetailActivity.this,
-                                                            R.color.white));
-                                        }
-                                        snackbar.show();
-                                    } else {
-                                        TypefaceSnackbar
-                                                .make(mCoordinatorLayout, "Fail",
-                                                        Snackbar.LENGTH_LONG)
-                                                .setCallback(mSnackbarCallback)
-                                                .show();
-                                    }
-                                    dismissDialog();
-                                }
-                            });
                 }
+                return mUri != null;
             }
-        });
-
+        }).flatMap(new Func1<Boolean, Observable<Uri>>() {
+            @Override
+            public Observable<Uri> call(Boolean aBoolean) {
+                return Observable.just(mUri);
+            }
+        }).observeOn(Schedulers.newThread()).map(new Func1<Uri, Boolean>() {
+            @Override
+            public Boolean call(Uri uri) {
+                try {
+                    WallpaperManager wallpaperManager =
+                            WallpaperManager.getInstance(getApplicationContext());
+                    wallpaperManager.setWallpaperOffsets(
+                            getWindow().getDecorView().getRootView().getWindowToken(), 0.5f, 1);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        if (lockScreen) {
+                            wallpaperManager.setBitmap(
+                                    cropBitmapFromCenterAndScreenSize(mUri),
+                                    null,
+                                    true,
+                                    FLAG_LOCK);
+                        }
+                        if (homeScreen) {
+                            wallpaperManager.setStream(
+                                    new FileInputStream(new File(mUri.getPath())),
+                                    null,
+                                    true,
+                                    FLAG_SYSTEM);
+                        }
+                    }
+                    if (!homeScreen && !lockScreen) {
+                        setWallpaperSimple(wallpaperManager, uriToBitmap(mUri));
+                    }
+                    return true;
+                } catch (IOException e) {
+                    Timber.e(e);
+                }
+                return false;
+            }
+        }).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        if (aBoolean) {
+                            TypefaceSnackbar snackbar = TypefaceSnackbar
+                                    .make(mCoordinatorLayout, "Success",
+                                            Snackbar.LENGTH_LONG)
+                                    .setCallback(mSnackbarCallback);
+                            if (!lockScreen) {
+                                snackbar.setAction("have a look", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent startMain =
+                                                new Intent(Intent.ACTION_MAIN);
+                                        startMain.addCategory(
+                                                Intent.CATEGORY_HOME);
+                                        startMain.setFlags(
+                                                Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(startMain);
+                                    }
+                                }).setActionTextColor(
+                                        ResourceUtil.getColor(DetailActivity.this, R.color.white));
+                            }
+                            snackbar.show();
+                        } else {
+                            TypefaceSnackbar
+                                    .make(mCoordinatorLayout, "Fail", Snackbar.LENGTH_LONG)
+                                    .setCallback(mSnackbarCallback)
+                                    .show();
+                        }
+                        dismissDialog();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Timber.d(throwable);
+                    }
+                });
     }
 
     private void setWallpapersMore() {
@@ -501,7 +483,6 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void call(Boolean aBoolean) {
                 String progressText = "Preparing...";
-
                 if (mUri == null) {
                     showDialog(progressText);
                     download().subscribe(new Action1<Uri>() {
@@ -542,6 +523,20 @@ public class DetailActivity extends AppCompatActivity {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+    }
+
+    private void showFileChooser() {
+        mFAB.hideMenuButton(true);
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                mFAB.showMenuButton(true);
+            }
+        });
+        dialog.setContentView(new FilePickerSheetView(this));
+        dialog.show();
     }
 
     @Override

@@ -22,7 +22,7 @@ import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecorati
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheiderichphotography.db.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
-import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 
@@ -145,14 +145,12 @@ public class FavoriteFragment extends BaseFragment {
         super.refreshUI();
         mAdapter.setNightMode(MHApp.getInstance().getPrefs().getThemeNightMode().getValue());
 
-        mEmptyView.setTextColor(
-                ResourceUtil.getColor(getContext(), StyleUtil.getAccentColorRes(getContext())));
+        mEmptyView.setTextColor(ThemeHelper.getAccentColor(getContext()));
 
         mEmptyView.setCompoundDrawables(null,
                 new IconicsDrawable(getContext())
                         .icon(GoogleMaterial.Icon.gmd_favorite)
-                        .color(ResourceUtil
-                                .getColor(getContext(), StyleUtil.getAccentColorRes(getContext())))
+                        .color(ThemeHelper.getAccentColor(getContext()))
                         .sizeDp(56),
                 null, null);
     }

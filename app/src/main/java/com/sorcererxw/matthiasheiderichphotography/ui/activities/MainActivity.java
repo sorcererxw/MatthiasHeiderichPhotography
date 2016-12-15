@@ -1,6 +1,5 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +30,7 @@ import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
-import com.sorcererxw.matthiasheiderichphotography.util.StyleUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.TypefaceToolbar;
@@ -267,66 +265,57 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshUI(boolean isNightMode) {
-        Resources.Theme theme = getTheme();
-        TypedValue textPrimary = new TypedValue();
-        TypedValue textSecondary = new TypedValue();
-        TypedValue accent = new TypedValue();
-        TypedValue primary = new TypedValue();
-        TypedValue primaryDark = new TypedValue();
-        TypedValue background = new TypedValue();
+        int colorPrimaryText = ResourceUtil.getColor(this, ThemeHelper.getPrimaryTextColorRes(this));
+        int colorBackground = ResourceUtil.getColor(this, ThemeHelper.getBackgroundColorRes(this));
+        int colorPrimary = ResourceUtil.getColor(this, ThemeHelper.getPrimaryColorRes(this));
+        int colorPrimaryDark = ResourceUtil.getColor(this, ThemeHelper.getPrimaryDarkColorRes(this));
+        int colorSecondaryText =
+                ResourceUtil.getColor(this, ThemeHelper.getSecondaryTextColorRes(this));
 
-        theme.resolveAttribute(R.attr.colorPrimaryText, textPrimary, true);
-        theme.resolveAttribute(R.attr.colorBackground, background, true);
-        theme.resolveAttribute(R.attr.colorPrimary, primary, true);
-        theme.resolveAttribute(R.attr.colorPrimaryDark, primaryDark, true);
-        theme.resolveAttribute(R.attr.colorSecondaryText, textSecondary, true);
-        theme.resolveAttribute(R.attr.colorAccent, accent, true);
-
-        mContainer.setBackgroundResource(background.resourceId);
+        mContainer.setBackgroundColor(colorBackground);
 
         ((TextView) mDrawer.getHeader().findViewById(R.id.textView_drawer_head))
-                .setTextColor(ContextCompat.getColor(this, textPrimary.resourceId));
-        mDrawer.getHeader().setBackgroundResource(background.resourceId);
-        mDrawer.getSlider().setBackgroundResource(background.resourceId);
+                .setTextColor(colorPrimaryText);
+        mDrawer.getHeader().setBackgroundColor(colorBackground);
+        mDrawer.getSlider().setBackgroundColor(colorBackground);
 
         for (IDrawerItem drawerItem : mDrawer.getDrawerItems()) {
             if (drawerItem instanceof PrimaryDrawerItem) {
                 PrimaryDrawerItem primaryDrawerItem = (PrimaryDrawerItem) drawerItem;
-                primaryDrawerItem.withSelectedColorRes(primaryDark.resourceId);
-                primaryDrawerItem.withTextColorRes(textSecondary.resourceId);
-                primaryDrawerItem.withSelectedTextColorRes(textPrimary.resourceId);
+                primaryDrawerItem.withSelectedColor(colorPrimaryDark);
+                primaryDrawerItem.withTextColor(colorSecondaryText);
+                primaryDrawerItem.withSelectedTextColor(colorPrimaryText);
 
-                primaryDrawerItem.withIconColorRes(textSecondary.resourceId);
-                primaryDrawerItem.withSelectedIconColorRes(textPrimary.resourceId);
+                primaryDrawerItem.withIconColor(colorSecondaryText);
+                primaryDrawerItem.withSelectedIconColor(colorPrimaryText);
             } else if (drawerItem instanceof ExpandableDrawerItem) {
                 ExpandableDrawerItem expandableDrawerItem = (ExpandableDrawerItem) drawerItem;
-                expandableDrawerItem.withTextColorRes(textSecondary.resourceId);
+                expandableDrawerItem.withTextColor(colorSecondaryText);
                 for (IDrawerItem subDrawable : expandableDrawerItem.getSubItems()) {
                     if (subDrawable instanceof BaseDrawerItem) {
                         BaseDrawerItem subDrawerItem = (BaseDrawerItem) subDrawable;
-                        subDrawerItem.withTextColorRes(textSecondary.resourceId);
-                        subDrawerItem.withSelectedTextColorRes(textPrimary.resourceId);
-                        subDrawerItem.withSelectedColorRes(primaryDark.resourceId);
+                        subDrawerItem.withTextColor(colorSecondaryText);
+                        subDrawerItem.withSelectedTextColor(colorPrimaryText);
+                        subDrawerItem.withSelectedColor(colorPrimaryDark);
                     }
                 }
-                expandableDrawerItem.withIconColorRes(textSecondary.resourceId);
-                expandableDrawerItem.withSelectedIconColorRes(textPrimary.resourceId);
+                expandableDrawerItem.withIconColor(colorSecondaryText);
+                expandableDrawerItem.withSelectedIconColor(colorPrimaryText);
             }
         }
 
-        mToolbar.setBackgroundResource(primary.resourceId);
-        mToolbar.setSubtitleTextColor(ContextCompat.getColor(this, textSecondary.resourceId));
-        mToolbar.setTitleTextColor(ContextCompat.getColor(this, textPrimary.resourceId));
+        mToolbar.setBackgroundColor(colorPrimary);
+        mToolbar.setSubtitleTextColor(colorSecondaryText);
+        mToolbar.setTitleTextColor(colorPrimaryText);
 
-        mDrawer.getActionBarDrawerToggle().getDrawerArrowDrawable()
-                .setColor(ResourceUtil.getColor(this, textPrimary.resourceId));
+        mDrawer.getActionBarDrawerToggle().getDrawerArrowDrawable().setColor(colorPrimaryText);
         mDrawer.getAdapter().notifyDataSetChanged();
     }
 
     private void refreshStatusBar(boolean isNightMode) {
 
         getWindow().setStatusBarColor(
-                ContextCompat.getColor(this, StyleUtil.getPrimaryDarkColorRes(this)));
+                ContextCompat.getColor(this, ThemeHelper.getPrimaryDarkColorRes(this)));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (isNightMode) {

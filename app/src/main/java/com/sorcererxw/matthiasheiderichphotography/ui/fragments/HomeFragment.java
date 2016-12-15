@@ -1,7 +1,6 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.fragments;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -11,15 +10,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.sorcererxw.matthiasheiderichphotography.models.LibraryBean;
 import com.sorcererxw.matthiasheiderichphotography.ui.adapters.LibAdapter;
+import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 
@@ -103,28 +101,29 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void refreshUI() {
-        TypedValue cardColor = new TypedValue();
-        TypedValue primaryTextColor = new TypedValue();
-        TypedValue secondaryTextColor = new TypedValue();
-        TypedValue libColor = new TypedValue();
-        Resources.Theme theme = getActivity().getTheme();
-        theme.resolveAttribute(R.attr.colorCard, cardColor, true);
-        theme.resolveAttribute(R.attr.colorPrimaryText, primaryTextColor, true);
-        theme.resolveAttribute(R.attr.colorSecondaryText, secondaryTextColor, true);
-        theme.resolveAttribute(R.attr.colorLibCopyrightBackground, libColor, true);
-
         mLibRecyclerView.getAdapter().notifyDataSetChanged();
 
-        mIntroduceCard.setCardBackgroundColor(
-                ContextCompat.getColor(getContext(), cardColor.resourceId));
-        mLibCard.setCardBackgroundColor(
-                ContextCompat.getColor(getContext(), cardColor.resourceId));
-        mProjectCard.setCardBackgroundColor(
-                ContextCompat.getColor(getContext(), cardColor.resourceId));
+        mIntroduce.setLinkTextColor(ContextCompat
+                .getColor(getContext(), ThemeHelper.getPrimaryTextColorRes(getContext())));
+        mIntroduce.setTextColor(ContextCompat
+                .getColor(getContext(), ThemeHelper.getSecondaryTextColorRes(getContext())));
 
-        mProject.setTextColor(ContextCompat.getColor(getContext(), secondaryTextColor.resourceId));
-        mIntroduce
-                .setTextColor(ContextCompat.getColor(getContext(), secondaryTextColor.resourceId));
+        mProject.setLinkTextColor(ContextCompat
+                .getColor(getContext(), ThemeHelper.getPrimaryTextColorRes(getContext())));
+        mProject.setTextColor(ContextCompat
+                .getColor(getContext(), ThemeHelper.getSecondaryTextColorRes(getContext())));
+
+        mIntroduceCard.setCardBackgroundColor(
+                ContextCompat.getColor(getContext(), ThemeHelper.getCardColorRes(getContext())));
+        mLibCard.setCardBackgroundColor(
+                ContextCompat.getColor(getContext(), ThemeHelper.getCardColorRes(getContext())));
+        mProjectCard.setCardBackgroundColor(
+                ContextCompat.getColor(getContext(), ThemeHelper.getCardColorRes(getContext())));
+
+        mProject.setTextColor(ContextCompat
+                .getColor(getContext(), ThemeHelper.getSecondaryTextColorRes(getContext())));
+        mIntroduce.setTextColor(ContextCompat.getColor(getContext(),
+                ThemeHelper.getSecondaryTextColorRes(getContext())));
     }
 
     @Override
