@@ -101,7 +101,9 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void refreshUI() {
-        mLibRecyclerView.getAdapter().notifyDataSetChanged();
+        if (mLibRecyclerView.getAdapter() != null) {
+            mLibRecyclerView.getAdapter().notifyDataSetChanged();
+        }
 
         mIntroduce.setLinkTextColor(ContextCompat
                 .getColor(getContext(), ThemeHelper.getPrimaryTextColorRes(getContext())));

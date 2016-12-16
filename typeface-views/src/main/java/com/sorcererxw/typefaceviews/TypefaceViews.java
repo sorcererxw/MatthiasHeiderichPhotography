@@ -9,6 +9,11 @@ import android.graphics.Typeface;
  */
 
 public class TypefaceViews {
+    public enum TypefaceType {
+        MEDIUM,
+        REGULAR
+    }
+
     private static Typeface mMediumTypeface = null;
     private static Typeface mRegularTypeface = null;
 

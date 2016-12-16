@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <com.sorcererxw.typefaceviews.TypefaceToolbar
+        <com.sorcererxw.typefaceviews.widgets.TypefaceToolbar
             android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"

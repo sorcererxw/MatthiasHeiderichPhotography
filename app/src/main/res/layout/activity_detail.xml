@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.sorcererxw.typefaceviews.TypefaceToolbar
+        <com.sorcererxw.typefaceviews.widgets.TypefaceToolbar
             android:id="@+id/toolbar_detail"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -31,7 +31,6 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
-            app:indicatorColor="?attr/colorAccent"
             app:indicatorName="LineScalePulseOutIndicator"/>
 
         <uk.co.senab.photoview.PhotoView

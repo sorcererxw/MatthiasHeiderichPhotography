@@ -1,4 +1,4 @@
-package com.sorcererxw.typefaceviews.util;
+package com.sorcererxw.typefaceviews.utils;
 
 import android.graphics.Typeface;
 import android.widget.TextView;
@@ -19,6 +19,5 @@ public class TypefaceBinder {
     public static void bindTypeface(TextView textView, Typeface typeface) {
         textView.setTypeface(typeface);
     }
-
 
 }

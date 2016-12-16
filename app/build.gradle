@@ -100,4 +100,5 @@ dependencies {
     compile 'com.lcodecorex:tkrefreshlayout:1.0.4'
 
     compile project(':typeface-views')
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

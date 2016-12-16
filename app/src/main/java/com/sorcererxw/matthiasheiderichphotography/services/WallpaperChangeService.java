@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
+import com.sorcererxw.matthiasheiderichphotography.util.WallpaperSetter;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
 
 import java.io.IOException;
@@ -37,9 +38,16 @@ public class WallpaperChangeService extends IntentService {
         super("wallpaper change");
     }
 
+    private WallpaperSetter mWallpaperSetter;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mWallpaperSetter = new WallpaperSetter(this);
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
-        Timber.d("start service");
         String url = "http://www.matthias-heiderich.de/";
         int categoriesIndex = new Random().nextInt(1000);
         final int len = MHApp.PROJECTS_NAME.length;
@@ -72,36 +80,16 @@ public class WallpaperChangeService extends IntentService {
                 .subscribe(new Action1<Bitmap>() {
                     @Override
                     public void call(Bitmap bitmap) {
-                        Timber.d("catched bitmap");
-
                         if (bitmap == null) {
                             Toast.makeText(WallpaperChangeService.this,
                                     "change wallpaper: failed",
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        WallpaperManager wallpaperManager
-                                = WallpaperManager
-                                .getInstance(getApplicationContext());
-                        setWallpaperSimple(wallpaperManager, bitmap);
+                        mWallpaperSetter.setWallpaperSimple((WindowManager) getSystemService(
+                                WallpaperChangeService.WINDOW_SERVICE), bitmap);
                     }
                 });
     }
 
-    private void setWallpaperSimple(WallpaperManager manager, Bitmap wallPaperBitmap) {
-        Display display = ((WindowManager) getSystemService(WallpaperChangeService.WINDOW_SERVICE))
-                .getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screenHeight = size.y;
-
-        int width = wallPaperBitmap.getWidth();
-        width = (width * screenHeight) / wallPaperBitmap.getHeight();
-        try {
-            manager.setBitmap(
-                    Bitmap.createScaledBitmap(wallPaperBitmap, width, screenHeight, true));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

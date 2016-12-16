@@ -1,10 +1,12 @@
-package com.sorcererxw.typefaceviews;
+package com.sorcererxw.typefaceviews.widgets;
 
 import android.content.Context;
 import android.graphics.Typeface;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.sorcererxw.typefaceviews.TypefaceViews;
 
 /**
  * @description:

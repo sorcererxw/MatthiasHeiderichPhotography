@@ -1,4 +1,4 @@
-package com.sorcererxw.typefaceviews;
+package com.sorcererxw.typefaceviews.widgets;
 
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
@@ -9,6 +9,8 @@ import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.sorcererxw.typefaceviews.TypefaceViews;
 
 /**
  * @description:

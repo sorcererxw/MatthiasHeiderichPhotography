@@ -1,5 +1,6 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.others;
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -22,5 +23,18 @@ public class Dialogs {
         return ThemeMaterialDialogBuilder(context).typeface(
                 TypefaceHelper.getTypeface(context, TypefaceHelper.Type.Demi),
                 TypefaceHelper.getTypeface(context, TypefaceHelper.Type.Book));
+    }
+
+    public static TransparentStatusBarBottomSheetDialog FilePickerBottomSheetDialog(
+            Activity activity, CharSequence title,
+            FilePickerSheetView.OnFileSelectedCallBack callBack) {
+        TransparentStatusBarBottomSheetDialog dialog =
+                new TransparentStatusBarBottomSheetDialog(activity);
+        FilePickerSheetView sheetView = new FilePickerSheetView(activity);
+        sheetView.setTitle(title);
+        sheetView.setOnFileSelectedCallBack(callBack);
+        sheetView.setIsAutoDismiss(dialog, true);
+        dialog.setContentView(sheetView);
+        return dialog;
     }
 }

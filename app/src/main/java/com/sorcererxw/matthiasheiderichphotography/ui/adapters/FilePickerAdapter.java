@@ -9,12 +9,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.Iconics;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -59,6 +65,12 @@ public class FilePickerAdapter extends Adapter<FilePickerAdapter.FilePickerViewH
                 return pathname.isDirectory();
             }
         }));
+        Collections.sort(mFileList, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         notifyDataSetChanged();
     }
 
@@ -70,7 +82,7 @@ public class FilePickerAdapter extends Adapter<FilePickerAdapter.FilePickerViewH
 
     @Override
     public void onBindViewHolder(FilePickerViewHolder holder, int position) {
-        if (position == 0) {
+        if (!isOnBasePath() && position == 0) {
             holder.title.setText("\\");
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,7 +95,13 @@ public class FilePickerAdapter extends Adapter<FilePickerAdapter.FilePickerViewH
                 }
             });
         } else {
-            final File file = mFileList.get(position - 1);
+            final File file;
+            if (isOnBasePath()) {
+                file = mFileList.get(position);
+            } else {
+                file = mFileList.get(position - 1);
+            }
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -93,10 +111,22 @@ public class FilePickerAdapter extends Adapter<FilePickerAdapter.FilePickerViewH
 
             holder.title.setText(file.getName());
         }
+
+        holder.icon.setImageDrawable(new IconicsDrawable(mContext)
+                .icon(GoogleMaterial.Icon.gmd_folder)
+                .color(ThemeHelper.getAccentColor(mContext))
+                .sizeDp(36));
+    }
+
+    public File getCurrentPath() {
+        return mCurrentPath;
     }
 
     @Override
     public int getItemCount() {
+        if (isOnBasePath()) {
+            return mFileList.size();
+        }
         return mFileList.size() + 1;
     }
 
@@ -112,5 +142,9 @@ public class FilePickerAdapter extends Adapter<FilePickerAdapter.FilePickerViewH
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    private boolean isOnBasePath() {
+        return mCurrentPath.getAbsolutePath().equals(mBasePath.getAbsolutePath());
     }
 }

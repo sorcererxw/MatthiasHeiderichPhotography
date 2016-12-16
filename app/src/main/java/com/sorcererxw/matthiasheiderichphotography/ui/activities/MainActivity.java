@@ -33,7 +33,7 @@ import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.typefaceviews.TypefaceToolbar;
+import com.sorcererxw.typefaceviews.widgets.TypefaceToolbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
 
     private BaseFragment mCurrentFragment;
     private BaseFragment mLastFragment;
+
+    private PrimaryDrawerItem mHomeDrawerItem;
+    private PrimaryDrawerItem mSettingsDrawerItem;
+    private PrimaryDrawerItem mFavoriteDrawerItem;
+    private ExpandableDrawerItem mCollectionsExpandableDrawerItem;
+    private List<IDrawerItem> mCollectionsDrawerItemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 .withActivity(this)
                 .build();
 
-        List<IDrawerItem> collectionList = new ArrayList<>();
+        mCollectionsDrawerItemList = new ArrayList<>();
         for (int i = 0; i < MHApp.PROJECTS_NAME.length; i++) {
             IDrawerItem item = new SecondaryDrawerItem()
                     .withName("        " + StringUtil
@@ -143,53 +149,66 @@ public class MainActivity extends AppCompatActivity {
                             return false;
                         }
                     });
-            collectionList.add(item);
+            mCollectionsDrawerItemList.add(item);
         }
 
+        String fragmentTag = MHApp.getInstance().getPrefs().getLastLeaveFragmentTag().getValue();
+        boolean unexpandedCategories = FRAGMENT_TAG_HOME.equals(fragmentTag)
+                || FRAGMENT_TAG_FAVORITE.equals(fragmentTag)
+                || FRAGMENT_TAG_SETTINGS.equals(fragmentTag);
+
+        mHomeDrawerItem = new PrimaryDrawerItem()
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position,
+                                               IDrawerItem drawerItem) {
+                        showFragment(FRAGMENT_TAG_HOME);
+                        return false;
+                    }
+                })
+                .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
+                .withIcon(GoogleMaterial.Icon.gmd_home)
+                .withName("Home");
+
+        mFavoriteDrawerItem = new PrimaryDrawerItem().withOnDrawerItemClickListener(
+                new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position,
+                                               IDrawerItem drawerItem) {
+                        showFragment(FRAGMENT_TAG_FAVORITE);
+                        return false;
+                    }
+                })
+                .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
+                .withIcon(GoogleMaterial.Icon.gmd_favorite)
+                .withName("Favorite");
+
+        mSettingsDrawerItem = new PrimaryDrawerItem().withOnDrawerItemClickListener(
+                new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position,
+                                               IDrawerItem drawerItem) {
+                        showFragment(FRAGMENT_TAG_SETTINGS);
+                        return false;
+                    }
+                })
+                .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
+                .withIcon(GoogleMaterial.Icon.gmd_settings)
+                .withName("Settings");
+
+        mCollectionsExpandableDrawerItem = new ExpandableDrawerItem()
+                .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
+                .withIsExpanded(!unexpandedCategories)
+                .withSelectable(false)
+                .withName("Collections")
+                .withIcon(GoogleMaterial.Icon.gmd_photo_library)
+                .withSubItems(mCollectionsDrawerItemList);
+
         mDrawer.addItems(
-                new PrimaryDrawerItem()
-                        .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                            @Override
-                            public boolean onItemClick(View view, int position,
-                                                       IDrawerItem drawerItem) {
-                                showFragment(FRAGMENT_TAG_HOME);
-                                return false;
-                            }
-                        })
-                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                        .withIcon(GoogleMaterial.Icon.gmd_home)
-                        .withName("Home"),
-                new PrimaryDrawerItem().withOnDrawerItemClickListener(
-                        new Drawer.OnDrawerItemClickListener() {
-                            @Override
-                            public boolean onItemClick(View view, int position,
-                                                       IDrawerItem drawerItem) {
-                                showFragment(FRAGMENT_TAG_FAVORITE);
-                                return false;
-                            }
-                        })
-                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                        .withIcon(GoogleMaterial.Icon.gmd_favorite)
-                        .withName("Favorite"),
-                new ExpandableDrawerItem()
-                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                        .withIsExpanded(false)
-                        .withSelectable(false)
-                        .withName("Collections")
-                        .withIcon(GoogleMaterial.Icon.gmd_photo_library)
-                        .withSubItems(collectionList),
-                new PrimaryDrawerItem().withOnDrawerItemClickListener(
-                        new Drawer.OnDrawerItemClickListener() {
-                            @Override
-                            public boolean onItemClick(View view, int position,
-                                                       IDrawerItem drawerItem) {
-                                showFragment(FRAGMENT_TAG_SETTINGS);
-                                return false;
-                            }
-                        })
-                        .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                        .withIcon(GoogleMaterial.Icon.gmd_settings)
-                        .withName("Settings")
+                mHomeDrawerItem,
+                mFavoriteDrawerItem,
+                mCollectionsExpandableDrawerItem,
+                mSettingsDrawerItem
         );
     }
 
@@ -210,15 +229,23 @@ public class MainActivity extends AppCompatActivity {
         if (mCurrentFragment == null) {
             switch (tag) {
                 case FRAGMENT_TAG_HOME:
+                    mDrawer.setSelection(mHomeDrawerItem, false);
                     mCurrentFragment = HomeFragment.newInstance();
                     break;
                 case FRAGMENT_TAG_FAVORITE:
+                    mDrawer.setSelection(mFavoriteDrawerItem, false);
                     mCurrentFragment = FavoriteFragment.newInstance();
                     break;
                 case FRAGMENT_TAG_SETTINGS:
+                    mDrawer.setSelection(mSettingsDrawerItem, false);
                     mCurrentFragment = SettingsFragment.newInstance();
                     break;
                 default:
+                    for (IDrawerItem item : mCollectionsDrawerItemList) {
+                        if (tag.equals(item.getTag())) {
+                            mDrawer.setSelection(item, false);
+                        }
+                    }
                     mCurrentFragment = MHFragment.newInstance(tag);
             }
             transaction.add(R.id.frameLayout_fragment_container,
@@ -265,10 +292,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshUI(boolean isNightMode) {
-        int colorPrimaryText = ResourceUtil.getColor(this, ThemeHelper.getPrimaryTextColorRes(this));
+        int colorPrimaryText =
+                ResourceUtil.getColor(this, ThemeHelper.getPrimaryTextColorRes(this));
         int colorBackground = ResourceUtil.getColor(this, ThemeHelper.getBackgroundColorRes(this));
         int colorPrimary = ResourceUtil.getColor(this, ThemeHelper.getPrimaryColorRes(this));
-        int colorPrimaryDark = ResourceUtil.getColor(this, ThemeHelper.getPrimaryDarkColorRes(this));
+        int colorPrimaryDark =
+                ResourceUtil.getColor(this, ThemeHelper.getPrimaryDarkColorRes(this));
         int colorSecondaryText =
                 ResourceUtil.getColor(this, ThemeHelper.getSecondaryTextColorRes(this));
 
@@ -285,7 +314,6 @@ public class MainActivity extends AppCompatActivity {
                 primaryDrawerItem.withSelectedColor(colorPrimaryDark);
                 primaryDrawerItem.withTextColor(colorSecondaryText);
                 primaryDrawerItem.withSelectedTextColor(colorPrimaryText);
-
                 primaryDrawerItem.withIconColor(colorSecondaryText);
                 primaryDrawerItem.withSelectedIconColor(colorPrimaryText);
             } else if (drawerItem instanceof ExpandableDrawerItem) {

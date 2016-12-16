@@ -28,10 +28,12 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.eftimoff.androipathview.PathView;
+import com.mikepenz.materialdrawer.model.BaseViewHolder;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.MHItemAnimInterpolator;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -49,9 +51,26 @@ import static android.view.View.GONE;
  * @author: Sorcerer
  * @date: 2016/8/22
  */
-public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
+public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> {
 
-    public static class MHViewHolder extends RecyclerView.ViewHolder {
+    private static final boolean FOOTER_ENABLE = false;
+
+    public static class MHBaseViewHolder extends RecyclerView.ViewHolder {
+
+        public MHBaseViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    public static class MHFooterViewHolder extends MHBaseViewHolder {
+
+        public MHFooterViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    public static class MHViewHolder extends MHBaseViewHolder {
         Drawable drawable;
 
         @BindView(R.id.pathView_item)
@@ -65,7 +84,6 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
         public MHViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
 
         public void playLikeAnim(Context context) {
@@ -140,7 +158,11 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
     }
 
     @Override
-    public MHViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MHBaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_FOOTER) {
+            return new MHFooterViewHolder(
+                    LayoutInflater.from(mContext).inflate(R.layout.item_mh_footer, parent, false));
+        }
         return new MHViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_mh, parent, false));
     }
@@ -158,88 +180,83 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
     private OnItemLongClickListener mOnItemLongClickListener;
 
     @Override
-    public void onBindViewHolder(final MHViewHolder holder, int position) {
-        Resources.Theme theme = mContext.getTheme();
-        TypedValue imagePlaceHolderColor = new TypedValue();
-        TypedValue accentColor = new TypedValue();
-        theme.resolveAttribute(R.attr.colorImagePlaceHolder, imagePlaceHolderColor, true);
-        theme.resolveAttribute(R.attr.colorAccent, accentColor, true);
+    public void onBindViewHolder(MHBaseViewHolder baseHolder, int position) {
 
-        holder.loadingIndicatorView
-                .setIndicatorColor(ResourceUtil.getColor(mContext, accentColor.resourceId));
-        holder.itemView.setBackgroundColor(
-                ResourceUtil.getColor(mContext, imagePlaceHolderColor.resourceId));
-        if (mShowedMap.get(position)) {
-            holder.loadingIndicatorView.setVisibility(GONE);
-        } else {
-            holder.loadingIndicatorView.setVisibility(View.VISIBLE);
-        }
+        if (getItemViewType(position) == TYPE_GENERAL) {
+            final MHViewHolder holder = (MHViewHolder) baseHolder;
+            holder.loadingIndicatorView.setIndicatorColor(ThemeHelper.getAccentColor(mContext));
+            holder.itemView.setBackgroundColor(ThemeHelper.getImagePlaceHolderColor(mContext));
 
-        Animation animation = new AlphaAnimation(0, 1);
-        animation.setDuration(500);
-        animation.setInterpolator(new MHItemAnimInterpolator());
+            if (mShowedMap.get(position)) {
+                holder.loadingIndicatorView.setVisibility(GONE);
+            } else {
+                holder.loadingIndicatorView.setVisibility(View.VISIBLE);
+            }
 
-        holder.loadingIndicatorView.setAlpha(1);
+            Animation animation = new AlphaAnimation(0, 1);
+            animation.setDuration(500);
+            animation.setInterpolator(new MHItemAnimInterpolator());
 
-        mGlideRequestManager.load(mList.get(position))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e,
-                                               String model,
-                                               Target<GlideDrawable> target,
-                                               boolean isFirstResource) {
-                        Timber.e(e);
-                        return false;
-                    }
+            holder.loadingIndicatorView.setAlpha(1);
 
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource,
+            mGlideRequestManager.load(mList.get(position))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e,
                                                    String model,
                                                    Target<GlideDrawable> target,
-                                                   boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
-                        holder.loadingIndicatorView.animate().alpha(0).start();
-//                        holder.loadingIndicatorView.setVisibility(GONE);
-                        mShowedMap.put(holder.getAdapterPosition(), true);
-                        holder.drawable = resource;
-                        return false;
+                            Timber.e(e);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource,
+                                                       String model,
+                                                       Target<GlideDrawable> target,
+                                                       boolean isFromMemoryCache,
+                                                       boolean isFirstResource) {
+                            holder.loadingIndicatorView.animate().alpha(0).start();
+                            mShowedMap.put(holder.getAdapterPosition(), true);
+                            holder.drawable = resource;
+                            return false;
+                        }
+                    })
+                    .animate(animation)
+                    .fitCenter()
+                    .into(holder.image);
+
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(mContext, DetailActivity.class);
+                    intent.putExtra("link", mList.get(holder.getAdapterPosition()));
+                    if (mShowedMap.get(holder.getAdapterPosition())) {
+                        MHApp.setTmpDrawable(mContext, holder.drawable);
+                    } else {
+                        MHApp.setTmpDrawable(mContext, null);
                     }
-                })
-                .animate(animation)
-                .fitCenter()
-                .into(holder.image);
-
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtra("link", mList.get(holder.getAdapterPosition()));
-                if (mShowedMap.get(holder.getAdapterPosition())) {
-                    MHApp.setTmpDrawable(mContext, holder.drawable);
-                } else {
-                    MHApp.setTmpDrawable(mContext, null);
+                    mContext.startActivityForResult(intent, 0, ActivityOptions
+                            .makeSceneTransitionAnimation(mContext, holder.image, "image")
+                            .toBundle());
                 }
-                mContext.startActivityForResult(intent, 0, ActivityOptions
-                        .makeSceneTransitionAnimation(mContext, holder.image, "image")
-                        .toBundle());
-            }
-        });
+            });
 
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (mOnItemLongClickListener != null) {
-                    mOnItemLongClickListener.onLongClick(view,
-                            mList.get(holder.getAdapterPosition()),
-                            holder.getAdapterPosition(), holder);
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (mOnItemLongClickListener != null) {
+                        mOnItemLongClickListener.onLongClick(view,
+                                mList.get(holder.getAdapterPosition()),
+                                holder.getAdapterPosition(), holder);
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
-
+            });
+        }
     }
 
     public void removeItem(int position) {
@@ -257,11 +274,24 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHViewHolder> {
 
     @Override
     public int getItemCount() {
+        if (mList.size() == 0) {
+            return 0;
+        }
+        if (FOOTER_ENABLE) {
+            return mList.size() + 1;
+        }
         return mList.size();
     }
 
-    public OnItemLongClickListener getOnItemLongClickListener() {
-        return mOnItemLongClickListener;
+    private static final int TYPE_GENERAL = 0x0;
+    private static final int TYPE_FOOTER = 0x1;
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == getItemCount() - 1 && FOOTER_ENABLE) {
+            return TYPE_FOOTER;
+        }
+        return TYPE_GENERAL;
     }
 
     public void setOnItemLongClickListener(

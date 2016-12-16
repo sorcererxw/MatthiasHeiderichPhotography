@@ -1,4 +1,4 @@
-package com.sorcererxw.typefaceviews;
+package com.sorcererxw.typefaceviews.widgets;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
+import com.sorcererxw.typefaceviews.TypefaceViews;
 
 import java.lang.reflect.Field;
 
@@ -50,12 +52,20 @@ public class TypefaceToolbar extends Toolbar {
 
     public void setHasText(boolean hasText) {
         mHasText = hasText;
-        if (mHasText){
+        if (mHasText) {
             setTitle(getTitle());
             setSubtitle(getSubtitle());
-        }else {
+        } else {
             setTitle("");
             setSubtitle("");
+        }
+    }
+
+    public void setTitleTypeface(TypefaceViews.TypefaceType type) {
+        if (type == TypefaceViews.TypefaceType.MEDIUM) {
+            setTitleTypeface(TypefaceViews.getMediumTypeface());
+        } else if (type == TypefaceViews.TypefaceType.REGULAR) {
+            setTitleTypeface(TypefaceViews.getRegularTypeface());
         }
     }
 

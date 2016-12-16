@@ -1,12 +1,9 @@
 package com.sorcererxw.matthiasheiderichphotography.ui.activities;
 
 import android.app.WallpaperManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -19,11 +16,9 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.transition.Transition;
-import android.view.Display;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,6 +27,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.Dialogs;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.FilePickerSheetView;
@@ -39,11 +38,14 @@ import com.sorcererxw.matthiasheiderichphotography.ui.others.SimpleTransitionLis
 import com.sorcererxw.matthiasheiderichphotography.util.DialogUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
+import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
+import com.sorcererxw.matthiasheiderichphotography.util.WallpaperSetter;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.typefaceviews.TypefaceSnackbar;
-import com.sorcererxw.typefaceviews.TypefaceToolbar;
+import com.sorcererxw.typefaceviews.widgets.TypefaceSnackbar;
+import com.sorcererxw.typefaceviews.widgets.TypefaceToolbar;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -81,6 +83,15 @@ public class DetailActivity extends AppCompatActivity {
     FloatingActionButton mApplyFAB;
     @BindView(R.id.fab_detail_save)
     FloatingActionButton mSaveFAB;
+    @BindView(R.id.loadingIndicator_item)
+    AVLoadingIndicatorView mIndicatorView;
+
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient mClient;
 
     @OnClick(R.id.fab_detail_apply)
     void clickApply() {
@@ -124,6 +135,8 @@ public class DetailActivity extends AppCompatActivity {
         return true;
     }
 
+    private WallpaperSetter mWallpaperSetter;
+
     private String mLink;
     private Uri mUri = null;
 
@@ -150,8 +163,10 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
         mLink = getIntent().getStringExtra("link");
+        mWallpaperSetter = new WallpaperSetter(this);
         initImage();
 
+        mIndicatorView.setIndicatorColor(ThemeHelper.getAccentColor(this));
         mToolbar.setHasText(false);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -160,6 +175,9 @@ public class DetailActivity extends AppCompatActivity {
 
         mFAB.hideMenuButton(false);
         mRxPermissions = new RxPermissions(this);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void initImage() {
@@ -246,6 +264,15 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private Observable<Uri> download() {
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File dir = new File(path, "/Matthisa Heiderich");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        return download(dir);
+    }
+
+    private Observable<Uri> download(final File path) {
         return Observable.just(mLink).map(new Func1<String, Bitmap>() {
             @Override
             public Bitmap call(String s) {
@@ -284,15 +311,8 @@ public class DetailActivity extends AppCompatActivity {
                 Uri uri = null;
                 FileOutputStream out = null;
                 try {
-                    File path = Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_PICTURES);
-                    File dir = new File(path, "/Matthisa Heiderich");
-                    if (!dir.exists()) {
-                        dir.mkdir();
-                    }
-                    final File file = new File(path, "/Matthisa Heiderich/"
-                            + StringUtil.getFileNameFromLinkWithoutExtension(mLink)
-                            + ".png");
+                    final File file = new File(path,
+                            StringUtil.getFileNameFromLinkWithoutExtension(mLink) + ".png");
                     if (file.exists()) {
                         uri = Uri.fromFile(file);
                     } else {
@@ -329,6 +349,21 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void saveToLocal() {
+        requestPermission().subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean aBoolean) {
+                File path = Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                File dir = new File(path, "/Matthisa Heiderich");
+                if (!dir.exists()) {
+                    dir.mkdir();
+                }
+                saveToLocal(dir);
+            }
+        });
+    }
+
+    private void saveToLocal(final File path) {
         requestPermission().filter(new Func1<Boolean, Boolean>() {
             @Override
             public Boolean call(Boolean granted) {
@@ -352,7 +387,7 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public Observable<Uri> call(Boolean aBoolean) {
                 showDialog("Saving To Local...");
-                return download();
+                return download(path);
             }
         }).filter(new Func1<Uri, Boolean>() {
             @Override
@@ -414,22 +449,14 @@ public class DetailActivity extends AppCompatActivity {
                             getWindow().getDecorView().getRootView().getWindowToken(), 0.5f, 1);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         if (lockScreen) {
-                            wallpaperManager.setBitmap(
-                                    cropBitmapFromCenterAndScreenSize(mUri),
-                                    null,
-                                    true,
-                                    FLAG_LOCK);
+                            mWallpaperSetter.setLockScreenWallpaper(mUri);
                         }
                         if (homeScreen) {
-                            wallpaperManager.setStream(
-                                    new FileInputStream(new File(mUri.getPath())),
-                                    null,
-                                    true,
-                                    FLAG_SYSTEM);
+                            mWallpaperSetter.setSystemWallpaper(mUri);
                         }
                     }
                     if (!homeScreen && !lockScreen) {
-                        setWallpaperSimple(wallpaperManager, uriToBitmap(mUri));
+                        mWallpaperSetter.setWallpaperSimple(getWindowManager(), mUri);
                     }
                     return true;
                 } catch (IOException e) {
@@ -526,17 +553,29 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void showFileChooser() {
-        mFAB.hideMenuButton(true);
-        BottomSheetDialog dialog = new BottomSheetDialog(this);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+        requestPermission().subscribe(new Action1<Boolean>() {
             @Override
-            public void onDismiss(DialogInterface dialog) {
-                mFAB.showMenuButton(true);
+            public void call(Boolean aBoolean) {
+                mFAB.hideMenuButton(true);
+                final BottomSheetDialog dialog =
+                        Dialogs.FilePickerBottomSheetDialog(DetailActivity.this,
+                                "Select path to save...",
+                                new FilePickerSheetView.OnFileSelectedCallBack() {
+                                    @Override
+                                    public void onFileSelected(File file) {
+                                        saveToLocal(file);
+                                    }
+                                });
+
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        mFAB.showMenuButton(true);
+                    }
+                });
+                dialog.show();
             }
         });
-        dialog.setContentView(new FilePickerSheetView(this));
-        dialog.show();
     }
 
     @Override
@@ -544,7 +583,11 @@ public class DetailActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
+            if (mToolbar.getAlpha() == 0) {
+                return false;
+            }
             onBackPressed();
+            return true;
         }
         return false;
     }
@@ -631,63 +674,39 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap uriToBitmap(Uri uri) {
-        File image = new File(uri.getPath());
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        return BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Detail Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
     }
 
-    private void setWallpaperSimple(WallpaperManager manager, Bitmap wallPaperBitmap) {
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screenHeight = size.y;
+    @Override
+    public void onStart() {
+        super.onStart();
 
-        int width = wallPaperBitmap.getWidth();
-        width = (width * screenHeight) / wallPaperBitmap.getHeight();
-        try {
-            manager.setBitmap(
-                    Bitmap.createScaledBitmap(wallPaperBitmap, width, screenHeight, true));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        mClient.connect();
+        AppIndex.AppIndexApi.start(mClient, getIndexApiAction());
     }
 
-    private Bitmap cropBitmapFromCenterAndScreenSize(Uri uri) {
-        return cropBitmapFromCenterAndScreenSize(uriToBitmap(uri));
-    }
+    @Override
+    public void onStop() {
+        super.onStop();
 
-    private Bitmap cropBitmapFromCenterAndScreenSize(Bitmap bitmap) {
-        float screenWidth, screenHeight;
-        float bitmap_width = bitmap.getWidth(), bitmap_height = bitmap
-                .getHeight();
-        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay();
-        screenWidth = display.getWidth();
-        screenHeight = display.getHeight();
-
-        float bitmap_ratio = bitmap_width / bitmap_height;
-        float screen_ratio = screenWidth / screenHeight;
-        int bitmapNewWidth, bitmapNewHeight;
-
-        if (screen_ratio > bitmap_ratio) {
-            bitmapNewWidth = (int) screenWidth;
-            bitmapNewHeight = (int) (bitmapNewWidth / bitmap_ratio);
-        } else {
-            bitmapNewHeight = (int) screenHeight;
-            bitmapNewWidth = (int) (bitmapNewHeight * bitmap_ratio);
-        }
-
-        bitmap = Bitmap.createScaledBitmap(bitmap, bitmapNewWidth,
-                bitmapNewHeight, true);
-
-        int bitmapGapX, bitmapGapY;
-        bitmapGapX = (int) ((bitmapNewWidth - screenWidth) / 2.0f);
-        bitmapGapY = (int) ((bitmapNewHeight - screenHeight) / 2.0f);
-
-        bitmap = Bitmap.createBitmap(bitmap,
-                bitmapGapX, bitmapGapY,
-                (int) screenWidth, (int) screenHeight);
-        return bitmap;
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(mClient, getIndexApiAction());
+        mClient.disconnect();
     }
 }
