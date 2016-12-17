@@ -26,6 +26,7 @@ import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -159,7 +160,9 @@ public class FavoriteFragment extends BaseFragment {
         Observable.create(new Observable.OnSubscribe<List<String>>() {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
-                subscriber.onNext(mProjectDBHelper.getLinks());
+                List<String> list = mProjectDBHelper.getLinks();
+                Collections.reverse(list);
+                subscriber.onNext(list);
             }
         })
                 .subscribeOn(Schedulers.newThread())

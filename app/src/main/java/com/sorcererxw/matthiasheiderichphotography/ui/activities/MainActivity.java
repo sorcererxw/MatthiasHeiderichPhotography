@@ -11,6 +11,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -42,6 +43,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+
+    @BindView(R.id.linearLayout_main_root)
+    LinearLayout mRoot;
 
     @BindView(R.id.toolbar_main)
     TypefaceToolbar mToolbar;
@@ -218,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String mFragmentTag;
 
-    private void showFragment(String tag) {
+    public void showFragment(String tag) {
         if (tag.equals(mFragmentTag)) {
             return;
         }
@@ -307,6 +311,8 @@ public class MainActivity extends AppCompatActivity {
                 .setTextColor(colorPrimaryText);
         mDrawer.getHeader().setBackgroundColor(colorBackground);
         mDrawer.getSlider().setBackgroundColor(colorBackground);
+        mDrawer.getRecyclerView().setHorizontalScrollBarEnabled(false);
+        mDrawer.getRecyclerView().setVerticalScrollBarEnabled(false);
 
         for (IDrawerItem drawerItem : mDrawer.getDrawerItems()) {
             if (drawerItem instanceof PrimaryDrawerItem) {
@@ -341,9 +347,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshStatusBar(boolean isNightMode) {
-
-        getWindow().setStatusBarColor(
-                ContextCompat.getColor(this, ThemeHelper.getPrimaryDarkColorRes(this)));
+        mRoot.setBackgroundColor(ThemeHelper.getPrimaryDarkColor(this));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (isNightMode) {

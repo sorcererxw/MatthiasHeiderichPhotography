@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <com.sorcererxw.typefaceviews.preferences.TypefacePreferenceCategory
+        android:key="KEY_GENERAL_GROUP"
+        android:title="General">
+        <com.sorcererxw.typefaceviews.preferences.TypefacePreference
+            android:key="KEY_GENERAL_CLEAR_CACHE"
+            android:title="Clear Cache"/>
+    </com.sorcererxw.typefaceviews.preferences.TypefacePreferenceCategory>
+
+    <com.sorcererxw.typefaceviews.preferences.TypefacePreferenceCategory
+        android:key="KEY_AUTO_ROTATE_GROUP"
+        android:title="Auto Rotate">
+
+        <com.sorcererxw.typefaceviews.preferences.TypefaceSwitchPreference
+            android:key="KEY_AUTO_ROTATE_ENABLE"
+            android:summary="Select a random picture as system wallpaper automatically"
+            android:title="Auto Rotate"/>
+        <com.sorcererxw.typefaceviews.preferences.TypefacePreference
+            android:key="KEY_AUTO_ROTATE_TIME"
+            android:title="Time Interval"/>
+        <com.sorcererxw.typefaceviews.preferences.TypefaceSwitchPreference
+            android:key="KEY_AUTO_ROTATE_WIFI"
+            android:summary="May consume large amounts of data in the mobile network"
+            android:title="Rotate Only in WiFi"/>
+
+    </com.sorcererxw.typefaceviews.preferences.TypefacePreferenceCategory>
+
+    <com.sorcererxw.typefaceviews.preferences.TypefacePreferenceCategory
         android:key="KEY_MUZEI_GROUP"
         android:title="Muzei Live Wallpaper">
         <com.sorcererxw.typefaceviews.preferences.TypefacePreference
@@ -9,7 +35,7 @@
         <com.sorcererxw.typefaceviews.preferences.TypefacePreference
             android:key="KEY_MUZEI_ROTATE_CATEGORY"
             android:title="Rotate Category"/>
-        <com.sorcererxw.typefaceviews.preferences.TypefaceCheckBoxPreference
+        <com.sorcererxw.typefaceviews.preferences.TypefaceSwitchPreference
             android:key="KEY_MUZEI_ROTATE_ONLY_WIFI"
             android:title="Rotate Only in WiFi"/>
         <com.sorcererxw.typefaceviews.preferences.TypefacePreference

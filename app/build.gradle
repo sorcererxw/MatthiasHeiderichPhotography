@@ -97,8 +97,6 @@ dependencies {
     apt 'com.google.auto.value:auto-value:1.2'
     apt 'com.ryanharter.auto.value:auto-value-parcel:0.2.5'
 
-    compile 'com.lcodecorex:tkrefreshlayout:1.0.4'
-
     compile project(':typeface-views')
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    compile 'com.google.android.gms:play-services-appindexing:9.8.0'
 }

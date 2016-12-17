@@ -19,6 +19,7 @@ import java.util.Random;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import timber.log.Timber;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -109,9 +110,7 @@ public class MHArtSource extends RemoteMuzeiArtSource {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        if (BuildConfig.DEBUG) {
-                            throwable.printStackTrace();
-                        }
+                        Timber.e(throwable);
                     }
                 });
     }

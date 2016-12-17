@@ -31,15 +31,15 @@ public class TypefacePreferenceCategory extends PreferenceCategory {
 
     private View mView;
 
+    private TextView mTitleTextView;
     @Override
     protected void onBindView(View view) {
         super.onBindView(view);
         mView = view;
+        mTitleTextView = (TextView) mView.findViewById(android.R.id.title);
+        mTitleTextView.setTextColor(ColorStateLists.TitleColorStateList(getContext()));
         if (getTitle() != null && getTitle().length() > 0) {
             setTitleTypeface(TypefaceViews.getMediumTypeface());
-        }
-        if (getSummary() != null && getSummary().length() > 0) {
-            setSummaryTypeface(TypefaceViews.getRegularTypeface());
         }
     }
 
@@ -48,16 +48,9 @@ public class TypefacePreferenceCategory extends PreferenceCategory {
     }
 
     public void setTitleTypeface(Typeface typeface) {
-        if (mView == null) {
+        if (mTitleTextView == null) {
             return;
         }
-        ((TextView) mView.findViewById(android.R.id.title)).setTypeface(typeface);
-    }
-
-    public void setSummaryTypeface(Typeface typeface) {
-        if (mView == null) {
-            return;
-        }
-        ((TextView) mView.findViewById(android.R.id.summary)).setTypeface(typeface);
+        mTitleTextView.setTypeface(typeface);
     }
 }

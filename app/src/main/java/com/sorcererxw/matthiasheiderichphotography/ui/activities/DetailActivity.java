@@ -48,7 +48,6 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -67,8 +66,6 @@ import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.app.WallpaperManager.FLAG_LOCK;
-import static android.app.WallpaperManager.FLAG_SYSTEM;
 
 public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.coordinatorLayout_detail)
@@ -85,7 +82,6 @@ public class DetailActivity extends AppCompatActivity {
     FloatingActionButton mSaveFAB;
     @BindView(R.id.loadingIndicator_item)
     AVLoadingIndicatorView mIndicatorView;
-
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -598,7 +594,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupFAB() {
-        Observable.just(mLink + "?format=1000w").map(new Func1<String, Palette.Swatch>() {
+        Observable.just(mLink).map(new Func1<String, Palette.Swatch>() {
             @Override
             public Palette.Swatch call(String s) {
                 Bitmap bitmap = null;

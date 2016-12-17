@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import timber.log.Timber;
 
@@ -75,10 +77,14 @@ public class ProjectDBHelper {
     }
 
     public void saveLinks(List<String> list) {
-        clear();
+        List<String> saved = getLinks();
+        Set<String> savedSet = new HashSet<>(saved);
+        Set<String> toSaveSet = new HashSet<>(list);
+        toSaveSet.removeAll(savedSet);
+
         String sql = "INSERT INTO " + mTable + "(link) values(?)";
-        for (int i = 0; i < list.size(); i++) {
-            mDB.execSQL(sql, new String[]{list.get(i)});
+        for (String link : toSaveSet) {
+            mDB.execSQL(sql, new String[]{link});
         }
     }
 
@@ -91,5 +97,9 @@ public class ProjectDBHelper {
         }
         cursor.close();
         return list;
+    }
+
+    public void close() {
+        mDB.close();
     }
 }

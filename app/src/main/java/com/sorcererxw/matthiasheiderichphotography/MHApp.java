@@ -6,9 +6,13 @@ import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 
 import com.sorcererxw.matthiasheiderichphotography.util.Prefs;
+import com.sorcererxw.matthiasheiderichphotography.util.ScheduleManager;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.typefaceviews.TypefaceViews;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import timber.log.Timber;
 
@@ -60,11 +64,12 @@ public class MHApp extends Application {
         );
         mPrefs = new Prefs(this);
 
+        mScheduleManager = new ScheduleManager(this);
+        mScheduleManager.startAutoChangeWallpaperIfNeeded();
+
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
-
-//        mMHComponent = DaggerMHComponent.builder().build();
     }
 
     private static MHApp mApp;
@@ -83,4 +88,9 @@ public class MHApp extends Application {
         return ((MHApp) context.getApplicationContext()).mTmpDrawable;
     }
 
+    private ScheduleManager mScheduleManager;
+
+    public ScheduleManager getScheduleManager() {
+        return mScheduleManager;
+    }
 }

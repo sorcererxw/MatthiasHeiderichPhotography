@@ -14,6 +14,9 @@ import android.view.WindowManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Time;
+
+import timber.log.Timber;
 
 import static android.app.WallpaperManager.FLAG_LOCK;
 import static android.app.WallpaperManager.FLAG_SYSTEM;
@@ -54,11 +57,12 @@ public class WallpaperSetter {
         mWallpaperManager.setStream(new FileInputStream(file), null, true, FLAG_SYSTEM);
     }
 
-    public void setWallpaperSimple(WindowManager windowManager, Uri uri){
+    public void setWallpaperSimple(WindowManager windowManager, Uri uri) {
         setWallpaperSimple(windowManager, uriToBitmap(uri));
     }
 
-    public void setWallpaperSimple(WindowManager windowManager, Bitmap wallPaperBitmap) {
+
+    public boolean setWallpaperSimple(WindowManager windowManager, Bitmap wallPaperBitmap) {
         Display display = windowManager.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -69,8 +73,10 @@ public class WallpaperSetter {
         try {
             mWallpaperManager.setBitmap(
                     Bitmap.createScaledBitmap(wallPaperBitmap, width, screenHeight, true));
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
+            return false;
         }
     }
 

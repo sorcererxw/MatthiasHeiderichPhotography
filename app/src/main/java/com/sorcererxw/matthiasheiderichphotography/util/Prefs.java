@@ -51,4 +51,20 @@ public class Prefs {
     public MHPreference<Boolean> getThemeNightMode() {
         return new MHPreference<>(mSharedPreferences, KEY_THEME_NIGHT_MODE, false);
     }
+
+    public static final String KEY_AUTO_ROTATE_TIME = "KEY_AUTO_ROTATE_TIME";
+    public static final String KEY_AUTO_ROTATE_ENABLE = "KEY_AUTO_ROTATE_ENABLE";
+    public static final String KEY_AUTO_ROTATE_WIFI = "KEY_AUTO_ROTATE_WIFI";
+
+    public MHPreference<Long> getAutoRotateTime() {
+        return new MHPreference<>(mSharedPreferences, KEY_AUTO_ROTATE_TIME, 1000 * 60 * 60 * 24L);
+    }
+
+    public MHPreference<Boolean> getAutoRotateEnable() {
+        return new MHPreference<>(mSharedPreferences, KEY_AUTO_ROTATE_ENABLE, false);
+    }
+
+    public MHPreference<Boolean> getAutoRotateOnlyInWifi() {
+        return new MHPreference<>(mSharedPreferences, KEY_AUTO_ROTATE_WIFI, false);
+    }
 }
