@@ -32,6 +32,7 @@ public class TypefacePreferenceCategory extends PreferenceCategory {
     private View mView;
 
     private TextView mTitleTextView;
+
     @Override
     protected void onBindView(View view) {
         super.onBindView(view);

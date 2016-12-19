@@ -38,6 +38,7 @@ import com.sorcererxw.matthiasheidericphotography.R;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -64,6 +65,9 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
     }
 
     public static class MHFooterViewHolder extends MHBaseViewHolder {
+
+        @BindView(R.id.pathView_foot)
+        PathView footView;
 
         public MHFooterViewHolder(View itemView) {
             super(itemView);
@@ -181,8 +185,9 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
 
     @Override
     public void onBindViewHolder(MHBaseViewHolder baseHolder, int position) {
-
-        if (getItemViewType(position) == TYPE_GENERAL) {
+        if (getItemViewType(position) == TYPE_FOOTER) {
+            final MHFooterViewHolder holder = (MHFooterViewHolder) baseHolder;
+        } else if (getItemViewType(position) == TYPE_GENERAL) {
             final MHViewHolder holder = (MHViewHolder) baseHolder;
             holder.loadingIndicatorView.setIndicatorColor(ThemeHelper.getAccentColor(mContext));
             holder.itemView.setBackgroundColor(ThemeHelper.getImagePlaceHolderColor(mContext));
@@ -226,7 +231,6 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
                     .animate(animation)
                     .fitCenter()
                     .into(holder.image);
-
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

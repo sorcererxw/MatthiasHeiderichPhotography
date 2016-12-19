@@ -25,6 +25,8 @@ import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.widgets.TypefaceSnackbar;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -149,6 +151,7 @@ public class MHFragment extends BaseFragment {
                 mLastSync.setValue(0L);
                 initData();
             } else {
+                Collections.sort(list);
                 mAdapter.setData(list);
             }
         } else {
@@ -170,6 +173,7 @@ public class MHFragment extends BaseFragment {
                 .subscribe(new Action1<List<String>>() {
                     @Override
                     public void call(List<String> strings) {
+                        Collections.sort(strings);
                         mAdapter.setData(strings);
                         mLastSync.setValue(System.currentTimeMillis());
                         mDbHelper.saveLinks(strings);

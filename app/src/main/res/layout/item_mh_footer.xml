@@ -3,6 +3,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical">
 
     <FrameLayout
@@ -14,13 +15,10 @@
         android:outlineProvider="bounds"
         tools:layout_height="100dp"/>
 
-    <com.sorcererxw.typefaceviews.widgets.TypefaceTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="4dp"
-        android:gravity="center"
-        android:text="❈❈❈End❈❈❈"
-        android:textSize="20sp"
-        android:textStyle="italic"/>
+    <com.eftimoff.androipathview.PathView
+        app:svg="@raw/footer_line"
+        android:layout_width="100dp"
+        app:pathColor="#000"
+        android:layout_height="100dp"
+        android:id="@+id/pathView_foot"/>
 </LinearLayout>

@@ -119,6 +119,11 @@ public class WallpaperChangeService extends IntentService {
                 WallpaperChangeService.this.stopSelf();
                 mRunning = false;
             }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                Timber.e(throwable);
+            }
         });
     }
 
