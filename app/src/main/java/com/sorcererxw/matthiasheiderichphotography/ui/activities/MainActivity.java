@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -24,6 +23,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.data.Project;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectTable;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.BaseFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.FavoriteFragment;
 import com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment;
@@ -119,6 +120,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static final String FRAGMENT_TAG_FAVORITE = "Favorite";
+    public static final String FRAGMENT_TAG_HOME = "Home";
+    public static final String FRAGMENT_TAG_SETTINGS = "Settings";
+
     private Drawer mDrawer;
 
     private void initDrawer() {
@@ -139,12 +144,11 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mCollectionsDrawerItemList = new ArrayList<>();
-        for (int i = 0; i < MHApp.PROJECTS_NAME.length; i++) {
+        for (Project project : Project.values()) {
             IDrawerItem item = new SecondaryDrawerItem()
-                    .withName("        " + StringUtil
-                            .handleProjectName(MHApp.PROJECTS_NAME[i]))
+                    .withName("        " + project.toCollectionName())
                     .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                    .withTag(MHApp.PROJECTS_NAME[i])
+                    .withTag(project.toString())
                     .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                         @Override
                         public boolean onItemClick(View view, int position,
@@ -161,7 +165,21 @@ public class MainActivity extends AppCompatActivity {
                 || FRAGMENT_TAG_FAVORITE.equals(fragmentTag)
                 || FRAGMENT_TAG_SETTINGS.equals(fragmentTag);
 
-        mHomeDrawerItem = new PrimaryDrawerItem()
+        mHomeDrawerItem = homeDrawerItem();
+        mFavoriteDrawerItem = favoriteDrawerItem();
+        mSettingsDrawerItem = settingsDrawerItem();
+        mCollectionsExpandableDrawerItem = collectionsDrawerItem(!unexpandedCategories);
+
+        mDrawer.addItems(
+                mHomeDrawerItem,
+                mFavoriteDrawerItem,
+                mCollectionsExpandableDrawerItem,
+                mSettingsDrawerItem
+        );
+    }
+
+    private PrimaryDrawerItem homeDrawerItem() {
+        return new PrimaryDrawerItem()
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position,
@@ -173,8 +191,10 @@ public class MainActivity extends AppCompatActivity {
                 .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
                 .withIcon(GoogleMaterial.Icon.gmd_home)
                 .withName("Home");
+    }
 
-        mFavoriteDrawerItem = new PrimaryDrawerItem().withOnDrawerItemClickListener(
+    private PrimaryDrawerItem favoriteDrawerItem() {
+        return new PrimaryDrawerItem().withOnDrawerItemClickListener(
                 new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position,
@@ -186,8 +206,10 @@ public class MainActivity extends AppCompatActivity {
                 .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
                 .withIcon(GoogleMaterial.Icon.gmd_favorite)
                 .withName("Favorite");
+    }
 
-        mSettingsDrawerItem = new PrimaryDrawerItem().withOnDrawerItemClickListener(
+    private PrimaryDrawerItem settingsDrawerItem() {
+        return new PrimaryDrawerItem().withOnDrawerItemClickListener(
                 new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position,
@@ -199,26 +221,17 @@ public class MainActivity extends AppCompatActivity {
                 .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
                 .withIcon(GoogleMaterial.Icon.gmd_settings)
                 .withName("Settings");
+    }
 
-        mCollectionsExpandableDrawerItem = new ExpandableDrawerItem()
+    private ExpandableDrawerItem collectionsDrawerItem(boolean expandedCategories) {
+        return new ExpandableDrawerItem()
                 .withTypeface(TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book))
-                .withIsExpanded(!unexpandedCategories)
+                .withIsExpanded(expandedCategories)
                 .withSelectable(false)
                 .withName("Collections")
                 .withIcon(GoogleMaterial.Icon.gmd_photo_library)
                 .withSubItems(mCollectionsDrawerItemList);
-
-        mDrawer.addItems(
-                mHomeDrawerItem,
-                mFavoriteDrawerItem,
-                mCollectionsExpandableDrawerItem,
-                mSettingsDrawerItem
-        );
     }
-
-    public static final String FRAGMENT_TAG_FAVORITE = "Favorite";
-    public static final String FRAGMENT_TAG_HOME = "Home";
-    public static final String FRAGMENT_TAG_SETTINGS = "Settings";
 
     private String mFragmentTag;
 
@@ -269,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         mLastFragment = mCurrentFragment;
         transaction.commit();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(StringUtil.handleProjectName(tag));
+            getSupportActionBar().setTitle(tag);
         }
     }
 

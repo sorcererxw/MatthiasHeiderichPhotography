@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.data.Project;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectTable;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.Dialogs;
 import com.sorcererxw.matthiasheiderichphotography.util.ApplicationUtil;
@@ -21,7 +23,6 @@ import com.sorcererxw.matthiasheiderichphotography.util.ListUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
 import com.sorcererxw.matthiasheiderichphotography.util.Prefs;
 import com.sorcererxw.matthiasheidericphotography.R;
-import com.sorcererxw.typefaceviews.preferences.TypefacePreference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -262,7 +263,7 @@ public class SettingsFragment extends BaseFragment {
                         public boolean onPreferenceClick(Preference preference) {
                             List<String> items = new ArrayList<>();
                             items.add(MUZEI_ROTATE_CATEGORY_ALL);
-                            items.addAll(Arrays.asList(MHApp.PROJECTS_NAME));
+                            items.addAll(Project.toCollectionNameList());
                             Dialogs.TypefaceMaterialDialogBuilder(getActivity()).items(items)
                                     .itemsCallback(new MaterialDialog.ListCallback() {
                                         @Override

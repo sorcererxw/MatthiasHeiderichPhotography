@@ -2,17 +2,14 @@ package com.sorcererxw.matthiasheiderichphotography;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 
+import com.sorcererxw.matthiasheiderichphotography.data.db.Db;
 import com.sorcererxw.matthiasheiderichphotography.util.Prefs;
 import com.sorcererxw.matthiasheiderichphotography.util.ScheduleManager;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 import com.sorcererxw.typefaceviews.TypefaceViews;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import timber.log.Timber;
 
@@ -22,35 +19,17 @@ import timber.log.Timber;
  * @date: 2016/8/22
  */
 public class MHApp extends Application {
-    public static String[] PROJECTS_NAME = new String[]{
-            "material-i",
-            "reflections-1",
-            "nowhere-in-particular",
-            "systems-layers-iii",
-            "systems-layers-ii",
-            "systems-layers",
-            "northbound",
-            "reflexionen-drei",
-            "reflexionen-zwei",
-            "reflexionen-eins",
-            "reflexiones",
-            "spektrum-eins",
-            "spektrum-zwei",
-            "fragment",
-            "uae",
-            "stadt-der-zukunft",
-            "kali",
-            "a7-southbound",
-            "ost-west",
-            "studien",
-            "color-berlin",
-            "random"
-    };
 
     private Prefs mPrefs;
 
     public Prefs getPrefs() {
         return mPrefs;
+    }
+
+    private Db mDb;
+
+    public static Db getDb(Context context) {
+        return ((MHApp) context.getApplicationContext()).mDb;
     }
 
     @Override
@@ -63,6 +42,7 @@ public class MHApp extends Application {
                 TypefaceHelper.getTypeface(this, TypefaceHelper.Type.Book)
         );
         mPrefs = new Prefs(this);
+        mDb = new Db(this);
 
         mScheduleManager = new ScheduleManager(this);
         mScheduleManager.startAutoChangeWallpaperIfNeeded();

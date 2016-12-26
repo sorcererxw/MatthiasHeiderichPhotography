@@ -1,35 +1,24 @@
-package com.sorcererxw.matthiasheiderichphotography.db;
+package com.sorcererxw.matthiasheiderichphotography.data.db;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
-import com.squareup.sqlbrite.SqlBrite;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import timber.log.Timber;
-
 /**
  * @description:
  * @author: Sorcerer
  * @date: 2016/8/22
  */
-public class ProjectDBHelper {
+class ProjectDBHelper {
 
     private SQLiteDatabase mDB;
 
     private String mTable;
-
-    private SqlBrite mSqlBrite = new SqlBrite.Builder().logger(new SqlBrite.Logger() {
-        @Override
-        public void log(String message) {
-            Timber.v(message);
-        }
-    }).build();
 
     public ProjectDBHelper(Context context, String table) {
         mTable = table;

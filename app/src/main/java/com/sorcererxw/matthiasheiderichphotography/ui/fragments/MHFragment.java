@@ -10,29 +10,32 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
-import com.sorcererxw.matthiasheiderichphotography.db.ProjectDBHelper;
+import com.sorcererxw.matthiasheiderichphotography.data.Project;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectDbManager;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectTable;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity;
 import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
-import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
 import com.sorcererxw.matthiasheidericphotography.R;
 import com.sorcererxw.typefaceviews.widgets.TypefaceSnackbar;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 
@@ -55,9 +58,9 @@ public class MHFragment extends BaseFragment {
         return fragment;
     }
 
-    ProjectDBHelper mFavoriteDBHelper;
-
     private Activity mActivity;
+
+    private ProjectDbManager mFavoriteDBHelper;
 
     @Override
     public void onAttach(Activity activity) {
@@ -69,10 +72,13 @@ public class MHFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        mFavoriteDBHelper = new ProjectDBHelper(getContext(), "favorite");
+        mFavoriteDBHelper =
+                MHApp.getDb(getContext()).getProjectDbManager(ProjectTable.PROJECT_FAVORITE);
+        mProjectName = getArguments().getString(PROJECT_KEY);
+
     }
 
-    private ProjectDBHelper mDbHelper;
+    private Project mProject;
 
     private MHPreference<Long> mLastSync;
 
@@ -82,7 +88,6 @@ public class MHFragment extends BaseFragment {
                                    @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mh, container, false);
         ButterKnife.bind(this, view);
-        mProjectName = getArguments().getString(PROJECT_KEY);
         initViews(mActivity);
         return view;
     }
@@ -107,12 +112,12 @@ public class MHFragment extends BaseFragment {
                 if (!mAdapter.hasItemShowed(position)) {
                     return;
                 }
-                if (mFavoriteDBHelper.isLinkContain(data)) {
-                    mFavoriteDBHelper.deleteLink(data);
+                if (mFavoriteDBHelper.isContain(data)) {
+                    mFavoriteDBHelper.removeLink(data);
                     TypefaceSnackbar.make(mRoot, "Removed from Favorite", LENGTH_LONG).show();
                     holder.playDislikeAnim(getContext());
                 } else {
-                    mFavoriteDBHelper.saveLink(data);
+                    mFavoriteDBHelper.saveLinks(Collections.singletonList(data));
                     TypefaceSnackbar.make(mRoot, "Added to Favorite", LENGTH_LONG)
                             .setAction("show favorites", new View.OnClickListener() {
                                 @Override
@@ -142,24 +147,38 @@ public class MHFragment extends BaseFragment {
         });
     }
 
+    private ProjectDbManager mProjectsHelper;
+
     private void initData() {
-        mDbHelper = new ProjectDBHelper(getContext(), StringUtil.onlyLetter(mProjectName));
+        mProjectsHelper = MHApp.getDb(getContext()).getProjectDbManager(mProjectName);
         mLastSync = MHApp.getInstance().getPrefs().getLastSync(mProjectName, 0L);
+
         if (System.currentTimeMillis() - mLastSync.getValue() < 86400000) {
-            List<String> list = mDbHelper.getLinks();
-            if (list.size() == 0) {
-                mLastSync.setValue(0L);
-                initData();
-            } else {
-                Collections.sort(list);
-                mAdapter.setData(list);
-            }
+            mProjectsHelper.getLinks()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<List<String>>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(List<String> strings) {
+                            mAdapter.setData(strings);
+                        }
+                    });
         } else {
             catchData();
         }
     }
 
-    public void catchData() {
+    private void catchData() {
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -170,13 +189,36 @@ public class MHFragment extends BaseFragment {
         WebCatcher.catchImageLinks(
                 "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<String>>() {
+                .subscribe(new Subscriber<List<String>>() {
                     @Override
-                    public void call(List<String> strings) {
+                    public void onCompleted() {
+                        mSwipeRefreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                        Toast.makeText(mActivity, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        mSwipeRefreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onNext(List<String> strings) {
                         Collections.sort(strings);
-                        mAdapter.setData(strings);
-                        mLastSync.setValue(System.currentTimeMillis());
-                        mDbHelper.saveLinks(strings);
+                        if (strings.size() > 0) {
+                            mLastSync.setValue(System.currentTimeMillis());
+                            mProjectsHelper.saveLinks(strings);
+                        }
                         mSwipeRefreshLayout.post(new Runnable() {
                             @Override
                             public void run() {
@@ -196,9 +238,6 @@ public class MHFragment extends BaseFragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (mDbHelper != null) {
-            mDbHelper.close();
-        }
     }
 
     @Override

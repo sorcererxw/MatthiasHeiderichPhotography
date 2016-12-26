@@ -7,11 +7,12 @@ import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.google.android.apps.muzei.api.UserCommand;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.data.Project;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectTable;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.DetailActivity;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity;
 import com.sorcererxw.matthiasheiderichphotography.util.NetworkUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
-import com.sorcererxw.matthiasheidericphotography.BuildConfig;
 
 import java.util.List;
 import java.util.Random;
@@ -89,7 +90,7 @@ public class MHArtSource extends RemoteMuzeiArtSource {
         final Random random = new Random();
         String category = MHApp.getInstance().getPrefs().getMuzeiRotateCategory().getValue();
         if (category.isEmpty()) {
-            category = MHApp.PROJECTS_NAME[random.nextInt(MHApp.PROJECTS_NAME.length)];
+            category = Project.values()[random.nextInt(Project.values().length)].toSimpleName();
         }
 
         WebCatcher.catchImageLinks("http://www.matthias-heiderich.de/" + category)

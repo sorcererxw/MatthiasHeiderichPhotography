@@ -16,26 +16,25 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectTable;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectDbManager;
 import com.sorcererxw.matthiasheiderichphotography.ui.adapters.MHAdapter;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.Dialogs;
 import com.sorcererxw.matthiasheiderichphotography.ui.others.LinerMarginDecoration;
 import com.sorcererxw.matthiasheiderichphotography.util.DisplayUtil;
-import com.sorcererxw.matthiasheiderichphotography.db.ProjectDBHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.ResourceUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.ThemeHelper;
 import com.sorcererxw.matthiasheiderichphotography.util.TypefaceHelper;
 import com.sorcererxw.matthiasheidericphotography.R;
 
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * @description:
@@ -61,7 +60,7 @@ public class FavoriteFragment extends BaseFragment {
 
     private MHAdapter mAdapter;
 
-    private ProjectDBHelper mProjectDBHelper;
+    private ProjectDbManager mProjectDBHelper;
 
     @Nullable
     @Override
@@ -71,8 +70,7 @@ public class FavoriteFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         ButterKnife.bind(this, view);
 
-        mProjectDBHelper = new ProjectDBHelper(getContext(), "favorite");
-
+        mProjectDBHelper = MHApp.getDb(getContext()).getProjectDbManager(ProjectTable.PROJECT_FAVORITE);
         mAdapter = new MHAdapter(mActivity);
         mAdapter.setOnItemLongClickListener(new MHAdapter.OnItemLongClickListener() {
             @Override
@@ -85,7 +83,7 @@ public class FavoriteFragment extends BaseFragment {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog,
                                                 @NonNull DialogAction which) {
-                                mProjectDBHelper.deleteLink(data);
+                                mProjectDBHelper.removeLink(data);
                                 mAdapter.removeItem(position);
                                 if (mAdapter.getItemCount() == 0) {
                                     mEmptyView.setVisibility(View.VISIBLE);
@@ -157,19 +155,22 @@ public class FavoriteFragment extends BaseFragment {
     }
 
     public void initData() {
-        Observable.create(new Observable.OnSubscribe<List<String>>() {
-            @Override
-            public void call(Subscriber<? super List<String>> subscriber) {
-                List<String> list = mProjectDBHelper.getLinks();
-                Collections.reverse(list);
-                subscriber.onNext(list);
-            }
-        })
-                .subscribeOn(Schedulers.newThread())
+        mProjectDBHelper.getLinks()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<String>>() {
+                .subscribe(new Subscriber<List<String>>() {
                     @Override
-                    public void call(List<String> list) {
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+
+                    @Override
+                    public void onNext(List<String> list) {
                         if (list != null && list.size() > 0) {
                             mAdapter.setData(list);
                             mEmptyView.setVisibility(View.INVISIBLE);

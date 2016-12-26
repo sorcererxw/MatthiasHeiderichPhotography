@@ -1,30 +1,22 @@
 package com.sorcererxw.matthiasheiderichphotography.services;
 
 import android.app.IntentService;
-import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
-import com.sorcererxw.matthiasheiderichphotography.db.DbHelper;
-import com.sorcererxw.matthiasheiderichphotography.db.ProjectDBHelper;
-import com.sorcererxw.matthiasheiderichphotography.ui.fragments.MHFragment;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectTable;
+import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectDbManager;
 import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
 import com.sorcererxw.matthiasheiderichphotography.util.NetworkUtil;
-import com.sorcererxw.matthiasheiderichphotography.util.StringUtil;
 import com.sorcererxw.matthiasheiderichphotography.util.WallpaperSetter;
 import com.sorcererxw.matthiasheiderichphotography.util.WebCatcher;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -66,7 +58,7 @@ public class WallpaperChangeService extends IntentService {
         mWallpaperSetter = new WallpaperSetter(this);
     }
 
-    private ProjectDBHelper mDBHelper;
+    private ProjectDbManager mDBHelper;
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -76,9 +68,9 @@ public class WallpaperChangeService extends IntentService {
         }
         mRunning = true;
         int categoriesIndex = new Random().nextInt(1000);
-        final int len = MHApp.PROJECTS_NAME.length;
+        final int len = ProjectTable.PROJECTS_NAME.length;
         categoriesIndex = categoriesIndex % len;
-        String projectName = MHApp.PROJECTS_NAME[categoriesIndex];
+        String projectName = ProjectTable.PROJECTS_NAME[categoriesIndex];
         getLink(projectName).map(new Func1<List<String>, String>() {
             @Override
             public String call(List<String> list) {
@@ -115,7 +107,6 @@ public class WallpaperChangeService extends IntentService {
         }).subscribe(new Action1<Boolean>() {
             @Override
             public void call(Boolean aBoolean) {
-                mDBHelper.close();
                 WallpaperChangeService.this.stopSelf();
                 mRunning = false;
             }
@@ -128,21 +119,18 @@ public class WallpaperChangeService extends IntentService {
     }
 
     private Observable<List<String>> getLink(String projectName) {
-        if (mDBHelper != null) {
-            mDBHelper.close();
-        }
-        mDBHelper = new ProjectDBHelper(this, StringUtil.onlyLetter(projectName));
+        mDBHelper = MHApp.getDb(this).getProjectDbManager(projectName);
         MHPreference<Long> lastSync = MHApp.getInstance().getPrefs().getLastSync(projectName, 0L);
         if (System.currentTimeMillis() - lastSync.getValue() < 86400000) {
-            List<String> list = mDBHelper.getLinks();
-            if (list.size() == 0) {
-                lastSync.setValue(0L);
-                return getLink(projectName);
-            } else {
-                return Observable.just(list);
-            }
+            return mDBHelper.getLinks();
         } else {
-            return WebCatcher.catchImageLinks("http://www.matthias-heiderich.de/" + projectName);
+            return WebCatcher.catchImageLinks("http://www.matthias-heiderich.de/" + projectName)
+                    .doOnNext(new Action1<List<String>>() {
+                        @Override
+                        public void call(List<String> strings) {
+                            mDBHelper.saveLinks(strings);
+                        }
+                    });
         }
     }
 }
