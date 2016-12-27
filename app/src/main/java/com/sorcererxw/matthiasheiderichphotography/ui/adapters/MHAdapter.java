@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
@@ -40,6 +41,7 @@ import com.wang.avi.AVLoadingIndicatorView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -301,6 +303,36 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
     public void setOnItemLongClickListener(
             OnItemLongClickListener onItemLongClickListener) {
         mOnItemLongClickListener = onItemLongClickListener;
+    }
+
+    private static class MHDiffCallback extends DiffUtil.Callback {
+        private List<String> mOldList;
+        private List<String> mNewList;
+
+        public MHDiffCallback(List<String> oldList, List<String> newList) {
+            mOldList = oldList;
+            mNewList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return mOldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return mNewList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return Objects.equals(mOldList.get(oldItemPosition), mNewList.get(newItemPosition));
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return Objects.equals(mOldList.get(oldItemPosition), mNewList.get(newItemPosition));
+        }
     }
 
 }

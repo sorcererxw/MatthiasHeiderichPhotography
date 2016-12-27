@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sorcererxw.matthiasheiderichphotography.MHApp;
+import com.sorcererxw.matthiasheiderichphotography.data.Project;
 import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectTable;
 import com.sorcererxw.matthiasheiderichphotography.data.db.ProjectDbManager;
 import com.sorcererxw.matthiasheiderichphotography.util.MHPreference;
@@ -68,10 +69,10 @@ public class WallpaperChangeService extends IntentService {
         }
         mRunning = true;
         int categoriesIndex = new Random().nextInt(1000);
-        final int len = ProjectTable.PROJECTS_NAME.length;
+        final int len = Project.values().length;
         categoriesIndex = categoriesIndex % len;
-        String projectName = ProjectTable.PROJECTS_NAME[categoriesIndex];
-        getLink(projectName).map(new Func1<List<String>, String>() {
+       Project project = Project.values()[categoriesIndex];
+        getLink(project).map(new Func1<List<String>, String>() {
             @Override
             public String call(List<String> list) {
                 int photoIndex = new Random().nextInt(1000) % list.size();
@@ -118,13 +119,13 @@ public class WallpaperChangeService extends IntentService {
         });
     }
 
-    private Observable<List<String>> getLink(String projectName) {
-        mDBHelper = MHApp.getDb(this).getProjectDbManager(projectName);
-        MHPreference<Long> lastSync = MHApp.getInstance().getPrefs().getLastSync(projectName, 0L);
+    private Observable<List<String>> getLink(Project project) {
+        mDBHelper = MHApp.getDb(this).getProjectDbManager(project);
+        MHPreference<Long> lastSync = MHApp.getInstance().getPrefs().getLastSync(project, 0L);
         if (System.currentTimeMillis() - lastSync.getValue() < 86400000) {
             return mDBHelper.getLinks();
         } else {
-            return WebCatcher.catchImageLinks("http://www.matthias-heiderich.de/" + projectName)
+            return WebCatcher.catchImageLinks(project)
                     .doOnNext(new Action1<List<String>>() {
                         @Override
                         public void call(List<String> strings) {

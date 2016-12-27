@@ -48,8 +48,6 @@ public class MHFragment extends BaseFragment {
 
     private static final String PROJECT_KEY = "project key";
 
-    private String mProjectName;
-
     public static MHFragment newInstance(String projects) {
         MHFragment fragment = new MHFragment();
         Bundle bundle = new Bundle();
@@ -61,6 +59,8 @@ public class MHFragment extends BaseFragment {
     private Activity mActivity;
 
     private ProjectDbManager mFavoriteDBHelper;
+    private Project mProject;
+    private ProjectDbManager mProjectsHelper;
 
     @Override
     public void onAttach(Activity activity) {
@@ -72,15 +72,9 @@ public class MHFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        mFavoriteDBHelper =
-                MHApp.getDb(getContext()).getProjectDbManager(ProjectTable.PROJECT_FAVORITE);
-        mProjectName = getArguments().getString(PROJECT_KEY);
-
+        mFavoriteDBHelper = MHApp.getDb(getContext()).getFavoriteDbManager();
+        mProject = Project.valueOf(getArguments().getString(PROJECT_KEY));
     }
-
-    private Project mProject;
-
-    private MHPreference<Long> mLastSync;
 
     @Nullable
     @Override
@@ -89,6 +83,7 @@ public class MHFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_mh, container, false);
         ButterKnife.bind(this, view);
         initViews(mActivity);
+        initData();
         return view;
     }
 
@@ -147,49 +142,46 @@ public class MHFragment extends BaseFragment {
         });
     }
 
-    private ProjectDbManager mProjectsHelper;
-
     private void initData() {
-        mProjectsHelper = MHApp.getDb(getContext()).getProjectDbManager(mProjectName);
-        mLastSync = MHApp.getInstance().getPrefs().getLastSync(mProjectName, 0L);
+        mProjectsHelper =
+                MHApp.getDb(getContext()).getProjectDbManager(mProject);
+        mProjectsHelper.getLinks()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<String>>() {
+                    @Override
+                    public void onCompleted() {
 
-        if (System.currentTimeMillis() - mLastSync.getValue() < 86400000) {
-            mProjectsHelper.getLinks()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<List<String>>() {
-                        @Override
-                        public void onCompleted() {
+                    }
 
-                        }
+                    @Override
+                    public void onError(Throwable e) {
 
-                        @Override
-                        public void onError(Throwable e) {
+                    }
 
-                        }
-
-                        @Override
-                        public void onNext(List<String> strings) {
-                            mAdapter.setData(strings);
-                        }
-                    });
-        } else {
-            catchData();
-        }
+                    @Override
+                    public void onNext(List<String> strings) {
+                        mAdapter.setData(strings);
+                    }
+                });
+        catchData();
     }
 
     private void catchData() {
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-        });
-
-        WebCatcher.catchImageLinks(
-                "http://www.matthias-heiderich.de/" + getArguments().getString(PROJECT_KEY))
+        WebCatcher.catchImageLinks(mProject)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<String>>() {
+                    @Override
+                    public void onStart() {
+                        super.onStart();
+                        mSwipeRefreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                            }
+                        });
+                    }
+
                     @Override
                     public void onCompleted() {
                         mSwipeRefreshLayout.post(new Runnable() {
@@ -216,7 +208,6 @@ public class MHFragment extends BaseFragment {
                     public void onNext(List<String> strings) {
                         Collections.sort(strings);
                         if (strings.size() > 0) {
-                            mLastSync.setValue(System.currentTimeMillis());
                             mProjectsHelper.saveLinks(strings);
                         }
                         mSwipeRefreshLayout.post(new Runnable() {
@@ -232,7 +223,7 @@ public class MHFragment extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        initData();
+        Timber.d("onStart");
     }
 
     @Override

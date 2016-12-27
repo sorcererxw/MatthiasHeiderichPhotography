@@ -41,6 +41,10 @@ public enum Project {
         return toString().toLowerCase().replaceAll("_", "");
     }
 
+    public String toUrlName() {
+        return toString().toLowerCase().replaceAll("_", "-");
+    }
+
     public String toSimpleName() {
         return toString().toLowerCase();
     }
@@ -51,15 +55,6 @@ public enum Project {
             list.add(project.toCollectionName());
         }
         return list;
-    }
-
-    public static Project fromProjectName(String name) {
-        for (Project project : values()) {
-            if (project.toString().equals(name)) {
-                return project;
-            }
-        }
-        return values()[0];
     }
 //    "material-i",
 //    "reflections-1",

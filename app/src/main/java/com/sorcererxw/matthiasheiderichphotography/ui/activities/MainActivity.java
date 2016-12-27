@@ -161,9 +161,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String fragmentTag = MHApp.getInstance().getPrefs().getLastLeaveFragmentTag().getValue();
-        boolean unexpandedCategories = FRAGMENT_TAG_HOME.equals(fragmentTag)
-                || FRAGMENT_TAG_FAVORITE.equals(fragmentTag)
-                || FRAGMENT_TAG_SETTINGS.equals(fragmentTag);
+        boolean unexpandedCategories = !isCollectionTag(fragmentTag);
 
         mHomeDrawerItem = homeDrawerItem();
         mFavoriteDrawerItem = favoriteDrawerItem();
@@ -176,6 +174,12 @@ public class MainActivity extends AppCompatActivity {
                 mCollectionsExpandableDrawerItem,
                 mSettingsDrawerItem
         );
+    }
+
+    private static boolean isCollectionTag(String tag) {
+        return !(FRAGMENT_TAG_HOME.equals(tag)
+                || FRAGMENT_TAG_FAVORITE.equals(tag)
+                || FRAGMENT_TAG_SETTINGS.equals(tag));
     }
 
     private PrimaryDrawerItem homeDrawerItem() {
@@ -282,7 +286,11 @@ public class MainActivity extends AppCompatActivity {
         mLastFragment = mCurrentFragment;
         transaction.commit();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(tag);
+            if (isCollectionTag(tag)) {
+                getSupportActionBar().setTitle(Project.valueOf(tag).toCollectionName());
+            } else {
+                getSupportActionBar().setTitle(tag);
+            }
         }
     }
 

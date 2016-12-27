@@ -3,6 +3,7 @@ package com.sorcererxw.matthiasheiderichphotography.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.sorcererxw.matthiasheiderichphotography.data.Project;
 import com.sorcererxw.matthiasheiderichphotography.ui.activities.MainActivity;
 
 /**
@@ -19,7 +20,11 @@ public class Prefs {
                 context.getSharedPreferences("matthiasheiderich", Context.MODE_PRIVATE);
     }
 
-    public MHPreference<Long> getLastSync(String projectName, Long defaultValue) {
+    public MHPreference<Long> getLastSync(Project project, Long defaultValue) {
+        return getLastSync(project.toString(), defaultValue);
+    }
+
+    private MHPreference<Long> getLastSync(String projectName, Long defaultValue) {
         return new MHPreference<>(mSharedPreferences, "last_sync_" + projectName, defaultValue);
     }
 

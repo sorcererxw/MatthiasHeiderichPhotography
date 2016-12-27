@@ -1,5 +1,7 @@
 package com.sorcererxw.matthiasheiderichphotography.util;
 
+import com.sorcererxw.matthiasheiderichphotography.data.Project;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,13 +28,13 @@ public class WebCatcher {
     private static final String USER_AGENT =
             "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
 
-    public static Observable<List<String>> catchImageLinks(final String pageAddress) {
+    public static Observable<List<String>> catchImageLinks(final Project project) {
         return Observable.create(new Observable.OnSubscribe<List<String>>() {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
                 try {
                     List<String> list = new ArrayList<>();
-                    Document document = Jsoup.connect(pageAddress)
+                    Document document = Jsoup.connect("http://www.matthias-heiderich.de/"+project.toUrlName())
                             .userAgent(USER_AGENT)
                             .get();
 

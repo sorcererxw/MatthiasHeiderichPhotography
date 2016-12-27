@@ -90,10 +90,12 @@ public class MHArtSource extends RemoteMuzeiArtSource {
         final Random random = new Random();
         String category = MHApp.getInstance().getPrefs().getMuzeiRotateCategory().getValue();
         if (category.isEmpty()) {
-            category = Project.values()[random.nextInt(Project.values().length)].toSimpleName();
+            category = Project.values()[random.nextInt(Project.values().length)].toString();
         }
 
-        WebCatcher.catchImageLinks("http://www.matthias-heiderich.de/" + category)
+        Project project = Project.valueOf(category);
+
+        WebCatcher.catchImageLinks(project)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<String>>() {
                     @Override

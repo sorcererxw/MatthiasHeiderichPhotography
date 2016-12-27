@@ -70,7 +70,7 @@ public class FavoriteFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         ButterKnife.bind(this, view);
 
-        mProjectDBHelper = MHApp.getDb(getContext()).getProjectDbManager(ProjectTable.PROJECT_FAVORITE);
+        mProjectDBHelper = MHApp.getDb(getContext()).getFavoriteDbManager();
         mAdapter = new MHAdapter(mActivity);
         mAdapter.setOnItemLongClickListener(new MHAdapter.OnItemLongClickListener() {
             @Override

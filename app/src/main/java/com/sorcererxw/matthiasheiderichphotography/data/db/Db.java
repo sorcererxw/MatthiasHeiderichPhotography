@@ -3,6 +3,7 @@ package com.sorcererxw.matthiasheiderichphotography.data.db;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.sorcererxw.matthiasheiderichphotography.data.Project;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
@@ -34,11 +35,20 @@ public class Db {
 
     private Map<String, ProjectDbManager> mProjectsMap = new HashMap<>();
 
-    public ProjectDbManager getProjectDbManager(String project) {
-        if (!mProjectsMap.containsKey(project)) {
-            mProjectsMap.put(project, new ProjectDbManager(mDatabase, project));
+    public ProjectDbManager getFavoriteDbManager() {
+        return getProjectDbManager(ProjectTable.PROJECT_FAVORITE);
+    }
+
+    public ProjectDbManager getProjectDbManager(Project project) {
+        return getProjectDbManager(project.toDatabaseTableName());
+    }
+
+    private ProjectDbManager getProjectDbManager(String projectName) {
+        if (!mProjectsMap.containsKey(projectName)) {
+            mProjectsMap.put(projectName,
+                    new ProjectDbManager(mDatabase, projectName));
         }
-        return mProjectsMap.get(project);
+        return mProjectsMap.get(projectName);
     }
 
     public static String getString(Cursor cursor, String columnName) {
