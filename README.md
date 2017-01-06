@@ -6,7 +6,8 @@
 A simple client of [Matthias Heiderich Photography](http://www.matthias-heiderich.de)
 
 
-     
+## Licence
+
 > Copyright (C) 2016 SorcererXW <sorcerer@sorcererxw.com>
 >
 > MatthiasHeiderichPhotography is free software: you can redistribute it and/or modify
