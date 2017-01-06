@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
@@ -40,7 +42,9 @@ import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -159,8 +163,11 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
     }
 
     public void setData(List<String> list) {
+        List<String> oldList = new ArrayList<>(mList);
         mList = list;
-        notifyDataSetChanged();
+        DiffUtil.DiffResult diffResult =
+                DiffUtil.calculateDiff(new MHDiffCallback(oldList, mList), true);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @Override
@@ -173,10 +180,13 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
                 LayoutInflater.from(mContext).inflate(R.layout.item_mh, parent, false));
     }
 
-    private SparseBooleanArray mShowedMap = new SparseBooleanArray();
+    private Map<String, Boolean> mShowedMap = new HashMap<>();
 
-    public boolean hasItemShowed(int position) {
-        return mShowedMap.get(position);
+    public boolean hasItemShowed(String link) {
+        if(mShowedMap.get(link)==null){
+            return false;
+        }
+        return mShowedMap.get(link);
     }
 
     public interface OnItemLongClickListener {
@@ -194,7 +204,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
             holder.loadingIndicatorView.setIndicatorColor(ThemeHelper.getAccentColor(mContext));
             holder.itemView.setBackgroundColor(ThemeHelper.getImagePlaceHolderColor(mContext));
 
-            if (mShowedMap.get(position)) {
+            if (hasItemShowed(mList.get(position))) {
                 holder.loadingIndicatorView.setVisibility(GONE);
             } else {
                 holder.loadingIndicatorView.setVisibility(View.VISIBLE);
@@ -203,7 +213,6 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
             Animation animation = new AlphaAnimation(0, 1);
             animation.setDuration(500);
             animation.setInterpolator(new MHItemAnimInterpolator());
-
             holder.loadingIndicatorView.setAlpha(1);
 
             mGlideRequestManager.load(mList.get(position))
@@ -225,7 +234,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
                                                        boolean isFromMemoryCache,
                                                        boolean isFirstResource) {
                             holder.loadingIndicatorView.animate().alpha(0).start();
-                            mShowedMap.put(holder.getAdapterPosition(), true);
+                            mShowedMap.put(mList.get(holder.getAdapterPosition()), true);
                             holder.drawable = resource;
                             return false;
                         }
@@ -239,7 +248,7 @@ public class MHAdapter extends RecyclerView.Adapter<MHAdapter.MHBaseViewHolder> 
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, DetailActivity.class);
                     intent.putExtra("link", mList.get(holder.getAdapterPosition()));
-                    if (mShowedMap.get(holder.getAdapterPosition())) {
+                    if (hasItemShowed(mList.get(holder.getAdapterPosition()))) {
                         MHApp.setTmpDrawable(mContext, holder.drawable);
                     } else {
                         MHApp.setTmpDrawable(mContext, null);

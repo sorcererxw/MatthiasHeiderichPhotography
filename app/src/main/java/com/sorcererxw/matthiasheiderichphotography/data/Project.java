@@ -11,7 +11,7 @@ import java.util.List;
 
 public enum Project {
     MATERIAL_I,
-    REFLECTION_1,
+    REFLECTIONS_1,
     NOWHERE_IN_PARTICULAR,
     SYSTEMS_LAYERS_III,
     SYSTEMS_LAYERS_II,
@@ -34,7 +34,20 @@ public enum Project {
     RANDOM;
 
     public String toCollectionName() {
-        return toString().toLowerCase().replaceAll("_", " ");
+        String name = toString().toLowerCase();
+        String[] nameFragment = name.split("_");
+        String res = "";
+        for (String fragment : nameFragment) {
+            if (fragment.length() > 0) {
+                if (fragment.matches("i+")) {
+                    res += (fragment.toUpperCase() + " ");
+                } else {
+                    res += (Character.toUpperCase(fragment.charAt(0)) + fragment.substring(1))
+                            + " ";
+                }
+            }
+        }
+        return res;
     }
 
     public String toDatabaseTableName() {
@@ -56,26 +69,4 @@ public enum Project {
         }
         return list;
     }
-//    "material-i",
-//    "reflections-1",
-//    "nowhere-in-particular",
-//    "systems-layers-iii",
-//    "systems-layers-ii",
-//    "systems-layers",
-//    "northbound",
-//    "reflexionen-drei",
-//    "reflexionen-zwei",
-//    "reflexionen-eins",
-//    "reflexiones",
-//    "spektrum-eins",
-//    "spektrum-zwei",
-//    "fragment",
-//    "uae",
-//    "stadt-der-zukunft",
-//    "kali",
-//    "a7-southbound",
-//    "ost-west",
-//    "studien",
-//    "color-berlin",
-//    "random"
 }

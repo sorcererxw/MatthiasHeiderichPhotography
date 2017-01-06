@@ -16,6 +16,7 @@ public class ProjectTable {
     public static final String LINK = "link";
 
     public static void onCreate(SQLiteDatabase db) {
+        onCreate(db, PROJECT_FAVORITE);
         for (Project project : Project.values()) {
             onCreate(db, project.toDatabaseTableName());
         }

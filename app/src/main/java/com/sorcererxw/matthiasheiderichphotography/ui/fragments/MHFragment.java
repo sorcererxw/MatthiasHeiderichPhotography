@@ -104,7 +104,7 @@ public class MHFragment extends BaseFragment {
             @Override
             public void onLongClick(View view, String data, int position,
                                     MHAdapter.MHViewHolder holder) {
-                if (!mAdapter.hasItemShowed(position)) {
+                if (!mAdapter.hasItemShowed(data)) {
                     return;
                 }
                 if (mFavoriteDBHelper.isContain(data)) {

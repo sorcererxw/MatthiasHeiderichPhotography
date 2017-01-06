@@ -71,7 +71,7 @@ public class WallpaperChangeService extends IntentService {
         int categoriesIndex = new Random().nextInt(1000);
         final int len = Project.values().length;
         categoriesIndex = categoriesIndex % len;
-       Project project = Project.values()[categoriesIndex];
+        Project project = Project.values()[categoriesIndex];
         getLink(project).map(new Func1<List<String>, String>() {
             @Override
             public String call(List<String> list) {
