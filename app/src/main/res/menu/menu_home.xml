@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        app:showAsAction="always"
+        android:icon="@drawable/ic_outline_bookmark_border_24px"
+        android:id="@+id/action_favorite"
+        android:title="Favorite"/>
+    <item
+        app:showAsAction="always"
+        android:icon="@drawable/ic_outline_settings_24px"
+        android:id="@+id/action_settings"
+        android:title="Settings"/>
+</menu>

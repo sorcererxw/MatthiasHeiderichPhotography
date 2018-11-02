@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"/>
 
-        <com.sorcererxw.typefaceviews.widgets.TypefaceTextView
+        <TextView
             android:id="@+id/textView_item_file_picker_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

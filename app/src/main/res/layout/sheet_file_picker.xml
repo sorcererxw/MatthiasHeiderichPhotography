@@ -4,12 +4,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <com.sorcererxw.typefaceviews.widgets.TypefaceToolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_file_picker_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_sheet_file_picker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

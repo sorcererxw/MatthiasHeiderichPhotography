@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/nav_graph"
+            app:startDestination="@id/homeFragment">
+    <fragment android:id="@+id/homeFragment"
+              android:name="com.sorcererxw.matthiasheiderichphotography.ui.fragments.HomeFragment"
+              android:label="HomeFragment">
+        <action android:id="@+id/action_homeFragment_to_galleryFragment"
+                app:destination="@id/galleryFragment"/>
+        <action android:id="@+id/action_homeFragment_to_settingsFragment"
+                app:destination="@id/settingsFragment"/>
+        <action android:id="@+id/action_homeFragment_to_favoriteFragment"
+                app:destination="@id/favoriteFragment"/>
+    </fragment>
+    <fragment android:id="@+id/galleryFragment"
+              android:name="com.sorcererxw.matthiasheiderichphotography.ui.fragments.GalleryFragment"
+              android:label="GalleryFragment">
+        <argument android:name="galleyName" app:argType="string" app:nullable="false"/>
+        <action android:id="@+id/action_galleryFragment_to_detailFragment"
+                app:destination="@id/detailFragment"
+                app:enterAnim="@android:anim/fade_in"
+                app:exitAnim="@android:anim/fade_out"
+                app:popEnterAnim="@android:anim/fade_in"
+                app:popExitAnim="@android:anim/fade_out"/>
+        <action android:id="@+id/action_galleryFragment_to_favoriteFragment"
+                app:destination="@id/favoriteFragment"/>
+    </fragment>
+    <fragment android:id="@+id/favoriteFragment"
+              android:name="com.sorcererxw.matthiasheiderichphotography.ui.fragments.FavoriteFragment"
+              android:label="FavoriteFragment"/>
+    <fragment android:id="@+id/settingsFragment"
+              android:name="com.sorcererxw.matthiasheiderichphotography.ui.fragments.SettingsFragment"
+              android:label="SettingsFragment">
+        <action android:id="@+id/action_settingsFragment_to_aboutFragment"
+                app:destination="@id/aboutFragment"/>
+    </fragment>
+    <fragment android:id="@+id/aboutFragment"
+              android:name="com.sorcererxw.matthiasheiderichphotography.ui.fragments.AboutFragment"
+              android:label="AboutFragment"/>
+    <fragment android:id="@+id/detailFragment"
+              android:name="com.sorcererxw.matthiasheiderichphotography.ui.fragments.DetailFragment"
+              android:label="DetailFragment">
+        <argument android:name="link" app:argType="string" app:nullable="false"/>
+    </fragment>
+</navigation>

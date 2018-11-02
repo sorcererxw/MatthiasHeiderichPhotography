@@ -1,20 +1,21 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowTranslucentStatus">true</item>
 
+        <item name="android:textViewStyle">@style/AppTheme.TextViewStyle</item>
+    </style>
+
+    <style name="AppTheme.TextViewStyle">
+        <item name="android:fontFamily">@font/app_font</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
-
-    <style name="AppTheme.Detail" parent="AppTheme">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
 
     <style name="Theme.Transparent" parent="android:Theme">
         <item name="android:windowIsTranslucent">true</item>
@@ -54,4 +55,5 @@
         <item name="colorLibCopyrightBackground">@color/colorNightLibCopyrightBackground</item>
         <item name="colorImagePlaceHolder">@color/colorNightImagePlaceHolder</item>
     </style>
+
 </resources>
